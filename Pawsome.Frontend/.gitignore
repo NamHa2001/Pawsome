@@ -26,7 +26,6 @@ yarn-error.log
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
-!.vscode/mcp.json
 .history/*
 
 # Miscellaneous
@@ -42,6 +41,3 @@ __screenshots__/
 # System files
 .DS_Store
 Thumbs.db
-
-# Không commit cấu hình MCP (kết nối AI) của VS Code
-/.vscode/mcp.json

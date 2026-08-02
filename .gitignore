@@ -1,13 +1,5 @@
-# Repo này chỉ track code Backend + Frontend, không track tài liệu/nội bộ ở gốc E:\KTPM
+# Repo chi track code Backend + Frontend
 /*
 !/Pawsome.Backend/
 !/Pawsome.Frontend/
 !/.gitignore
-
-# Phòng hờ: không bao giờ commit file quy tắc nội bộ hoặc cấu hình công cụ AI
-CLAUDE.md
-QUY_TAC_COMMIT.md
-.claude/
-.cursor/
-.aider*
-.windsurf/
