@@ -7,6 +7,7 @@ using Pawsome.API.Common.AuditLog;
 using Pawsome.API.Common.Auth;
 using Pawsome.API.Common.Middleware;
 using Pawsome.Infrastructure;
+using Pawsome.API.Services.TaiKhoan;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -81,7 +82,8 @@ builder.Services.AddScoped<IAuditLogService, AuditLogService>();
 // ── DI của từng Phần: mỗi Phần tự thêm AddScoped<...>() của mình vào đây ──
 // (đúng mục 5.8 Pawsome_KhungDuAn.md - chỗ duy nhất mọi Phần đều phải đụng
 // vào cùng 1 file; kéo code mới nhất trước khi thêm dòng của mình để tránh xung đột)
-// Phần 1 - Tài khoản:      builder.Services.AddScoped<IAuthService, AuthService>();
+// Phần 1 - Tài khoản:
+builder.Services.AddScoped<IAuthService, AuthService>();
 // Phần 2 - Sản phẩm:       builder.Services.AddScoped<IProductService, ProductService>();
 // Phần 3 - Giỏ hàng:       builder.Services.AddScoped<ICartService, CartService>();
 // Phần 4 - Đơn hàng:       builder.Services.AddScoped<IOrderService, OrderService>();
