@@ -1,4 +1,3 @@
-using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -6,8 +5,10 @@ using Microsoft.OpenApi.Models;
 using Pawsome.API.Common.AuditLog;
 using Pawsome.API.Common.Auth;
 using Pawsome.API.Common.Middleware;
-using Pawsome.Infrastructure;
+using Pawsome.API.Services.SanPham;
 using Pawsome.API.Services.TaiKhoan;
+using Pawsome.Infrastructure;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -85,6 +86,7 @@ builder.Services.AddScoped<IAuditLogService, AuditLogService>();
 // Phần 1 - Tài khoản:
 builder.Services.AddScoped<IAuthService, AuthService>();
 // Phần 2 - Sản phẩm:       builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
 // Phần 3 - Giỏ hàng:       builder.Services.AddScoped<ICartService, CartService>();
 // Phần 4 - Đơn hàng:       builder.Services.AddScoped<IOrderService, OrderService>();
 // Phần 5 - Blog/Quản trị:  builder.Services.AddScoped<IBlogService, BlogService>();
