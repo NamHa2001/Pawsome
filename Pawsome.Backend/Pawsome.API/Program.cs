@@ -87,6 +87,7 @@ builder.Services.AddScoped<IAuditLogService, AuditLogService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 // Phần 2 - Sản phẩm:       builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<IBrandService, BrandService>();
 // Phần 3 - Giỏ hàng:       builder.Services.AddScoped<ICartService, CartService>();
 // Phần 4 - Đơn hàng:       builder.Services.AddScoped<IOrderService, OrderService>();
 // Phần 5 - Blog/Quản trị:  builder.Services.AddScoped<IBlogService, BlogService>();
