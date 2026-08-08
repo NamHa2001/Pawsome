@@ -41,6 +41,10 @@ public class BrandService : IBrandService
 
     public async Task<BrandDto> CreateAsync(BrandRequestDto dto)
     {
+        var trungTen = await _dbContext.Brands.AnyAsync(b => b.TenThuongHieu == dto.TenThuongHieu);
+        if (trungTen)
+            throw new InvalidOperationException("Tên thương hiệu này đã tồn tại.");
+
         var brand = new Brand
         {
             TenThuongHieu = dto.TenThuongHieu,
@@ -62,7 +66,11 @@ public class BrandService : IBrandService
     {
         var brand = await _dbContext.Brands.FindAsync(id);
         if (brand == null)
-            throw new InvalidOperationException("Không tìm thấy thương hiệu.");
+            throw new KeyNotFoundException("Không tìm thấy thương hiệu.");
+
+        var trungTen = await _dbContext.Brands.AnyAsync(b => b.TenThuongHieu == dto.TenThuongHieu && b.BrandId != id);
+        if (trungTen)
+            throw new InvalidOperationException("Tên thương hiệu này đã tồn tại.");
 
         brand.TenThuongHieu = dto.TenThuongHieu;
         brand.LogoUrl = dto.LogoUrl;
@@ -81,7 +89,7 @@ public class BrandService : IBrandService
     {
         var brand = await _dbContext.Brands.FindAsync(id);
         if (brand == null)
-            throw new InvalidOperationException("Không tìm thấy thương hiệu.");
+            throw new KeyNotFoundException("Không tìm thấy thương hiệu.");
 
         _dbContext.Brands.Remove(brand);
         await _dbContext.SaveChangesAsync();

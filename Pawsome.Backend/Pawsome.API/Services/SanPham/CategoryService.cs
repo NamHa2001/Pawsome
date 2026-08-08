@@ -43,6 +43,13 @@ public class CategoryService : ICategoryService
 
     public async Task<CategoryDto> CreateAsync(CategoryRequestDto dto)
     {
+        if (dto.DanhMucChaId.HasValue)
+        {
+            var chaTonTai = await _dbContext.Categories.AnyAsync(c => c.CategoryId == dto.DanhMucChaId.Value);
+            if (!chaTonTai)
+                throw new InvalidOperationException("Danh mục cha không tồn tại.");
+        }
+
         var category = new Category
         {
             TenDanhMuc = dto.TenDanhMuc,
@@ -66,7 +73,17 @@ public class CategoryService : ICategoryService
     {
         var category = await _dbContext.Categories.FindAsync(id);
         if (category == null)
-            throw new InvalidOperationException("Không tìm thấy danh mục.");
+            throw new KeyNotFoundException("Không tìm thấy danh mục.");
+
+        if (dto.DanhMucChaId.HasValue)
+        {
+            if (dto.DanhMucChaId.Value == id)
+                throw new InvalidOperationException("Danh mục không thể là cha của chính nó.");
+
+            var chaTonTai = await _dbContext.Categories.AnyAsync(c => c.CategoryId == dto.DanhMucChaId.Value);
+            if (!chaTonTai)
+                throw new InvalidOperationException("Danh mục cha không tồn tại.");
+        }
 
         category.TenDanhMuc = dto.TenDanhMuc;
         category.DanhMucChaId = dto.DanhMucChaId;
@@ -87,7 +104,7 @@ public class CategoryService : ICategoryService
     {
         var category = await _dbContext.Categories.FindAsync(id);
         if (category == null)
-            throw new InvalidOperationException("Không tìm thấy danh mục.");
+            throw new KeyNotFoundException("Không tìm thấy danh mục.");
 
         _dbContext.Categories.Remove(category);
         await _dbContext.SaveChangesAsync();

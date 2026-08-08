@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Pawsome.API.Common;
 using Pawsome.API.DTOs.SanPham;
@@ -34,13 +35,22 @@ public class BrandsController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Create([FromBody] BrandRequestDto dto)
     {
-        var result = await _brandService.CreateAsync(dto);
-        return Ok(ApiResponse<BrandDto>.Ok(result, "Tạo thương hiệu thành công."));
+        try
+        {
+            var result = await _brandService.CreateAsync(dto);
+            return Ok(ApiResponse<BrandDto>.Ok(result, "Tạo thương hiệu thành công."));
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ApiResponse<BrandDto>.Fail(ex.Message));
+        }
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Update(int id, [FromBody] BrandRequestDto dto)
     {
         try
@@ -48,13 +58,18 @@ public class BrandsController : ControllerBase
             var result = await _brandService.UpdateAsync(id, dto);
             return Ok(ApiResponse<BrandDto>.Ok(result, "Cập nhật thành công."));
         }
-        catch (InvalidOperationException ex)
+        catch (KeyNotFoundException ex)
         {
             return NotFound(ApiResponse<BrandDto>.Fail(ex.Message));
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ApiResponse<BrandDto>.Fail(ex.Message));
         }
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(int id)
     {
         try
@@ -62,7 +77,7 @@ public class BrandsController : ControllerBase
             await _brandService.DeleteAsync(id);
             return Ok(ApiResponse<object>.Ok(new { }, "Xóa thành công."));
         }
-        catch (InvalidOperationException ex)
+        catch (KeyNotFoundException ex)
         {
             return NotFound(ApiResponse<object>.Fail(ex.Message));
         }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Pawsome.API.Common;
 using Pawsome.API.DTOs.SanPham;
 using Pawsome.API.Services.SanPham;
@@ -34,13 +35,22 @@ public class CategoriesController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Create([FromBody] CategoryRequestDto dto)
     {
-        var result = await _categoryService.CreateAsync(dto);
-        return Ok(ApiResponse<CategoryDto>.Ok(result, "Tạo danh mục thành công."));
+        try
+        {
+            var result = await _categoryService.CreateAsync(dto);
+            return Ok(ApiResponse<CategoryDto>.Ok(result, "Tạo danh mục thành công."));
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ApiResponse<CategoryDto>.Fail(ex.Message));
+        }
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Update(int id, [FromBody] CategoryRequestDto dto)
     {
         try
@@ -48,13 +58,18 @@ public class CategoriesController : ControllerBase
             var result = await _categoryService.UpdateAsync(id, dto);
             return Ok(ApiResponse<CategoryDto>.Ok(result, "Cập nhật thành công."));
         }
-        catch (InvalidOperationException ex)
+        catch (KeyNotFoundException ex)
         {
             return NotFound(ApiResponse<CategoryDto>.Fail(ex.Message));
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ApiResponse<CategoryDto>.Fail(ex.Message));
         }
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(int id)
     {
         try
@@ -62,7 +77,7 @@ public class CategoriesController : ControllerBase
             await _categoryService.DeleteAsync(id);
             return Ok(ApiResponse<object>.Ok(new { }, "Xóa thành công."));
         }
-        catch (InvalidOperationException ex)
+        catch (KeyNotFoundException ex)
         {
             return NotFound(ApiResponse<object>.Fail(ex.Message));
         }
