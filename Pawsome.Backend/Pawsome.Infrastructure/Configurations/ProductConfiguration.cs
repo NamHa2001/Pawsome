@@ -12,6 +12,10 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
         {
             t.HasCheckConstraint("CK_products_gia_tu", "gia_tu IS NULL OR gia_tu >= 0");
             t.HasCheckConstraint("CK_products_diem_danh_gia", "diem_danh_gia_tb BETWEEN 0 AND 5");
+            // Bảng có trigger trg_products_set_ngaycapnhat (AFTER UPDATE) -> SQL Server không cho phép
+            // EF Core dùng OUTPUT clause khi UPDATE bảng có trigger (lỗi "cannot have any enabled triggers
+            // if the statement contains an OUTPUT clause without INTO clause"). Tắt OUTPUT clause để UPDATE chạy được.
+            t.UseSqlOutputClause(false);
         });
         builder.HasKey(p => p.ProductId);
 

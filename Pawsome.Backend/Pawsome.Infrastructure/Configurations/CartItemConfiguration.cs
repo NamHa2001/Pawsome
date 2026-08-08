@@ -8,7 +8,13 @@ public class CartItemConfiguration : IEntityTypeConfiguration<CartItem>
 {
     public void Configure(EntityTypeBuilder<CartItem> builder)
     {
-        builder.ToTable("cart_items", t => t.HasCheckConstraint("CK_cart_items_soluong", "so_luong > 0"));
+        builder.ToTable("cart_items", t =>
+        {
+            t.HasCheckConstraint("CK_cart_items_soluong", "so_luong > 0");
+            // Bảng có trigger trg_cart_items_touch_cart (AFTER INSERT, UPDATE, DELETE) -> tắt OUTPUT clause
+            // của EF Core, nếu không mọi thêm/sửa/xóa dòng giỏ hàng sẽ lỗi 500 do SQL Server chặn OUTPUT trên bảng có trigger.
+            t.UseSqlOutputClause(false);
+        });
         builder.HasKey(ci => ci.CartItemId);
 
         builder.Property(ci => ci.CartItemId).HasColumnName("cart_item_id");

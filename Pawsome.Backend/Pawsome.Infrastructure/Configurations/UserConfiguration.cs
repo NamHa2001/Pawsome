@@ -12,6 +12,9 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         {
             t.HasCheckConstraint("CK_users_trangthai", "trang_thai IN (N'active', N'locked')");
             t.HasCheckConstraint("CK_users_diem_pawpoints", "diem_pawpoints >= 0");
+            // Bảng có trigger trg_users_set_ngaycapnhat (AFTER UPDATE) -> tắt OUTPUT clause của EF Core,
+            // nếu không mọi UPDATE (vd cập nhật hồ sơ cá nhân) sẽ lỗi 500 do SQL Server chặn OUTPUT trên bảng có trigger.
+            t.UseSqlOutputClause(false);
         });
         builder.HasKey(u => u.UserId);
 
