@@ -20,6 +20,7 @@ public class ProductService : IProductService
         var query = _dbContext.Products
             .Include(p => p.Variants)
             .Include(p => p.Images)
+            .Include(p => p.Reviews.Where(r => r.TrangThai == "da_duyet"))
             .Where(p => p.DangKinhDoanh)
             .AsQueryable();
 
@@ -66,6 +67,7 @@ public class ProductService : IProductService
         var product = await _dbContext.Products
             .Include(p => p.Variants)
             .Include(p => p.Images)
+            .Include(p => p.Reviews.Where(r => r.TrangThai == "da_duyet"))
             .FirstOrDefaultAsync(p => p.ProductId == id);
 
         return product == null ? null : MapToDto(product);
@@ -133,6 +135,7 @@ public class ProductService : IProductService
         var product = await _dbContext.Products
             .Include(p => p.Variants)
             .Include(p => p.Images)
+            .Include(p => p.Reviews.Where(r => r.TrangThai == "da_duyet"))
             .FirstOrDefaultAsync(p => p.ProductId == id);
 
         if (product == null)
@@ -360,6 +363,7 @@ public class ProductService : IProductService
         LieuLuong = p.LieuLuong,
         GiaTu = p.GiaTu,
         DiemDanhGiaTb = p.DiemDanhGiaTb,
+        SoLuongDanhGia = p.Reviews.Count,
         DangKinhDoanh = p.DangKinhDoanh,
         Variants = p.Variants.Select(MapVariantToDto).ToList(),
         Images = p.Images.Select(i => new ProductImageDto

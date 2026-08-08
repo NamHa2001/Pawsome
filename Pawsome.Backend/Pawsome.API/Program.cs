@@ -106,10 +106,12 @@ builder.Services.AddScoped<IAuditLogService, AuditLogService>();
 // Phần 1 - Tài khoản:
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IAddressService, AddressService>();
 // Phần 2 - Sản phẩm:
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IBrandService, BrandService>();
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IReviewService, ReviewService>();
 // Phần 3 - Giỏ hàng:       builder.Services.AddScoped<ICartService, CartService>();
 // Phần 4 - Đơn hàng:       builder.Services.AddScoped<IOrderService, OrderService>();
 // Phần 5 - Blog/Quản trị:  builder.Services.AddScoped<IBlogService, BlogService>();
