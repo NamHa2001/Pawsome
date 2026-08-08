@@ -25,7 +25,7 @@ public class ReviewService : IReviewService
         var tongSo = await query.CountAsync();
 
         var trang = page < 1 ? 1 : page;
-        var soDong = pageSize < 1 ? 20 : pageSize;
+        var soDong = pageSize < 1 ? 20 : Math.Min(pageSize, 100);
 
         var items = await query
             .Skip((trang - 1) * soDong)
