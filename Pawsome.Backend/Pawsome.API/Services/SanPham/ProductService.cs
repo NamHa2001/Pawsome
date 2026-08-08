@@ -31,7 +31,7 @@ public class ProductService : IProductService
             query = query.Where(p => p.BrandId == filter.BrandId.Value);
 
         if (!string.IsNullOrWhiteSpace(filter.TuKhoa))
-            query = query.Where(p => p.Ten.Contains(filter.TuKhoa));
+            query = query.Where(p => p.Ten.Contains(filter.TuKhoa.Trim()));
 
         if (filter.GiaMin.HasValue)
             query = query.Where(p => p.GiaTu != null && p.GiaTu >= filter.GiaMin.Value);
@@ -45,7 +45,7 @@ public class ProductService : IProductService
         var tongSo = await query.CountAsync();
 
         var trang = filter.Page < 1 ? 1 : filter.Page;
-        var soDong = filter.PageSize < 1 ? 20 : filter.PageSize;
+        var soDong = filter.PageSize < 1 ? 20 : Math.Min(filter.PageSize, 100);
 
         var items = await query
             .OrderByDescending(p => p.NgayTao)
@@ -60,6 +60,33 @@ public class ProductService : IProductService
             PageNumber = trang,
             PageSize = soDong
         };
+    }
+
+    // Gợi ý tự động khi gõ tìm kiếm (YC-2.4) - trả về nhanh, danh sách rút gọn, ưu tiên
+    // tên bắt đầu bằng từ khóa trước, chỉ lấy sản phẩm đang kinh doanh.
+    public async Task<List<ProductSuggestionDto>> GetSuggestionsAsync(string tuKhoa, int soLuong)
+    {
+        if (string.IsNullOrWhiteSpace(tuKhoa))
+            return new List<ProductSuggestionDto>();
+
+        var tuKhoaSach = tuKhoa.Trim();
+        var gioiHan = soLuong < 1 ? 8 : Math.Min(soLuong, 20);
+
+        var items = await _dbContext.Products
+            .Include(p => p.Images)
+            .Where(p => p.DangKinhDoanh && p.Ten.Contains(tuKhoaSach))
+            .OrderBy(p => p.Ten.StartsWith(tuKhoaSach) ? 0 : 1)
+            .ThenBy(p => p.Ten)
+            .Take(gioiHan)
+            .ToListAsync();
+
+        return items.Select(p => new ProductSuggestionDto
+        {
+            ProductId = p.ProductId,
+            Ten = p.Ten,
+            AnhChinh = p.Images.FirstOrDefault(i => i.LaAnhChinh)?.Url ?? p.Images.FirstOrDefault()?.Url,
+            GiaTu = p.GiaTu
+        }).ToList();
     }
 
     public async Task<ProductDto?> GetByIdAsync(int id)

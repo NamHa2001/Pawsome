@@ -24,6 +24,13 @@ public class ProductsController : ControllerBase
         return Ok(ApiResponse<PagedResult<ProductDto>>.Ok(result));
     }
 
+    [HttpGet("suggestions")]
+    public async Task<IActionResult> GetSuggestions([FromQuery] string? tuKhoa, [FromQuery] int soLuong = 8)
+    {
+        var result = await _productService.GetSuggestionsAsync(tuKhoa ?? "", soLuong);
+        return Ok(ApiResponse<List<ProductSuggestionDto>>.Ok(result));
+    }
+
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {

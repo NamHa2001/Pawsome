@@ -8,6 +8,7 @@ namespace Pawsome.API.Services.SanPham;
 public interface IProductService
 {
     Task<PagedResult<ProductDto>> SearchAsync(ProductFilterRequestDto filter);
+    Task<List<ProductSuggestionDto>> GetSuggestionsAsync(string tuKhoa, int soLuong);
     Task<ProductDto?> GetByIdAsync(int id);
     Task<ProductDto> CreateAsync(ProductRequestDto dto);
     Task<ProductDto> UpdateAsync(int id, ProductUpdateRequestDto dto);
