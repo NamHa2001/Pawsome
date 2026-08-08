@@ -12,6 +12,9 @@ public class PawPointsTransactionConfiguration : IEntityTypeConfiguration<PawPoi
         {
             t.HasCheckConstraint("CK_pawpoints_loai", "loai IN (N'earn', N'redeem', N'bonus')");
             t.HasCheckConstraint("CK_pawpoints_sodiem", "so_diem <> 0");
+            // Bảng có trigger trg_pawpoints_sync_balance (AFTER INSERT, UPDATE, DELETE) -> tắt OUTPUT clause
+            // của EF Core, nếu không mọi tích/tiêu điểm sẽ lỗi 500 do SQL Server chặn OUTPUT trên bảng có trigger.
+            t.UseSqlOutputClause(false);
         });
         builder.HasKey(pt => pt.TransactionId);
 

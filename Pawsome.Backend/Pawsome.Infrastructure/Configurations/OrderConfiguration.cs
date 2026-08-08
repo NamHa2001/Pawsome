@@ -14,6 +14,9 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
             t.HasCheckConstraint("CK_orders_phivanchuyen", "phi_van_chuyen >= 0");
             t.HasCheckConstraint("CK_orders_giamgia", "giam_gia >= 0");
             t.HasCheckConstraint("CK_orders_thanhtien", "thanh_tien >= 0");
+            // Bảng có trigger trg_orders_set_ngaycapnhat (AFTER UPDATE) -> tắt OUTPUT clause của EF Core,
+            // nếu không mọi UPDATE (vd cập nhật trạng thái đơn hàng) sẽ lỗi 500 do SQL Server chặn OUTPUT trên bảng có trigger.
+            t.UseSqlOutputClause(false);
         });
         builder.HasKey(o => o.OrderId);
 

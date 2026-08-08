@@ -12,6 +12,9 @@ public class ReviewConfiguration : IEntityTypeConfiguration<Review>
         {
             t.HasCheckConstraint("CK_reviews_sosao", "so_sao BETWEEN 1 AND 5");
             t.HasCheckConstraint("CK_reviews_trangthai", "trang_thai IN (N'cho_duyet', N'da_duyet', N'tu_choi')");
+            // Bảng reviews tự nó không có trigger, nhưng trigger trg_reviews_sync_avg (AFTER INSERT, UPDATE,
+            // DELETE trên chính bảng reviews) vẫn khiến SQL Server chặn OUTPUT clause khi ghi vào bảng này.
+            t.UseSqlOutputClause(false);
         });
         builder.HasKey(r => r.ReviewId);
 
