@@ -106,6 +106,7 @@ builder.Services.AddScoped<IAuditLogService, AuditLogService>();
 // Phần 1 - Tài khoản:
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IAddressService, AddressService>();
 // Phần 2 - Sản phẩm:
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IBrandService, BrandService>();
