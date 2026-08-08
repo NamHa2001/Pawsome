@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Pawsome.API.Common;
 using Pawsome.API.Common.AuditLog;
 using Pawsome.API.Common.Auth;
 using Pawsome.API.Common.Middleware;
@@ -17,7 +19,24 @@ builder.Services.AddDbContext<PawsomeDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // ── MVC + Swagger ──────────────────────────────────────────────────────────
-builder.Services.AddControllers();
+// ConfigureApiBehaviorOptions: chuẩn hóa lỗi tự động của [Required]/[StringLength]... về
+// đúng khung ApiResponse<T> (mục 5.2 Pawsome_KhungDuAn.md) - mặc định ASP.NET Core trả
+// ValidationProblemDetails, khác cấu trúc { success, data, message } nên Angular interceptor
+// chung không đọc được nếu không chuẩn hóa ở đây.
+builder.Services.AddControllers()
+    .ConfigureApiBehaviorOptions(options =>
+    {
+        options.InvalidModelStateResponseFactory = context =>
+        {
+            var loiDauTien = context.ModelState
+                .Values
+                .SelectMany(v => v.Errors)
+                .Select(e => e.ErrorMessage)
+                .FirstOrDefault() ?? "Dữ liệu không hợp lệ.";
+
+            return new BadRequestObjectResult(ApiResponse<object>.Fail(loiDauTien));
+        };
+    });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
