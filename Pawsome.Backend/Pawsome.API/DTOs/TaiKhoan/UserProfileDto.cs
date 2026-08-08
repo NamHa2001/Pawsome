@@ -1,0 +1,12 @@
+﻿namespace Pawsome.API.DTOs.TaiKhoan;
+
+public class UserProfileDto
+{
+    public int UserId { get; set; }
+    public string Email { get; set; } = null!;
+    public string HoTen { get; set; } = null!;
+    public string? SoDienThoai { get; set; }
+    public int DiemPawpoints { get; set; }
+    public string Role { get; set; } = null!;
+    public DateTime NgayTao { get; set; }
+}

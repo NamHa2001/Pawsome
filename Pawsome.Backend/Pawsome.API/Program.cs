@@ -49,7 +49,7 @@ builder.Services.AddSwaggerGen(options =>
         Scheme = "Bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Description = "Nhập token dạng: Bearer {token}"
+        Description = "Chỉ dán chuỗi token vào đây, KHÔNG cần gõ chữ 'Bearer' - Swagger tự thêm vào."
     };
     options.AddSecurityDefinition("Bearer", jwtScheme);
     options.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -81,6 +81,7 @@ builder.Services
     })
     .AddJwtBearer(options =>
     {
+        options.MapInboundClaims = false; //giữ nguyên tên claim gốc ("sub", "email"...), không đổi tên
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
@@ -104,6 +105,7 @@ builder.Services.AddScoped<IAuditLogService, AuditLogService>();
 // vào cùng 1 file; kéo code mới nhất trước khi thêm dòng của mình để tránh xung đột)
 // Phần 1 - Tài khoản:
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUserService, UserService>();
 // Phần 2 - Sản phẩm:
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IBrandService, BrandService>();
@@ -120,7 +122,10 @@ app.UseMiddleware<ExceptionHandlingMiddleware>();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(options =>
+    {
+        options.EnablePersistAuthorization(); 
+    });
 }
 
 app.UseHttpsRedirection();

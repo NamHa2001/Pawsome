@@ -42,4 +42,27 @@ public class AuthController : ControllerBase
             return Unauthorized(ApiResponse<AuthResponseDto>.Fail(ex.Message));
         }
     }
+    [HttpPost("forgot-password")]
+    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequestDto dto)
+    {
+        var token = await _authService.ForgotPasswordAsync(dto);
+
+        return Ok(ApiResponse<object>.Ok(
+            new { devToken = token },
+            "Nếu email tồn tại trong hệ thống, hướng dẫn đặt lại mật khẩu đã được gửi."));
+    }
+
+    [HttpPost("reset-password")]
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequestDto dto)
+    {
+        try
+        {
+            await _authService.ResetPasswordAsync(dto);
+            return Ok(ApiResponse<object>.Ok(null!, "Đặt lại mật khẩu thành công."));
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ApiResponse<object>.Fail(ex.Message));
+        }
+    }
 }
