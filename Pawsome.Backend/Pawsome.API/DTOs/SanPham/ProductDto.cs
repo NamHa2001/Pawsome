@@ -10,6 +10,7 @@ public class ProductDto
     public string? LieuLuong { get; set; }
     public decimal? GiaTu { get; set; }
     public decimal DiemDanhGiaTb { get; set; }
+    public int SoLuongDanhGia { get; set; }
     public bool DangKinhDoanh { get; set; }
     public List<ProductVariantDto> Variants { get; set; } = new();
     public List<ProductImageDto> Images { get; set; } = new();
