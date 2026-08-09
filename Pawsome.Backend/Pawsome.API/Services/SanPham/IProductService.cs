@@ -21,7 +21,11 @@ public interface IProductService
     Task<ProductImageDto> AddImageAsync(int productId, ProductImageRequestDto dto);
     Task DeleteImageAsync(int productId, int imageId);
 
-    // Dùng chung cho Phần 4 (Đơn hàng) gọi khi tạo/hủy đơn - không ghi trực tiếp DB ở Phần khác
+    // Dùng chung cho Phần 4 (Đơn hàng) gọi khi tạo/hủy đơn - không ghi trực tiếp DB ở Phần khác.
+    // Cả 2 hàm ghi thẳng xuống DB bằng UPDATE nguyên tử (ExecuteUpdateAsync), KHÔNG cập nhật lại
+    // property trên entity ProductVariant nào đang được track sẵn trong cùng DbContext (nếu trước
+    // đó đã đọc variant này bằng FindAsync/Include để lấy giá...). Nếu sau khi gọi cần biết số
+    // lượng tồn kho mới, phải query lại (không dùng entity/biến đã đọc từ trước, nó vẫn giữ số cũ).
     Task TruTonKhoAsync(int variantId, int soLuong);
     Task HoanKhoAsync(int variantId, int soLuong);
 }
