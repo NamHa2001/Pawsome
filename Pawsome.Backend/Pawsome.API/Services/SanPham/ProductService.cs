@@ -315,27 +315,43 @@ public class ProductService : IProductService
         await _dbContext.SaveChangesAsync();
     }
 
+    // Dùng ExecuteUpdateAsync (UPDATE ... WHERE so_luong_ton >= @soLuong trong đúng 1 câu SQL nguyên tử)
+    // thay vì đọc-rồi-ghi qua change tracker: đọc-rồi-ghi bị "lost update" khi 2 đơn hàng trừ kho đồng
+    // thời - cả hai đều đọc được tồn kho cũ, đều tính trừ thành công, ghi đè lên nhau, tồn kho cuối cùng
+    // chỉ giảm 1 lần dù cả 2 đơn đều báo thành công (bán vượt tồn kho thật). ExecuteUpdateAsync để SQL
+    // Server tự khóa dòng trong lúc UPDATE, request đến sau sẽ thấy tồn kho đã giảm và tự fail đúng.
+    //
+    // LƯU Ý cho nơi gọi (Phần 4 - xử lý đơn hàng): ExecuteUpdateAsync ghi thẳng xuống DB, KHÔNG cập
+    // nhật entity ProductVariant nào đang được track sẵn trong cùng DbContext (nếu trước đó đã
+    // FindAsync/Include variant này để đọc giá...). Nếu cần biết tồn kho MỚI sau khi gọi hàm này,
+    // phải query lại (FindAsync lại hoặc AsNoTracking), không dùng property trên biến/entity đã đọc
+    // trước đó - nó sẽ vẫn giữ giá trị cũ.
     public async Task TruTonKhoAsync(int variantId, int soLuong)
     {
-        var variant = await _dbContext.ProductVariants.FindAsync(variantId);
-        if (variant == null)
+        var soDongCapNhat = await _dbContext.ProductVariants
+            .Where(v => v.VariantId == variantId && v.SoLuongTon >= soLuong)
+            .ExecuteUpdateAsync(setters => setters
+                .SetProperty(v => v.SoLuongTon, v => v.SoLuongTon - soLuong));
+
+        if (soDongCapNhat > 0)
+            return;
+
+        var tonTai = await _dbContext.ProductVariants.AnyAsync(v => v.VariantId == variantId);
+        if (!tonTai)
             throw new KeyNotFoundException("Không tìm thấy biến thể sản phẩm.");
 
-        if (variant.SoLuongTon < soLuong)
-            throw new InvalidOperationException("Số lượng tồn kho không đủ.");
-
-        variant.SoLuongTon -= soLuong;
-        await _dbContext.SaveChangesAsync();
+        throw new InvalidOperationException("Số lượng tồn kho không đủ.");
     }
 
     public async Task HoanKhoAsync(int variantId, int soLuong)
     {
-        var variant = await _dbContext.ProductVariants.FindAsync(variantId);
-        if (variant == null)
-            throw new KeyNotFoundException("Không tìm thấy biến thể sản phẩm.");
+        var soDongCapNhat = await _dbContext.ProductVariants
+            .Where(v => v.VariantId == variantId)
+            .ExecuteUpdateAsync(setters => setters
+                .SetProperty(v => v.SoLuongTon, v => v.SoLuongTon + soLuong));
 
-        variant.SoLuongTon += soLuong;
-        await _dbContext.SaveChangesAsync();
+        if (soDongCapNhat == 0)
+            throw new KeyNotFoundException("Không tìm thấy biến thể sản phẩm.");
     }
 
     // sku dùng filtered unique index (chỉ áp dụng khi khác NULL) - xem Database.sql dòng 423.
