@@ -37,5 +37,22 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                .HasForeignKey(u => u.RoleId)
                .HasConstraintName("FK_users_roles")
                .OnDelete(DeleteBehavior.NoAction);
+
+        // Dữ liệu mẫu (Pawsome_PhanChia.docx - "Tầng 0: trưởng nhóm dựng toàn bộ bảng, dữ liệu mẫu"):
+        // 1 tài khoản Admin để các Phần có sẵn quyền test API cần role Admin (vd đăng bài blog, CRUD sản phẩm).
+        // Mật khẩu mẫu: Admin@123 (đã băm bằng BCrypt.Net-Next 4.0.3, cùng thư viện PasswordHasher đang dùng).
+        builder.HasData(new User
+        {
+            UserId = 1,
+            RoleId = 2,
+            Email = "admin@pawsome.vn",
+            PasswordHash = "$2a$11$VOB3KJqGRdIg7DYWqdKumuDJRPl4ED3pUwy36ArnXBg39m9Gz8wB.",
+            HoTen = "Quản trị viên",
+            SoDienThoai = null,
+            DiemPawpoints = 0,
+            TrangThai = "active",
+            NgayTao = new DateTime(2026, 1, 1),
+            NgayCapNhat = new DateTime(2026, 1, 1)
+        });
     }
 }
