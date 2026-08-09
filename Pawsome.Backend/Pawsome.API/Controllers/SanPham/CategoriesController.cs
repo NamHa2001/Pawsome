@@ -1,11 +1,12 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Pawsome.API.Common;
 using Pawsome.API.DTOs.SanPham;
 using Pawsome.API.Services.SanPham;
 
 namespace Pawsome.API.Controllers.SanPham;
 
+// Chỉ còn action đọc (khách duyệt danh mục công khai) - phần thêm/sửa/xóa (quản trị) đã dời
+// sang AdminProductController (Phần 5), đúng ranh giới ở Pawsome_KhungDuAn.md mục 2, ghi chú (*).
 [ApiController]
 [Route("api/[controller]")]
 public class CategoriesController : ControllerBase
@@ -32,54 +33,5 @@ public class CategoriesController : ControllerBase
             return NotFound(ApiResponse<CategoryDto>.Fail("Không tìm thấy danh mục."));
 
         return Ok(ApiResponse<CategoryDto>.Ok(result));
-    }
-
-    [HttpPost]
-    [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> Create([FromBody] CategoryRequestDto dto)
-    {
-        try
-        {
-            var result = await _categoryService.CreateAsync(dto);
-            return Ok(ApiResponse<CategoryDto>.Ok(result, "Tạo danh mục thành công."));
-        }
-        catch (InvalidOperationException ex)
-        {
-            return BadRequest(ApiResponse<CategoryDto>.Fail(ex.Message));
-        }
-    }
-
-    [HttpPut("{id}")]
-    [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> Update(int id, [FromBody] CategoryRequestDto dto)
-    {
-        try
-        {
-            var result = await _categoryService.UpdateAsync(id, dto);
-            return Ok(ApiResponse<CategoryDto>.Ok(result, "Cập nhật thành công."));
-        }
-        catch (KeyNotFoundException ex)
-        {
-            return NotFound(ApiResponse<CategoryDto>.Fail(ex.Message));
-        }
-        catch (InvalidOperationException ex)
-        {
-            return BadRequest(ApiResponse<CategoryDto>.Fail(ex.Message));
-        }
-    }
-
-    [HttpDelete("{id}")]
-    [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> Delete(int id)
-    {
-        try
-        {
-            await _categoryService.DeleteAsync(id);
-            return Ok(ApiResponse<object>.Ok(new { }, "Xóa thành công."));
-        }
-        catch (KeyNotFoundException ex)
-        {
-            return NotFound(ApiResponse<object>.Fail(ex.Message));
-        }
     }
 }
