@@ -8,6 +8,9 @@ using Pawsome.API.Services.SanPham;
 
 namespace Pawsome.API.Controllers.SanPham;
 
+// Chỉ còn action đọc công khai + gửi đánh giá của khách - phần kiểm duyệt (duyệt/từ chối) đã
+// dời hẳn sang AdminReviewController (Phần 5), đúng ranh giới ở Pawsome_PhanChia.docx (mục
+// "Kiểm duyệt đánh giá": Phần 2 cho gửi đánh giá, Phần 5 thực hiện duyệt/từ chối).
 [ApiController]
 [Route("api/[controller]")]
 public class ReviewsController : ControllerBase
@@ -41,44 +44,6 @@ public class ReviewsController : ControllerBase
         catch (InvalidOperationException ex)
         {
             return BadRequest(ApiResponse<ReviewDto>.Fail(ex.Message));
-        }
-    }
-
-    [HttpGet("pending")]
-    [Authorize(Roles = "Admin,Moderator")]
-    public async Task<IActionResult> GetChoDuyet()
-    {
-        var result = await _reviewService.GetChoDuyetAsync();
-        return Ok(ApiResponse<List<ReviewDto>>.Ok(result));
-    }
-
-    [HttpPut("{id}/approve")]
-    [Authorize(Roles = "Admin,Moderator")]
-    public async Task<IActionResult> Duyet(int id)
-    {
-        try
-        {
-            var result = await _reviewService.DuyetAsync(id);
-            return Ok(ApiResponse<ReviewDto>.Ok(result, "Đã duyệt đánh giá."));
-        }
-        catch (KeyNotFoundException ex)
-        {
-            return NotFound(ApiResponse<ReviewDto>.Fail(ex.Message));
-        }
-    }
-
-    [HttpPut("{id}/reject")]
-    [Authorize(Roles = "Admin,Moderator")]
-    public async Task<IActionResult> TuChoi(int id)
-    {
-        try
-        {
-            var result = await _reviewService.TuChoiAsync(id);
-            return Ok(ApiResponse<ReviewDto>.Ok(result, "Đã từ chối đánh giá."));
-        }
-        catch (KeyNotFoundException ex)
-        {
-            return NotFound(ApiResponse<ReviewDto>.Fail(ex.Message));
         }
     }
 }
