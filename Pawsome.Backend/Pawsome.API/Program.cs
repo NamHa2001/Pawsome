@@ -117,6 +117,7 @@ builder.Services.AddScoped<IReviewService, ReviewService>();
 // Phần 4 - Đơn hàng:       builder.Services.AddScoped<IOrderService, OrderService>();
 // Phần 5 - Blog/Quản trị:
 builder.Services.AddScoped<IBlogService, BlogService>();
+builder.Services.AddScoped<IWishlistService, WishlistService>();
 
 var app = builder.Build();
 
