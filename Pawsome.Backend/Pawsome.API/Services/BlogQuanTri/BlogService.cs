@@ -81,7 +81,7 @@ public class BlogService : IBlogService
         {
             TieuDe = dto.TieuDe,
             NoiDung = dto.NoiDung,
-            ChuDe = dto.ChuDe,
+            ChuDe = ChuanHoaChuDe(dto.ChuDe),
             TacGiaId = tacGiaId,
             AnhDaiDien = dto.AnhDaiDien,
             NgayDang = DateTime.UtcNow
@@ -104,7 +104,7 @@ public class BlogService : IBlogService
 
         post.TieuDe = dto.TieuDe;
         post.NoiDung = dto.NoiDung;
-        post.ChuDe = dto.ChuDe;
+        post.ChuDe = ChuanHoaChuDe(dto.ChuDe);
         post.AnhDaiDien = dto.AnhDaiDien;
 
         await _dbContext.SaveChangesAsync();
@@ -123,6 +123,11 @@ public class BlogService : IBlogService
         _dbContext.BlogPosts.Remove(post);
         await _dbContext.SaveChangesAsync();
     }
+
+    // Chuẩn hóa lúc ghi để khớp với Trim() lúc lọc ở SearchAsync - nếu không, chu_de dư khoảng trắng
+    // sẽ khiến GetChuDeListAsync trả về "topic bẩn" và lọc theo chu_de sạch bị trật (0 kết quả).
+    private static string? ChuanHoaChuDe(string? chuDe) =>
+        string.IsNullOrWhiteSpace(chuDe) ? null : chuDe.Trim();
 
     private static BlogPostDto MapToDto(BlogPost b, string? tenTacGiaGhiDe = null) => new()
     {
