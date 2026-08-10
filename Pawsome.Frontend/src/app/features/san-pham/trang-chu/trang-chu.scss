@@ -1,0 +1,882 @@
+
+:host {
+  display: contents;
+}
+
+.BannerSlideshow {
+  width: 100%;
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+}
+
+.BannerSlideshow .VungAnToan {
+  width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  padding-top: 10px;
+}
+
+.KhungVuaSlide {
+  width: 1200px;
+  height: 319px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  margin-bottom: 5px;
+}
+
+.DanhSachSlide {
+  display: flex;
+  width: 300%;
+  height: 100%;
+  transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.SlideItem {
+  width: 1200px;
+  height: 100%;
+
+  img { width: 100%; height: 100%; object-fit: cover; display: block; }
+}
+
+.CumDauCham {
+  position: absolute;
+  bottom: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 15px;
+  z-index: 5;
+}
+
+.DauCham {
+  width: 13px;
+  height: 13px;
+  background-color: var(--MauHongDam);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &.active { background-color: var(--MauDoDam); border-radius: 10px; }
+}
+
+.ThanhTienIch {
+  width: 100%;
+  padding: 40px 0 20px 0;
+  background-color: var(--MauTrang);
+  display: flex;
+  justify-content: center;
+
+  .VungAnToan { display: flex; justify-content: space-between; align-items: center; }
+}
+
+.OSevice {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  width: 24%;
+}
+
+.IconTron {
+  width: 65px;
+  height: 65px;
+  background-color: #D32F2F;
+  color: var(--MauTrang);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 30px;
+  flex-shrink: 0;
+  box-shadow: 0 4px 15px rgba(165, 31, 31, 0.2);
+  transition: all 0.3s ease;
+}
+
+.OSevice:hover .IconTron {
+  transform: translateY(-5px);
+  background-color: #C02E2E;
+}
+
+.ChuService {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  strong { font-size: 16px; font-weight: 700; color: var(--MauDen); margin-bottom: 4px; white-space: nowrap; }
+  span { font-size: 13px; color: #666; font-weight: 300; line-height: 1.4; }
+}
+
+.SanPhamNoiBat {
+  width: 100%;
+  padding: 10px 0;
+  background-color: var(--MauTrang);
+  display: flex;
+  justify-content: center;
+}
+
+.SanPhamNoiBat .VungAnToan {
+  width: 1200px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  overflow: visible;
+}
+
+.KhungNenDo {
+  width: 1200px;
+  height: 433px;
+  background-color: var(--MauDoDam);
+  border-radius: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  position: relative;
+  overflow: visible;
+}
+
+.AnhChoTrungTam {
+  height: 100%;
+  width: auto;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  pointer-events: none;
+}
+
+.CumSanPham {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  z-index: 10;
+}
+
+.CumVatPham {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 122px;
+  margin-top: 10px;
+}
+
+.HinhVuongLon {
+  width: 272px;
+  height: 353px;
+  background-color: var(--MauTrang);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  padding: 15px;
+}
+
+.HinhVuongNho {
+  width: 122px;
+  height: 176px;
+  background-color: var(--MauTrang);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  border: 1px solid #eee;
+  margin-bottom: 20px;
+
+  img { width: 85%; object-fit: contain; }
+}
+
+.NutShopNow {
+  width: 150px;
+  height: 40px;
+  background-color: var(--MauTrang);
+  color: var(--MauDoDam);
+  text-decoration: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 700;
+  border-radius: 30px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  transition: 0.3s ease;
+  margin-bottom: 10px;
+
+  &:hover { background-color: #fde42a; transform: scale(1.05); }
+}
+
+.NoiDungTrong {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 5px;
+}
+
+.PhanChu {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.TieuDeSP {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--MauDen);
+  line-height: 1.2;
+}
+
+.NhanPhu {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--MauDen);
+  border-bottom: 1px solid #eee;
+  padding-bottom: 3px;
+  margin-bottom: 5px;
+}
+
+.KhungGia {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.GiaCu {
+  font-size: 20px;
+  display: block;
+  text-decoration: line-through;
+  color: #ddd;
+}
+
+.GiaMoi {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  line-height: 1;
+}
+
+.ConSoGia {
+  font-size: 20px !important;
+  color: var(--MauDoDam);
+  font-weight: 600;
+}
+
+.LogoVipGia {
+  height: 25px;
+  width: auto;
+  padding-left: 20px;
+}
+
+.DiemNoiBat {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.DanhSachDiem {
+  list-style: none;
+  border-bottom: 1px solid #eee;
+
+  li {
+    font-size: 14px;
+    color: #555;
+    padding: 3px 0 10px 0;
+    line-height: 1.4;
+  }
+}
+
+.KhungAnhNhoHero {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 5px;
+}
+
+.OAnhNhoHero {
+  width: 48px;
+  height: 48px;
+  border: 1px solid #ddd;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  img { width: 90%; height: 90%; object-fit: contain; }
+}
+
+.KhungChuaLon {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 30px 0 10px 0;
+}
+
+.HeaderSanPham {
+  width: 1200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.TieuDeChinh {
+  font-size: 28px;
+  font-weight: 500;
+  color: #000;
+  white-space: nowrap;
+}
+
+.BoLoc {
+  position: relative;
+  padding-bottom: 5px;
+}
+
+.BoLocHienTai {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.DuongGachChan {
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--MauDoDam);
+}
+
+.MenuDropdown {
+  position: absolute;
+  top: 110%;
+  left: 0;
+  width: 200px;
+  background-color: #ffffff;
+  list-style: none;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  li {
+    padding: 12px 20px;
+    border-bottom: 1px solid #f5f5f5;
+    transition: 0.2s;
+
+    &:hover { background-color: #D32F2F; color: white; }
+  }
+}
+
+.BoLoc:hover .MenuDropdown {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.KhungDanhSachSP {
+  width: 1200px;
+  margin: 10px auto 30px auto;
+  display: grid;
+  grid-template-columns: repeat(4, 280px);
+  justify-content: center;
+  gap: 20px;
+}
+
+.TheSanPham {
+  width: 280px;
+  background-color: #FDECEC;
+  border-radius: 10px;
+  padding: 13px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.3s ease;
+
+  &:hover { transform: translateY(-5px); }
+}
+
+.KhungAnhTrang {
+  width: 254px;
+  height: 212px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  img { max-width: 90%; max-height: 90%; object-fit: contain; }
+}
+
+.NoiDungSP {
+  width: 100%;
+  padding: 15px 10px 0 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.RatingSao {
+  color: #FFB800;
+  font-size: 14px;
+  margin-bottom: 5px;
+
+  span { color: #888; margin-left: 5px; }
+}
+
+.TenSanPhamGrid {
+  font-size: 16px;
+  font-weight: 600;
+  color: #000;
+  margin-bottom: 15px;
+  text-align: center;
+  min-height: 44px;
+}
+
+.KeNgang {
+  width: 100%;
+  height: 1.5px;
+  background-color: #c1b9b9;
+  padding: 0 20px;
+  margin-bottom: 10px;
+}
+
+.CumGia {
+  width: 100%;
+  padding: 15px 20px 0;
+  margin-bottom: 15px;
+  line-height: 1.7;
+  text-align: center;
+}
+
+.GiaMoiHang {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.GiaMoiGrid {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--MauDoDam);
+}
+
+.VipIconGrid { height: 25px; }
+
+.NutShopNowGrid {
+  width: 190px;
+  height: 44px;
+  background-color: #A51F1F;
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  transition: 0.3s ease;
+
+  &:hover { background-color: #FF7A00; box-shadow: 0 4px 12px rgba(165, 31, 31, 0.3); }
+}
+
+.ContainerBannerVip {
+  width: 100%;
+  margin: 20px 0;
+  display: flex;
+  justify-content: center;
+}
+
+.KhungBannerVip {
+  display: flex;
+  justify-content: center;
+  gap: 35px;
+  margin: 0 auto;
+}
+
+.BannerVip {
+  height: 227px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+
+  &.Do { width: 686px; padding: 0 40px; }
+  &.Cam { width: 361px; }
+}
+
+.AnhNenBanner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+}
+
+.NoiDungVip, .NoiDungCoupon {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  display: flex;
+}
+
+.NoiDungVip { align-items: center; }
+
+.LogoPawVip {
+  height: 50px;
+  width: auto;
+  margin-right: 15px;
+  border-radius: 20px;
+}
+
+.TextVip {
+  h3 { color: #ffffff; font-size: 28px; font-weight: 800; line-height: 1.1; }
+  p { color: #ffffff; font-size: 16px; margin: 8px 0 0 0; }
+}
+
+.CumHanhDong {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-left: auto;
+  gap: 10px;
+}
+
+.GiaVip {
+  font-size: 75px;
+  font-weight: 900;
+  color: #FFD700;
+  line-height: 1;
+  text-shadow: 2px 4px 4px rgba(0, 0, 0, 0.3);
+}
+
+.NutJoinNow {
+  width: 150px;
+  height: 45px;
+  background-color: #ffffff;
+  color: #333;
+  border: none;
+  border-radius: 30px;
+  font-weight: 800;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  transition: 0.3s;
+
+  &:hover { transform: scale(1.05); background-color: #fde42a; }
+}
+
+.NoiDungCoupon {
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 25px;
+  box-sizing: border-box;
+}
+
+.CumSale { margin-top: 10px; }
+.ChuSave { font-size: 18px; font-weight: 700; color: #333; }
+.PhanTram { font-size: 45px; font-weight: 900; margin: -5px 0; color: var(--MauDoDam); }
+.FirstOrder { font-size: 14px; font-weight: 700; color: #333; }
+
+.KhungCoupon {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  text-align: right;
+}
+
+.LabelCoupon { font-size: 12px; color: #ffffff; display: block; }
+.MaCoupon { font-size: 26px; font-weight: 900; color: #ffffff; }
+
+.KhungDealMonth {
+  text-align: center;
+  margin: 40px 0 20px 0;
+}
+
+.TieuDeDeal {
+  display: inline-block;
+  font-size: 32px;
+  font-weight: 700;
+  color: #000;
+
+  .Cam { color: orange; margin-right: 8px; }
+}
+
+.BannerDealFull {
+  width: 100%;
+  background-color: #A51F1F;
+  background-image: url('/img/anhnen.png');
+  background-size: cover;
+  background-position: center;
+  padding: 60px 0;
+  margin: 10px 0 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.DealContent {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 30px;
+  width: 1200px;
+  margin: 0 auto;
+}
+
+.CuaSoDeal {
+  width: 375px;
+  height: 483px;
+  background-color: #ffffff;
+  border-radius: 200px 200px 0 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
+  cursor: pointer;
+  border: 3px solid transparent;
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  overflow: hidden;
+
+  &:hover { transform: scale(1.05); border-color: var(--MauHongDam); box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2); }
+}
+
+.KhungAnhDeal {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+
+  img { width: 320px; max-height: 320px; object-fit: contain; }
+}
+
+.ThongTinDeal {
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 30px 0;
+  border-top: 1px solid #f0f0f0;
+}
+
+.TenSPDeal { font-size: 20px; font-weight: 700; color: #000000; }
+.GiaSPDeal { font-size: 22px; font-weight: 700; color: var(--MauDoDam); }
+
+.BlogSection { padding: 20px 0; text-align: center; }
+
+.ReadOurText {
+  font-family: 'Dancing Script', cursive;
+  font-size: 45px;
+  color: #000;
+  line-height: 1;
+}
+
+.MainBlogTitle {
+  font-size: 36px;
+  font-weight: 600;
+  margin-top: 5px;
+  color: #000;
+
+  span { color: #FF7A00; }
+}
+
+.KhungChuaBlog {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 30px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 10px auto;
+}
+
+.O_Blog {
+  width: 380px;
+  height: 387px;
+  background-color: #FDECEC;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
+  text-align: left;
+  text-decoration: none;
+  color: inherit;
+}
+
+.AnhBlog {
+  width: 319px;
+  height: 247px;
+  overflow: hidden;
+  background-color: #fff;
+
+  img { width: 100%; height: 100%; object-fit: cover; }
+}
+
+.NoiDungBlog { width: 319px; margin-top: 15px; }
+
+.TenBlog {
+  font-size: 16px;
+  font-weight: 700;
+  color: #000;
+  margin: 0 0 10px 0;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.ReadNow { color: #FF7A00; text-decoration: none; font-weight: 700; font-size: 14px; }
+
+.NutViewAllContainer { margin-top: 20px; margin-bottom: 40px; }
+
+.NutViewAll {
+  background-color: #D32F2F;
+  color: white;
+  border: none;
+  padding: 12px 35px;
+  font-size: 16px;
+  font-weight: 700;
+  border-radius: 30px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(211, 47, 47, 0.3);
+  transition: 0.3s;
+
+  &:hover { background-color: #FF7A00; }
+}
+
+.WelcomeBonusSection {
+  width: 1200px;
+  background-color: #A51F1F;
+  height: 254px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 40px auto;
+}
+
+.BonusFlex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  height: 100%;
+}
+
+.WelcomeLeft { color: white; padding-left: 50px; }
+
+.BonusHeader {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  font-size: 32px;
+  font-weight: 700;
+}
+
+.BonusText {
+  font-size: 18px;
+  margin: 15px 0 25px 0;
+
+  span { color: #FFD700; font-weight: 700; }
+}
+
+.NutSignUp {
+  width: 110px;
+  height: 37px;
+  background-color: white;
+  color: black;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+
+  &:hover { background-color: #fde42a; }
+}
+
+.KhungSubscribeTrang {
+  width: 541px;
+  height: 285px;
+  background-color: white;
+  position: absolute;
+  right: 50px;
+  top: -60px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  padding: 30px;
+  box-sizing: border-box;
+}
+
+.SubSmallTitle { font-size: 18px; color: #333; margin-bottom: 5px; }
+.SubBigTitle { font-size: 28px; font-weight: 800; color: #000; margin-bottom: 20px; }
+
+.InputEmail {
+  width: 100%;
+  height: 45px;
+  border: 1px solid #ddd;
+  padding: 0 15px;
+  margin-bottom: 20px;
+  box-sizing: border-box;
+}
+
+.SubBottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.CaptchaGia {
+  border: 1px solid #ddd;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  width: 250px;
+  height: 60px;
+}
+
+.CaptchaIcon {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+  margin-left: auto;
+}
+
+.NutSubscribe {
+  width: 130px;
+  height: 40px;
+  background-color: #A51F1F;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover { background-color: #FF7A00; }
+}

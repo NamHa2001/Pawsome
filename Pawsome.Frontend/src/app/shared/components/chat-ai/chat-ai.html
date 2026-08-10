@@ -1,0 +1,23 @@
+<div class="CumChatAI">
+  <div class="CuaSoChat" [class.HienChat]="dangMo()">
+    <div class="HeaderChat">
+      <div class="ThongTinBot">
+        <div class="ChamOnline"></div>
+        <span>PawSome AI Assistant</span>
+      </div>
+      <i class="fa-solid fa-xmark" (click)="toggle()"></i>
+    </div>
+    <div class="NoiDungChat">
+      <div class="TinNhanBot">Hello! How can PawSome AI assist you and your furry friend today? 🐾</div>
+    </div>
+    <div class="KhungNhapLieu">
+      <input type="text" placeholder="Ask AI about pets...">
+      <button type="button"><i class="fa-solid fa-paper-plane"></i></button>
+    </div>
+  </div>
+
+  <div class="NutMoChat" (click)="toggle()">
+    <i class="fa-solid fa-robot"></i>
+    <span class="ThongBaoMoi">1</span>
+  </div>
+</div>
