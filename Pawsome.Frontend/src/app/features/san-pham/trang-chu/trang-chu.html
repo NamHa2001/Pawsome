@@ -1,0 +1,448 @@
+<app-header />
+
+<main class="NoiDungChinh">
+  <section class="BannerSlideshow">
+    <div class="VungAnToan">
+      <div class="KhungVuaSlide">
+        <div class="DanhSachSlide" [style.transform]="'translateX(-' + (slideIndex() * 1200) + 'px)'">
+          @for (anh of slideAnh; track anh) {
+            <div class="SlideItem"><img [src]="anh" alt="Promotional banner"></div>
+          }
+        </div>
+      </div>
+      <div class="CumDauCham">
+        @for (anh of slideAnh; track anh; let i = $index) {
+          <span class="DauCham" [class.active]="slideIndex() === i" (click)="chonSlide(i)"></span>
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="ThanhTienIch">
+    <div class="VungAnToan">
+      <div class="OSevice">
+        <div class="IconTron"><i class="fa-solid fa-truck"></i></div>
+        <div class="ChuService">
+          <strong>Free Shipping</strong>
+          <span>Speedy, Reliable, and Cost-Free</span>
+        </div>
+      </div>
+
+      <div class="OSevice">
+        <div class="IconTron"><i class="fa-solid fa-shield-dog"></i></div>
+        <div class="ChuService">
+          <strong>100% Satisfaction</strong>
+          <span>Commitment to Quality, Every Times!</span>
+        </div>
+      </div>
+
+      <div class="OSevice">
+        <div class="IconTron"><i class="fa-solid fa-hand-holding-heart"></i></div>
+        <div class="ChuService">
+          <strong>Rewards Program</strong>
+          <span>Earn as You Shop, Instantly!</span>
+        </div>
+      </div>
+
+      <div class="OSevice">
+        <div class="IconTron"><i class="fa-solid fa-sack-dollar"></i></div>
+        <div class="ChuService">
+          <strong>High Quality, Low Prices</strong>
+          <span>Keep Your Pet Happy & Healthy</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="SanPhamNoiBat">
+    <div class="VungAnToan">
+      <div class="KhungNenDo">
+        <div class="CumSanPham Trai">
+          <div class="HinhVuongLon">
+            <div class="NoiDungTrong">
+              <div class="PhanChu">
+                <div class="TieuDeSP">Heartgard Plus</div>
+                <div class="KhungGia">
+                  <span class="GiaCu">$41.74</span>
+                  <div class="GiaMoi">
+                    <span class="ConSoGia">$25.04</span>
+                    <img src="/img/pawvip2.png" alt="PawVip" class="LogoVipGia">
+                  </div>
+                </div>
+                <div class="DiemNoiBat">
+                  <div class="NhanPhu">Key Takeaways</div>
+                  <ul class="DanhSachDiem">
+                    <li>#1 Dog-preferred chew</li>
+                    <li>Proven heartworm disease protection</li>
+                    <li>Treats and controls roundworms</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="KhungAnhNhoHero">
+                <div class="OAnhNhoHero active"><img src="/img/cho4.png" alt="a"></div>
+                <div class="OAnhNhoHero"><img src="/img/cho5.png" alt="b"></div>
+                <div class="OAnhNhoHero"><img src="/img/cho6.png" alt="c"></div>
+              </div>
+            </div>
+          </div>
+          <div class="CumVatPham">
+            <div class="HinhVuongNho"><img src="/img/cho00.png" alt="Hero"></div>
+            <a routerLink="/san-pham" class="NutShopNow">Shop Now</a>
+          </div>
+        </div>
+
+        <img src="/img/nencho.png" alt="Featured Dog" class="AnhChoTrungTam">
+
+        <div class="CumSanPham Phai">
+          <div class="CumVatPham">
+            <div class="HinhVuongNho"><img src="/img/cho0.png" alt="Hero"></div>
+            <a routerLink="/san-pham" class="NutShopNow">Shop Now</a>
+          </div>
+          <div class="HinhVuongLon">
+            <div class="NoiDungTrong">
+              <div class="PhanChu">
+                <div class="TieuDeSP">Heartgard Plus</div>
+                <div class="KhungGia">
+                  <span class="GiaCu">$41.74</span>
+                  <div class="GiaMoi">
+                    <span class="ConSoGia">$25.04</span>
+                    <img src="/img/pawvip2.png" alt="PawVip" class="LogoVipGia">
+                  </div>
+                </div>
+                <div class="DiemNoiBat">
+                  <div class="NhanPhu">Key Takeaways</div>
+                  <ul class="DanhSachDiem">
+                    <li>#1 Dog-preferred chew</li>
+                    <li>Proven heartworm disease protection</li>
+                    <li>Treats and controls roundworms</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="KhungAnhNhoHero">
+                <div class="OAnhNhoHero active"><img src="/img/cho1.png" alt="a"></div>
+                <div class="OAnhNhoHero"><img src="/img/cho2.png" alt="b"></div>
+                <div class="OAnhNhoHero"><img src="/img/cho3.png" alt="c"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  @if (nhomTheoDanhMuc().length > 0) {
+    <div class="KhungChuaLon">
+      <div class="HeaderSanPham">
+        <div class="TieuDeChinh">{{ dichTenDanhMuc(nhomTheoDanhMuc()[0].danhMuc.tenDanhMuc) }} Healthcare</div>
+        <div class="BoLoc">
+          <div class="BoLocHienTai">
+            <span>Flea & Tick</span>
+            <i class="fas fa-chevron-down"></i>
+            <div class="DuongGachChan"></div>
+          </div>
+          <ul class="MenuDropdown">
+            <li class="active">Flea & Tick</li>
+            <li>Wormers</li>
+            <li>Joint Care</li>
+            <li>Skin & Coat</li>
+            <li>Behavioural</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="KhungDanhSachSP">
+      @for (sp of nhomTheoDanhMuc()[0].sanPham; track sp.productId) {
+        <a class="TheSanPham" [routerLink]="['/san-pham', sp.productId]">
+          <div class="KhungAnhTrang">
+            <img [src]="sp.images[0]?.url ?? '/img/logo1.png'" [alt]="sp.ten">
+          </div>
+          <div class="NoiDungSP">
+            <div class="RatingSao">
+              <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+              <span>{{ sp.diemDanhGiaTb }}</span>
+            </div>
+            <div class="TenSanPhamGrid">{{ sp.ten }}</div>
+            <hr class="KeNgang">
+            <div class="CumGia">
+              <div class="GiaMoiHang">
+                <span class="GiaMoiGrid">{{ sp.giaTu ? (quyDoiUSD(sp.giaTu) | currency:'USD':'symbol':'1.2-2') : 'Contact us' }}</span>
+                <img src="/img/pawvip.png" alt="PawVip" class="VipIconGrid">
+              </div>
+            </div>
+            <button class="NutShopNowGrid"><i class="fas fa-shopping-cart"></i> SHOP NOW</button>
+          </div>
+        </a>
+      }
+    </div>
+  }
+
+  <div class="ContainerBannerVip">
+    <div class="VungAnToan KhungBannerVip">
+      <div class="BannerVip Do">
+        <img src="/img/nen1.png" alt="PawVip" class="AnhNenBanner">
+        <div class="NoiDungVip">
+          <img src="/img/pawvip3.png" alt="PawVip" class="LogoPawVip">
+          <div class="TextVip">
+            <h3>One-Time Fee, <br> Full Year Benefits!</h3>
+            <p>Unlock exclusive savings on all essentials.</p>
+          </div>
+          <div class="CumHanhDong">
+            <div class="GiaVip">$99</div>
+            <button class="NutJoinNow">JOIN NOW</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="BannerVip Cam">
+        <img src="/img/nen2.png" alt="Coupon" class="AnhNenBanner">
+        <div class="NoiDungCoupon">
+          <div class="CumSale">
+            <span class="ChuSave">Save</span>
+            <h2 class="PhanTram">35% off</h2>
+            <p class="FirstOrder">On First Auto Order</p>
+          </div>
+          <div class="KhungCoupon">
+            <span class="LabelCoupon">Coupon:</span>
+            <div class="MaCoupon">AUTOSAVE35</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  @if (nhomTheoDanhMuc().length > 1) {
+    <section class="SanPhamNoiBat">
+      <div class="VungAnToan">
+        <div class="KhungNenDo">
+          <div class="CumSanPham Trai">
+            <div class="HinhVuongLon">
+              <div class="NoiDungTrong">
+                <div class="PhanChu">
+                  <div class="TieuDeSP">Heartgard Plus</div>
+                  <div class="KhungGia">
+                    <span class="GiaCu">$41.74</span>
+                    <div class="GiaMoi">
+                      <span class="ConSoGia">$25.04</span>
+                      <img src="/img/pawvip2.png" alt="PawVip" class="LogoVipGia">
+                    </div>
+                  </div>
+                  <div class="DiemNoiBat">
+                    <div class="NhanPhu">Key Takeaways</div>
+                    <ul class="DanhSachDiem">
+                      <li>#1 Dog-preferred chew</li>
+                      <li>Proven heartworm disease protection</li>
+                      <li>Treats and controls roundworms</li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="KhungAnhNhoHero">
+                  <div class="OAnhNhoHero active"><img src="/img/TM1.png" alt="a"></div>
+                  <div class="OAnhNhoHero"><img src="/img/TM2.png" alt="b"></div>
+                  <div class="OAnhNhoHero"><img src="/img/TM3.png" alt="c"></div>
+                </div>
+              </div>
+            </div>
+            <div class="CumVatPham">
+              <div class="HinhVuongNho"><img src="/img/meo0.png" alt="Hero"></div>
+              <a routerLink="/san-pham" class="NutShopNow">Shop Now</a>
+            </div>
+          </div>
+
+          <img src="/img/nenmeo.png" alt="Featured Cat" class="AnhChoTrungTam">
+
+          <div class="CumSanPham Phai">
+            <div class="CumVatPham">
+              <div class="HinhVuongNho"><img src="/img/meo00.png" alt="Hero"></div>
+              <a routerLink="/san-pham" class="NutShopNow">Shop Now</a>
+            </div>
+            <div class="HinhVuongLon">
+              <div class="NoiDungTrong">
+                <div class="PhanChu">
+                  <div class="TieuDeSP">Heartgard Plus</div>
+                  <div class="KhungGia">
+                    <span class="GiaCu">$41.74</span>
+                    <div class="GiaMoi">
+                      <span class="ConSoGia">$25.04</span>
+                      <img src="/img/pawvip2.png" alt="PawVip" class="LogoVipGia">
+                    </div>
+                  </div>
+                  <div class="DiemNoiBat">
+                    <div class="NhanPhu">Key Takeaways</div>
+                    <ul class="DanhSachDiem">
+                      <li>#1 Dog-preferred chew</li>
+                      <li>Proven heartworm disease protection</li>
+                      <li>Treats and controls roundworms</li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="KhungAnhNhoHero">
+                  <div class="OAnhNhoHero active"><img src="/img/TM4.png" alt="a"></div>
+                  <div class="OAnhNhoHero"><img src="/img/TM5.png" alt="b"></div>
+                  <div class="OAnhNhoHero"><img src="/img/TM6.png" alt="c"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="KhungChuaLon">
+      <div class="HeaderSanPham">
+        <div class="TieuDeChinh">{{ dichTenDanhMuc(nhomTheoDanhMuc()[1].danhMuc.tenDanhMuc) }} Healthcare</div>
+        <div class="BoLoc">
+          <div class="BoLocHienTai">
+            <span>Flea & Tick</span>
+            <i class="fas fa-chevron-down"></i>
+            <div class="DuongGachChan"></div>
+          </div>
+          <ul class="MenuDropdown">
+            <li class="active">Flea & Tick</li>
+            <li>Wormers</li>
+            <li>Joint Care</li>
+            <li>Skin & Coat</li>
+            <li>Behavioural</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="KhungDanhSachSP">
+      @for (sp of nhomTheoDanhMuc()[1].sanPham; track sp.productId) {
+        <a class="TheSanPham" [routerLink]="['/san-pham', sp.productId]">
+          <div class="KhungAnhTrang">
+            <img [src]="sp.images[0]?.url ?? '/img/logo1.png'" [alt]="sp.ten">
+          </div>
+          <div class="NoiDungSP">
+            <div class="RatingSao">
+              <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+              <span>{{ sp.diemDanhGiaTb }}</span>
+            </div>
+            <div class="TenSanPhamGrid">{{ sp.ten }}</div>
+            <hr class="KeNgang">
+            <div class="CumGia">
+              <div class="GiaMoiHang">
+                <span class="GiaMoiGrid">{{ sp.giaTu ? (quyDoiUSD(sp.giaTu) | currency:'USD':'symbol':'1.2-2') : 'Contact us' }}</span>
+                <img src="/img/pawvip.png" alt="PawVip" class="VipIconGrid">
+              </div>
+            </div>
+            <button class="NutShopNowGrid"><i class="fas fa-shopping-cart"></i> SHOP NOW</button>
+          </div>
+        </a>
+      }
+    </div>
+  }
+
+  <div class="KhungDealMonth">
+    <h2 class="TieuDeDeal"><span class="Cam">Deal Of</span> The Month</h2>
+  </div>
+  <div class="BannerDealFull">
+    <div class="VungAnToan DealContent">
+      <div class="CuaSoDeal">
+        <div class="KhungAnhDeal"><img src="/img/Dorwest.png" alt="Dorwest"></div>
+        <div class="ThongTinDeal">
+          <span class="TenSPDeal">Dorwest</span>
+          <span class="GiaSPDeal">$38.44</span>
+        </div>
+      </div>
+      <div class="CuaSoDeal">
+        <div class="KhungAnhDeal"><img src="/img/aristopet.png" alt="Aristopet"></div>
+        <div class="ThongTinDeal">
+          <span class="TenSPDeal">Aristopet</span>
+          <span class="GiaSPDeal">$18.61</span>
+        </div>
+      </div>
+      <div class="CuaSoDeal">
+        <div class="KhungAnhDeal"><img src="/img/milpro.png" alt="Milpro"></div>
+        <div class="ThongTinDeal">
+          <span class="TenSPDeal">Milpro</span>
+          <span class="GiaSPDeal">$27.42</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="BlogSection">
+    <div class="BlogHeader">
+      <div class="ReadOurText">Read Our</div>
+      <div class="MainBlogTitle"><span>Lastest Blogs</span> & Articles</div>
+    </div>
+
+    @if (blogList().length > 0) {
+      <div class="VungAnToan KhungChuaBlog">
+        @for (bai of blogList(); track bai.postId; let i = $index) {
+          <a class="O_Blog" routerLink="/blog/{{ bai.postId }}">
+            <div class="AnhBlog">
+              <img [src]="bai.anhDaiDien ?? anhBlogMacDinh(i)" [alt]="bai.tieuDe">
+            </div>
+            <div class="NoiDungBlog">
+              <h3 class="TenBlog">{{ bai.tieuDe }}</h3>
+              <span class="ReadNow">Read Now...</span>
+            </div>
+          </a>
+        }
+      </div>
+    } @else {
+      <div class="VungAnToan KhungChuaBlog">
+        <div class="O_Blog">
+          <div class="AnhBlog"><img src="/img/blog1.png" alt="Blog 1"></div>
+          <div class="NoiDungBlog">
+            <h3 class="TenBlog">Front Plus vs. Simparica Trio - Which One to Choose for Your Dog?</h3>
+            <span class="ReadNow">Read Now...</span>
+          </div>
+        </div>
+        <div class="O_Blog">
+          <div class="AnhBlog"><img src="/img/blog2.png" alt="Blog 2"></div>
+          <div class="NoiDungBlog">
+            <h3 class="TenBlog">A Quick Guide to Dog's Skin & Coat Care</h3>
+            <span class="ReadNow">Read Now...</span>
+          </div>
+        </div>
+        <div class="O_Blog">
+          <div class="AnhBlog"><img src="/img/blog3.png" alt="Blog 3"></div>
+          <div class="NoiDungBlog">
+            <h3 class="TenBlog">Why Dogs Lick and Chew Their Paws and When to Worry</h3>
+            <span class="ReadNow">Read Now...</span>
+          </div>
+        </div>
+      </div>
+    }
+
+    <div class="NutViewAllContainer">
+      <button class="NutViewAll"><i class="fas fa-paw"></i> VIEW ALL</button>
+    </div>
+  </div>
+
+  <div class="WelcomeBonusSection">
+    <div class="VungAnToan BonusFlex">
+      <div class="WelcomeLeft">
+        <div class="BonusHeader">
+          <i class="fas fa-gift"></i>
+          <span>Welcome Bonus</span>
+        </div>
+        <p class="BonusText">Join Today & Earn <span>20 PawPoints</span> Instantly!</p>
+        <a class="NutSignUp" routerLink="/tai-khoan/dang-ky">Sign Up</a>
+      </div>
+
+      <div class="KhungSubscribeTrang">
+        <div class="SubContent">
+          <p class="SubSmallTitle">Subscribe & Get</p>
+          <h2 class="SubBigTitle">Instant 15% Discount</h2>
+          <input type="email" placeholder="Enter Your Email Id" class="InputEmail">
+          <div class="SubBottom">
+            <div class="CaptchaGia">
+              <input type="checkbox" id="robot">
+              <label for="robot">I'm not a Robot</label>
+              <img src="/img/capcha.png" alt="captcha" class="CaptchaIcon">
+            </div>
+            <button class="NutSubscribe">Subscribe</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<app-footer />
+<app-chat-ai />

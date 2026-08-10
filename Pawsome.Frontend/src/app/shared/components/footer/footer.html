@@ -1,0 +1,59 @@
+<footer class="ChanTrang">
+  <div class="VungAnToan">
+    <div class="HangDauFooter">
+      <a routerLink="/">
+        <img src="/img/logo2.png" alt="PawSome" class="LogoFooter">
+      </a>
+      <div class="KhungMangXaHoi">
+        <a href="#"><img src="/img/tiktok.png" alt="Tiktok"></a>
+        <a href="#"><img src="/img/fb.png" alt="Facebook"></a>
+        <a href="#"><img src="/img/twitter.png" alt="Twitter"></a>
+        <a href="#"><img src="/img/ins.png" alt="Instagram"></a>
+      </div>
+    </div>
+
+    <div class="DuongKeTrang">
+      <div class="NutLenTren" (click)="lenDauTrang()"><i class="fa-solid fa-chevron-up"></i></div>
+    </div>
+
+    <div class="KhungNoiDungThayDoi">
+      <div class="CotTraiFooter">
+        <div class="TabHienThi active">
+          <span class="NhanTieuDe">About Us</span>
+          <p class="VanBanMoTa">
+            Welcome to PawSome.com - your one-stop destination for all your pet care needs!
+            We offer an extensive selection of premium products, from dog and cat care essentials
+            to horse health supplies, bird supplies, and small pet healthcare products.
+            As a leading online pet store, we're committed to delivering top-quality pet supplies
+            at unbeatable prices, ensuring your beloved pets get the best care possible.
+          </p>
+        </div>
+      </div>
+
+      <div class="CotPhaiFooter">
+        <div class="ThongTinLienHe">
+          <p class="SoDienThoaiFooter">(+84) 1234 5678</p>
+          <p class="GioLamViec">Mon-Fri 7 AM - 7 PM PST / Sat 7 AM - 4 PM PST</p>
+          <p class="EmailFooter">PawSome@gmail.com</p>
+          <p class="DiaChiFooter">106 Phuoc Hoa Street, Ho Chi Minh City</p>
+        </div>
+        <img src="/img/secure.png" alt="100% Secure" class="AnhSecurity">
+      </div>
+    </div>
+
+    <div class="ThanhTabFooter">
+      <div class="NutTab" [class.active]="tabDangChon() === 'about-us'" (click)="chonTab('about-us')">About Us</div>
+      <div class="NutTab" [class.active]="tabDangChon() === 'products'" (click)="chonTab('products')">Products</div>
+      <div class="NutTab" [class.active]="tabDangChon() === 'info'" (click)="chonTab('info')">Information</div>
+      <div class="NutTab" [class.active]="tabDangChon() === 'categories'" (click)="chonTab('categories')">Categories</div>
+    </div>
+
+    <div class="HangCuoiFooter">
+      <p class="BanQuyen">©2025 PawSome.com - All Rights Reserved</p>
+      <div class="ThanhToanFooter">
+        <span>We accept:</span>
+        <img src="/img/pay.png" alt="Payments" class="AnhPayment">
+      </div>
+    </div>
+  </div>
+</footer>

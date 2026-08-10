@@ -1,0 +1,114 @@
+<header class="DauTrang" [class.HeaderAn]="danHeader()">
+  <div class="ThanhTrenCung">
+    <div class="VungAnToan">
+      <ul class="DanhSachThongTin">
+        <li class="MucThongTin"><i class="fa-solid fa-truck"></i> FREE Shipping</li>
+        <li class="MucThongTin">Assured Delivery</li>
+        <li class="MucThongTin">Tariff Paid</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="KhungChinhDauTrang">
+    <div class="VungAnToan">
+      <div class="KhungLogo">
+        <a routerLink="/">
+          <img src="/img/logo1.png" alt="PawSome" class="AnhLogo">
+        </a>
+      </div>
+
+      <div class="KhungTimKiem">
+        <div class="VongTronTimKiem" (click)="timKiem()">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </div>
+        <input
+          type="text"
+          class="OInputTimKiem"
+          placeholder="Searching for products..."
+          [(ngModel)]="tuKhoaTimKiem"
+          (keyup.enter)="timKiem()"
+          name="tuKhoaTimKiem">
+      </div>
+
+      <div class="CumTienIch">
+        <div class="CumHotline">
+          <div class="VongTronIconDo"><i class="fa-solid fa-phone"></i></div>
+          <span class="VanBanHotline">(+84) 1234 5678</span>
+        </div>
+        <a routerLink="/gio-hang" class="NutTienIch">
+          <div class="VongTronIconDo">
+            <i class="fa-solid fa-cart-shopping"></i>
+            <span class="ThongBaoSoLuong">{{ soLuongGioHang() }}</span>
+          </div>
+        </a>
+        <a routerLink="/tai-khoan" class="NutTienIch">
+          <div class="VongTronIconDo"><i class="fa-solid fa-user"></i></div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <nav class="ThanhDieuHuong">
+    <div class="VungAnToan">
+      <ul class="DanhSachMenuChinh">
+        <li class="MucMenuChinh">
+          <a routerLink="/san-pham" class="LienKetChinh">Shop by Pet</a>
+          <ul class="KhungMenuCon">
+            <li><a routerLink="/san-pham">Dog</a></li>
+            <li><a routerLink="/san-pham">Cat</a></li>
+            <li><a routerLink="/san-pham">Horse</a></li>
+            <li><a routerLink="/san-pham">Bird</a></li>
+          </ul>
+        </li>
+
+        <li class="MucMenuChinh">
+          <a href="#" class="LienKetChinh">Shop by Condition</a>
+          <ul class="KhungMenuCon">
+            <li><a href="#">Flea, Tick</a></li>
+            <li><a href="#">Wormers</a></li>
+            <li><a href="#">Heartwormers</a></li>
+            <li><a href="#">Joint Care</a></li>
+            <li><a href="#">Skin & Coat</a></li>
+            <li><a href="#">Behavioural</a></li>
+          </ul>
+        </li>
+
+        <li class="MucMenuChinh">
+          <a routerLink="/san-pham" class="LienKetChinh">Brands</a>
+          <ul class="KhungMenuCon">
+            <li><a routerLink="/san-pham">Bravecto</a></li>
+            <li><a routerLink="/san-pham">Capstar</a></li>
+            <li><a routerLink="/san-pham">Frontline Plus</a></li>
+            <li><a routerLink="/san-pham">Profender</a></li>
+            <li><a routerLink="/san-pham">Simparica Trio</a></li>
+          </ul>
+        </li>
+
+        <li class="MucMenuChinh">
+          <a href="#" class="LienKetChinh">What's New</a>
+          <ul class="KhungMenuCon">
+            <li><a href="#">Coupon</a></li>
+            <li><a href="#">Reward</a></li>
+            <li><a href="#">PawCare</a></li>
+          </ul>
+        </li>
+
+        <li class="MucMenuChinh">
+          <a href="#" class="LienKetChinh">Latest Deals</a>
+          <ul class="KhungMenuCon">
+            <li><a href="#">Flash Sale</a></li>
+            <li><a href="#">New Arrivals</a></li>
+            <li><a href="#">Latest Offers</a></li>
+          </ul>
+        </li>
+      </ul>
+
+      <div class="KhuyenMaiMenu">
+        <img src="/img/Upto.png" alt="Up to 40 Percent Off" class="AnhKhuyenMaiTinh">
+        <a href="#" class="LienKetVip">
+          <img src="/img/pawvip.png" alt="PawVip" class="LogoVip">
+        </a>
+      </div>
+    </div>
+  </nav>
+</header>
