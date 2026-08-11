@@ -416,4 +416,27 @@ public class ProductService : IProductService
             LaAnhChinh = i.LaAnhChinh
         }).ToList()
     };
+    public async Task<ProductVariantInfoDto?> LayThongTinBienTheAsync(int variantId)
+    {
+        var variant = await _dbContext.ProductVariants
+            .AsNoTracking()
+            .Include(v => v.Product)
+                .ThenInclude(p => p.Images)
+            .FirstOrDefaultAsync(v => v.VariantId == variantId);
+
+        if (variant == null || !variant.DangKinhDoanh || !variant.Product.DangKinhDoanh)
+            return null;
+
+        return new ProductVariantInfoDto
+        {
+            VariantId = variant.VariantId,
+            ProductId = variant.ProductId,
+            TenSanPham = variant.Product.Ten,
+            ThuocTinh = variant.TenBienThe,
+            Gia = variant.Gia,
+            HinhAnhChinh = variant.Product.Images.FirstOrDefault(i => i.LaAnhChinh)?.Url
+                ?? variant.Product.Images.FirstOrDefault()?.Url,
+            SoLuongTon = variant.SoLuongTon
+        };
+    }
 }

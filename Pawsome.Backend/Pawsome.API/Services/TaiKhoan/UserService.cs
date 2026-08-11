@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Pawsome.API.Common;
 using Pawsome.API.DTOs.TaiKhoan;
 using Pawsome.Infrastructure;
 
@@ -22,7 +23,7 @@ public class UserService : IUserService
         if (user == null)
             throw new InvalidOperationException("Không tìm thấy người dùng.");
 
-        return MapToDto(user);
+        return MapToProfileDto(user);
     }
 
     public async Task<UserProfileDto> UpdateProfileAsync(int userId, UpdateProfileRequestDto dto)
@@ -38,16 +39,86 @@ public class UserService : IUserService
         user.SoDienThoai = dto.SoDienThoai;
         await _dbContext.SaveChangesAsync();
 
-        return MapToDto(user);
+        return MapToProfileDto(user);
     }
 
-    private static UserProfileDto MapToDto(Domain.Entities.TaiKhoan.User user) => new()
+    //Admin
+
+    public async Task<PagedResult<AdminUserDto>> GetAllUsersAsync(
+        int pageNumber, int pageSize, string? keyword, string? trangThai)
+    {
+        var query = _dbContext.Users.Include(u => u.Role).AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(keyword))
+        {
+            var k = keyword.Trim();
+            query = query.Where(u => u.Email.Contains(k) || u.HoTen.Contains(k));
+        }
+
+        if (!string.IsNullOrWhiteSpace(trangThai))
+            query = query.Where(u => u.TrangThai == trangThai);
+
+        var totalCount = await query.CountAsync();
+
+        var items = await query
+            .OrderByDescending(u => u.NgayTao)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .Select(u => MapToAdminDto(u))
+            .ToListAsync();
+
+        return new PagedResult<AdminUserDto>
+        {
+            Items = items,
+            TotalCount = totalCount,
+            PageNumber = pageNumber,
+            PageSize = pageSize
+        };
+    }
+
+    public async Task SetLockStatusAsync(int userId, bool locked)
+    {
+        var user = await _dbContext.Users.FindAsync(userId);
+        if (user == null)
+            throw new InvalidOperationException("Không tìm thấy người dùng.");
+
+        user.TrangThai = locked ? "locked" : "active";
+        await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task ChangeRoleAsync(int userId, int newRoleId)
+    {
+        var user = await _dbContext.Users.FindAsync(userId);
+        if (user == null)
+            throw new InvalidOperationException("Không tìm thấy người dùng.");
+
+        var roleTonTai = await _dbContext.Roles.AnyAsync(r => r.RoleId == newRoleId);
+        if (!roleTonTai)
+            throw new InvalidOperationException("Vai trò không hợp lệ.");
+
+        user.RoleId = newRoleId;
+        await _dbContext.SaveChangesAsync();
+    }
+
+    private static UserProfileDto MapToProfileDto(Domain.Entities.TaiKhoan.User user) => new()
     {
         UserId = user.UserId,
         Email = user.Email,
         HoTen = user.HoTen,
         SoDienThoai = user.SoDienThoai,
         DiemPawpoints = user.DiemPawpoints,
+        Role = user.Role.TenVaiTro,
+        NgayTao = user.NgayTao
+    };
+
+    private static AdminUserDto MapToAdminDto(Domain.Entities.TaiKhoan.User user) => new()
+    {
+        UserId = user.UserId,
+        Email = user.Email,
+        HoTen = user.HoTen,
+        SoDienThoai = user.SoDienThoai,
+        DiemPawpoints = user.DiemPawpoints,
+        TrangThai = user.TrangThai,
         Role = user.Role.TenVaiTro,
         NgayTao = user.NgayTao
     };
