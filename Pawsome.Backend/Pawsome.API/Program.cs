@@ -8,6 +8,7 @@ using Pawsome.API.Common.AuditLog;
 using Pawsome.API.Common.Auth;
 using Pawsome.API.Common.Middleware;
 using Pawsome.API.Services.BlogQuanTri;
+using Pawsome.API.Services.DonHang;
 using Pawsome.API.Services.SanPham;
 using Pawsome.API.Services.TaiKhoan;
 using Pawsome.Infrastructure;
@@ -115,6 +116,7 @@ builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IReviewService, ReviewService>();
 // Phần 3 - Giỏ hàng:       builder.Services.AddScoped<ICartService, CartService>();
 // Phần 4 - Đơn hàng:       builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
 // Phần 5 - Blog/Quản trị:
 builder.Services.AddScoped<IBlogService, BlogService>();
 builder.Services.AddScoped<IWishlistService, WishlistService>();
