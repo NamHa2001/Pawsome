@@ -7,6 +7,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
+using Google.Apis.Auth;
 
 namespace Pawsome.API.Services.TaiKhoan;
 
@@ -18,6 +19,7 @@ public class AuthService : IAuthService
     private readonly IPasswordHasher _passwordHasher;
     private readonly IJwtTokenGenerator _jwtTokenGenerator;
     private readonly IConfiguration _configuration;
+    private readonly string _googleClientId;
 
     public AuthService(
         PawsomeDbContext dbContext,
@@ -29,6 +31,7 @@ public class AuthService : IAuthService
         _passwordHasher = passwordHasher;
         _jwtTokenGenerator = jwtTokenGenerator;
         _configuration = configuration;
+        _googleClientId = configuration["GoogleAuth:ClientId"]!; 
     }
 
     public async Task<AuthResponseDto> RegisterAsync(RegisterRequestDto dto)
@@ -122,7 +125,7 @@ public class AuthService : IAuthService
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSection["Key"]!));
 
         var tokenHandler = new JwtSecurityTokenHandler();
-        tokenHandler.InboundClaimTypeMap.Clear(); 
+        tokenHandler.InboundClaimTypeMap.Clear();
 
         ClaimsPrincipal principal;
         try
@@ -154,5 +157,56 @@ public class AuthService : IAuthService
 
         user.PasswordHash = _passwordHasher.HashPassword(dto.NewPassword);
         await _dbContext.SaveChangesAsync();
+    }
+    public async Task<AuthResponseDto> GoogleLoginAsync(GoogleLoginRequestDto dto)
+    {
+        GoogleJsonWebSignature.Payload payload;
+        try
+        {
+            payload = await GoogleJsonWebSignature.ValidateAsync(dto.IdToken, new GoogleJsonWebSignature.ValidationSettings
+            {
+                Audience = new[] { _googleClientId }
+            });
+        }
+        catch (InvalidJwtException)
+        {
+            throw new InvalidOperationException("Token Google không hợp lệ.");
+        }
+
+        var user = await _dbContext.Users
+            .Include(u => u.Role)
+            .FirstOrDefaultAsync(u => u.Email == payload.Email);
+
+        if (user == null)
+        {
+            user = new User
+            {
+                RoleId = CustomerRoleId,
+                Email = payload.Email,
+                PasswordHash = _passwordHasher.HashPassword(Guid.NewGuid().ToString()),
+                HoTen = payload.Name ?? payload.Email,
+                TrangThai = "active",
+                NgayTao = DateTime.UtcNow,
+                NgayCapNhat = DateTime.UtcNow
+            };
+            _dbContext.Users.Add(user);
+            await _dbContext.SaveChangesAsync();
+
+            await _dbContext.Entry(user).Reference(u => u.Role).LoadAsync();
+        }
+
+        if (user.TrangThai == "locked")
+            throw new InvalidOperationException("Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên.");
+
+        var token = _jwtTokenGenerator.GenerateToken(user.UserId, user.Email, user.Role.TenVaiTro);
+
+        return new AuthResponseDto
+        {
+            Token = token,
+            UserId = user.UserId,
+            Email = user.Email,
+            HoTen = user.HoTen,
+            Role = user.Role.TenVaiTro
+        };
     }
 }
