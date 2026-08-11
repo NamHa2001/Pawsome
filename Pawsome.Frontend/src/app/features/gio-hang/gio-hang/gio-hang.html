@@ -1,0 +1,146 @@
+<div class="TrangGioHang">
+  <div class="VungAnToan KhungTieuDe">
+    <h1 class="TieuDeTrang">Giỏ hàng của bạn</h1>
+  </div>
+
+  @if (dangTai()) {
+    <div class="VungAnToan"><p class="DangTai">Đang tải giỏ hàng...</p></div>
+  } @else if (loi()) {
+    <div class="VungAnToan"><p class="ThongBaoLoi">{{ loi() }}</p></div>
+  } @else if (!gioHang() || gioHang()!.items.length === 0) {
+    <div class="VungAnToan KhungTrong">
+      <p>Giỏ hàng của bạn đang trống.</p>
+      <a routerLink="/" class="NutChinh">Tiếp tục mua sắm</a>
+    </div>
+  } @else {
+    <div class="VungAnToan KhungNoiDungGioHang">
+      <div class="CotDanhSach">
+        <table class="BangGioHang">
+          <thead>
+            <tr>
+              <th>Sản phẩm</th>
+              <th>Đơn giá</th>
+              <th>Số lượng</th>
+              <th>Thành tiền</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of gioHang()!.items; track item.cartItemId) {
+              <tr class="DongSanPham">
+                <td class="OSanPham">
+                  <img [src]="item.hinhAnh || '/img/no-image.png'" [alt]="item.tenSanPham" class="AnhSanPham" />
+                  <div class="ThongTinSanPham">
+                    <span class="TenSanPham">{{ item.tenSanPham }}</span>
+                    <span class="ThuocTinhSanPham">{{ item.thuocTinh }}</span>
+                  </div>
+                </td>
+                <td>{{ item.donGia | number:'1.0-0' }} đ</td>
+                <td class="OSoLuong">
+                  <button type="button" class="NutSoLuong" (click)="giamSoLuong(item.cartItemId, item.soLuong)" [disabled]="item.soLuong <= 1">−</button>
+                  <span class="GiaTriSoLuong">{{ item.soLuong }}</span>
+                  <button type="button" class="NutSoLuong" (click)="tangSoLuong(item.cartItemId, item.soLuong)">+</button>
+                </td>
+                <td class="OThanhTien">{{ item.thanhTien | number:'1.0-0' }} đ</td>
+                <td class="OHanhDong">
+                  <button type="button" class="NutMuaDinhKy" (click)="moFormAutoOrder(item.cartItemId)">🔁 Mua định kỳ</button>
+                  <button type="button" class="NutXoa" (click)="xoaSanPham(item.cartItemId)">Xóa</button>
+                </td>
+              </tr>
+
+              @if (cartItemIdDangMoAuto() === item.cartItemId) {
+                <tr class="DongFormAuto">
+                  <td colspan="5">
+                    <div class="FormAutoOrder">
+                      <span>Mua lặp lại {{ item.soLuong }} sản phẩm này mỗi:</span>
+                      <select [ngModel]="tanSuatDaChon()" (ngModelChange)="tanSuatDaChon.set($event)">
+                        @for (ts of tanSuatOptions; track ts) {
+                          <option [value]="ts">{{ nhanTanSuat[ts] }}</option>
+                        }
+                      </select>
+                      <button
+                        type="button"
+                        class="NutChinh NutNho"
+                        [disabled]="dangGuiAutoOrder()"
+                        (click)="thietLapMuaDinhKy(item.variantId, item.soLuong)">
+                        {{ dangGuiAutoOrder() ? 'Đang thiết lập...' : 'Xác nhận' }}
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            }
+          </tbody>
+        </table>
+
+        @if (thongBaoAutoOrder()) {
+          <p class="ThongBaoAuto">{{ thongBaoAutoOrder() }} — <a routerLink="/gio-hang/dat-hang-tu-dong">xem đơn tự động</a></p>
+        }
+
+        <div class="KhungHanhDongDuoi">
+          <a routerLink="/" class="NutPhu">← Tiếp tục mua sắm</a>
+          <button type="button" class="NutPhu NutNguyHiem" (click)="xoaSachGioHang()">Xóa toàn bộ giỏ hàng</button>
+        </div>
+      </div>
+
+      <div class="CotTomTat">
+        <div class="KhungMaGiamGia">
+          <label for="maGiamGia">Mã giảm giá</label>
+          <div class="ONhapMa">
+            <input id="maGiamGia" type="text" placeholder="Nhập mã giảm giá" [ngModel]="maCoupon()" (ngModelChange)="maCoupon.set($event)" />
+            <button type="button" [disabled]="dangApDungMa()" (click)="apDungMaGiamGia()">
+              {{ dangApDungMa() ? '...' : 'Áp dụng' }}
+            </button>
+          </div>
+
+          @if (thongBaoCoupon()) {
+            <p class="ThongBaoMa" [class.ThanhCong]="thongBaoCoupon()!.loai === 'thanh-cong'" [class.Loi]="thongBaoCoupon()!.loai === 'loi'">
+              {{ thongBaoCoupon()!.noiDung }}
+            </p>
+          }
+
+          @if (danhSachMaGiamGia().length > 0) {
+            <div class="DanhSachMaGoiY">
+              <span class="TieuDeGoiY">Mã đang áp dụng được:</span>
+              @for (m of danhSachMaGiamGia(); track m.couponId) {
+                <button type="button" class="TheMaGiamGia" (click)="chonMa(m.maCode)">
+                  {{ m.maCode }} — {{ m.loaiGiam === 'percent' ? (m.giaTri + '%') : (m.giaTri | number:'1.0-0') + 'đ' }}
+                </button>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="KhungTomTatTien">
+          <h3>Tóm tắt đơn hàng</h3>
+
+          <div class="DongTien">
+            <span>Tiền hàng</span>
+            <span>{{ gioHang()!.tienHang | number:'1.0-0' }} đ</span>
+          </div>
+
+          @if (gioHang()!.giamGia > 0) {
+            <div class="DongTien DongGiamGia">
+              <span>Giảm giá @if (gioHang()!.maCouponDangApDung) { ({{ gioHang()!.maCouponDangApDung }}) }</span>
+              <span>−{{ gioHang()!.giamGia | number:'1.0-0' }} đ</span>
+            </div>
+          }
+
+          <div class="DongTien">
+            <span>Phí vận chuyển (tạm tính)</span>
+            <span>{{ gioHang()!.phiVanChuyenTamTinh | number:'1.0-0' }} đ</span>
+          </div>
+
+          <div class="DongTien DongTongCong">
+            <span>Tổng cộng</span>
+            <span>{{ gioHang()!.tongTien | number:'1.0-0' }} đ</span>
+          </div>
+
+          <p class="GhiChuPhiVanChuyen">* Phí vận chuyển chính thức sẽ được chốt lại ở bước thanh toán.</p>
+
+          <a routerLink="/don-hang/thanh-toan" class="NutChinh NutThanhToan">Tiến hành thanh toán</a>
+        </div>
+      </div>
+    </div>
+  }
+</div>
