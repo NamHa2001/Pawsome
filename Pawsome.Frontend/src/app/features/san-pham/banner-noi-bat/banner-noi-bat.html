@@ -31,7 +31,7 @@
         </div>
         <div class="CumVatPham">
           <div class="HinhVuongNho"><img [src]="anhNhoTrai()" alt="Hero"></div>
-          <a routerLink="/san-pham" class="NutShopNow">Shop Now</a>
+          <a [routerLink]="['/san-pham', productIdTrai()]" class="NutShopNow">Shop Now</a>
         </div>
       </div>
 
@@ -40,7 +40,7 @@
       <div class="CumSanPham Phai">
         <div class="CumVatPham">
           <div class="HinhVuongNho"><img [src]="anhNhoPhai()" alt="Hero"></div>
-          <a routerLink="/san-pham" class="NutShopNow">Shop Now</a>
+          <a [routerLink]="['/san-pham', productIdPhai()]" class="NutShopNow">Shop Now</a>
         </div>
         <div class="HinhVuongLon">
           <div class="NoiDungTrong">
