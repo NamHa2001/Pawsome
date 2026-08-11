@@ -1,0 +1,203 @@
+:host {
+  display: contents;
+}
+
+.SanPhamNoiBat {
+  width: 100%;
+  padding: 10px 0;
+  background-color: var(--MauTrang);
+  display: flex;
+  justify-content: center;
+}
+
+.SanPhamNoiBat .VungAnToan {
+  width: 1200px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  overflow: visible;
+}
+
+.KhungNenDo {
+  width: 1200px;
+  height: 433px;
+  background-color: var(--MauDoDam);
+  border-radius: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  position: relative;
+  overflow: visible;
+}
+
+.AnhChoTrungTam {
+  height: 100%;
+  width: auto;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  pointer-events: none;
+}
+
+.CumSanPham {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  z-index: 10;
+}
+
+.CumVatPham {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 122px;
+  margin-top: 10px;
+}
+
+.HinhVuongLon {
+  width: 272px;
+  height: 353px;
+  background-color: var(--MauTrang);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  padding: 15px;
+}
+
+.HinhVuongNho {
+  width: 122px;
+  height: 176px;
+  background-color: var(--MauTrang);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  border: 1px solid #eee;
+  margin-bottom: 20px;
+
+  img { width: 85%; object-fit: contain; }
+}
+
+.NutShopNow {
+  width: 150px;
+  height: 40px;
+  background-color: var(--MauTrang);
+  color: var(--MauDoDam);
+  text-decoration: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 700;
+  border-radius: 30px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  transition: 0.3s ease;
+  margin-bottom: 10px;
+
+  &:hover { background-color: #fde42a; transform: scale(1.05); }
+}
+
+.NoiDungTrong {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 5px;
+}
+
+.PhanChu {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.TieuDeSP {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--MauDen);
+  line-height: 1.2;
+}
+
+.NhanPhu {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--MauDen);
+  border-bottom: 1px solid #eee;
+  padding-bottom: 3px;
+  margin-bottom: 5px;
+}
+
+.KhungGia {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.GiaCu {
+  font-size: 20px;
+  display: block;
+  text-decoration: line-through;
+  color: #ddd;
+}
+
+.GiaMoi {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  line-height: 1;
+}
+
+.ConSoGia {
+  font-size: 20px !important;
+  color: var(--MauDoDam);
+  font-weight: 600;
+}
+
+.LogoVipGia {
+  height: 25px;
+  width: auto;
+  padding-left: 20px;
+}
+
+.DiemNoiBat {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.DanhSachDiem {
+  list-style: none;
+  border-bottom: 1px solid #eee;
+
+  li {
+    font-size: 14px;
+    color: #555;
+    padding: 3px 0 10px 0;
+    line-height: 1.4;
+  }
+}
+
+.KhungAnhNhoHero {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 5px;
+}
+
+.OAnhNhoHero {
+  width: 48px;
+  height: 48px;
+  border: 1px solid #ddd;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  img { width: 90%; height: 90%; object-fit: contain; }
+}

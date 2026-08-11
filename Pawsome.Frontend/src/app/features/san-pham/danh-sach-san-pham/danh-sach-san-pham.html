@@ -1,0 +1,123 @@
+<app-header />
+
+<main class="NoiDungChinh">
+  <div class="ThanhDieuHuongPhu">
+    <div class="KhungBreadcrumb">
+      <a routerLink="/"><i class="fa-solid fa-house"></i></a>
+      <i class="fa-solid fa-chevron-right"></i>
+      <span class="active">Products</span>
+    </div>
+  </div>
+
+  <div class="KhungTrangDanhSach">
+    <aside class="SidebarLoc">
+      <div class="KhoiLoc">
+        <h3 class="TieuDeLoc">Category</h3>
+        <ul class="DanhSachLoc">
+          <li [class.active]="!boLoc().categoryId" (click)="apDungBoLoc({ categoryId: undefined })">All</li>
+          @for (dm of danhMucList(); track dm.categoryId) {
+            <li [class.active]="boLoc().categoryId === dm.categoryId" (click)="apDungBoLoc({ categoryId: dm.categoryId })">
+              {{ dichTenDanhMuc(dm.tenDanhMuc) }}
+            </li>
+          }
+        </ul>
+      </div>
+
+      <div class="KhoiLoc">
+        <h3 class="TieuDeLoc">Brand</h3>
+        <ul class="DanhSachLoc">
+          <li [class.active]="!boLoc().brandId" (click)="apDungBoLoc({ brandId: undefined })">All</li>
+          @for (th of thuongHieuList(); track th.brandId) {
+            <li [class.active]="boLoc().brandId === th.brandId" (click)="apDungBoLoc({ brandId: th.brandId })">
+              {{ th.tenThuongHieu }}
+            </li>
+          }
+        </ul>
+      </div>
+
+      <div class="KhoiLoc">
+        <h3 class="TieuDeLoc">Price Range (VND)</h3>
+        <div class="HangGiaLoc">
+          <input type="number" placeholder="Min" #giaMin [value]="boLoc().giaMin ?? ''">
+          <span>-</span>
+          <input type="number" placeholder="Max" #giaMax [value]="boLoc().giaMax ?? ''">
+        </div>
+        <button class="NutApDungGia" (click)="apDungBoLoc({ giaMin: giaMin.valueAsNumber || undefined, giaMax: giaMax.valueAsNumber || undefined })">
+          Apply
+        </button>
+      </div>
+
+      <div class="KhoiLoc">
+        <h3 class="TieuDeLoc">Minimum Rating</h3>
+        <ul class="DanhSachLoc">
+          <li [class.active]="!boLoc().danhGiaMin" (click)="apDungBoLoc({ danhGiaMin: undefined })">All</li>
+          @for (sao of [4, 3, 2, 1]; track sao) {
+            <li [class.active]="boLoc().danhGiaMin === sao" (click)="apDungBoLoc({ danhGiaMin: sao })">
+              {{ sao }} <i class="fa-solid fa-star icon-sao-nho"></i> & up
+            </li>
+          }
+        </ul>
+      </div>
+
+      <button class="NutXoaLoc" (click)="xoaLoc()"><i class="fa-solid fa-rotate-left"></i> Clear Filters</button>
+    </aside>
+
+    <section class="VungKetQua">
+      <div class="HangTieuDeKetQua">
+        @if (boLoc().tuKhoa) {
+          <span>Results for "{{ boLoc().tuKhoa }}" - {{ tongSo() }} products</span>
+        } @else {
+          <span>{{ tongSo() }} products</span>
+        }
+      </div>
+
+      @if (dangTai()) {
+        <p class="TrangThaiTai">Loading...</p>
+      } @else if (sanPhamList().length === 0) {
+        <p class="TrangThaiTai">No matching products found.</p>
+      } @else {
+        <div class="KhungDanhSachSP">
+          @for (sp of sanPhamList(); track sp.productId) {
+            <a class="TheSanPham" [routerLink]="['/san-pham', sp.productId]">
+              <div class="KhungAnhTrang">
+                <img [src]="sp.images[0]?.url ?? '/img/logo1.png'" [alt]="sp.ten">
+              </div>
+
+              <div class="NoiDungSP">
+                <div class="RatingSao">
+                  <i class="fa-solid fa-star"></i>
+                  <span>{{ sp.diemDanhGiaTb }} ({{ sp.soLuongDanhGia }})</span>
+                </div>
+
+                <div class="TenSanPhamGrid">{{ sp.ten }}</div>
+
+                <hr class="KeNgang">
+
+                <div class="CumGia">
+                  <div class="GiaChinhGrid">{{ sp.giaTu ? (quyDoiUSD(sp.giaTu) | currency:'USD':'symbol':'1.2-2') : 'Contact us' }}</div>
+                </div>
+
+                <button class="NutShopNowGrid">
+                  <i class="fas fa-eye"></i> VIEW DETAILS
+                </button>
+              </div>
+            </a>
+          }
+        </div>
+
+        @if (tongTrang() > 1) {
+          <div class="VungPhanTrang">
+            <button class="NutPhanTrang" [disabled]="(boLoc().page ?? 1) === 1" (click)="doiTrang((boLoc().page ?? 1) - 1)">Prev</button>
+            @for (p of Array(tongTrang()); track $index) {
+              <button class="NutPhanTrang" [class.active]="(boLoc().page ?? 1) === $index + 1" (click)="doiTrang($index + 1)">{{ $index + 1 }}</button>
+            }
+            <button class="NutPhanTrang" [disabled]="(boLoc().page ?? 1) === tongTrang()" (click)="doiTrang((boLoc().page ?? 1) + 1)">Next</button>
+          </div>
+        }
+      }
+    </section>
+  </div>
+</main>
+
+<app-footer />
+<app-chat-ai />

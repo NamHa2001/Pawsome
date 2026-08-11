@@ -54,10 +54,10 @@
         <li class="MucMenuChinh">
           <a routerLink="/san-pham" class="LienKetChinh">Shop by Pet</a>
           <ul class="KhungMenuCon">
-            <li><a routerLink="/san-pham">Dog</a></li>
-            <li><a routerLink="/san-pham">Cat</a></li>
-            <li><a routerLink="/san-pham">Horse</a></li>
-            <li><a routerLink="/san-pham">Bird</a></li>
+            <li><a routerLink="/san-pham" [queryParams]="{ categoryId: 1 }">Dog</a></li>
+            <li><a routerLink="/san-pham" [queryParams]="{ categoryId: 2 }">Cat</a></li>
+            <li><a routerLink="/san-pham" [queryParams]="{ categoryId: 3 }">Horse</a></li>
+            <li><a routerLink="/san-pham" [queryParams]="{ categoryId: 4 }">Bird</a></li>
           </ul>
         </li>
 
@@ -76,11 +76,11 @@
         <li class="MucMenuChinh">
           <a routerLink="/san-pham" class="LienKetChinh">Brands</a>
           <ul class="KhungMenuCon">
-            <li><a routerLink="/san-pham">Bravecto</a></li>
-            <li><a routerLink="/san-pham">Capstar</a></li>
-            <li><a routerLink="/san-pham">Frontline Plus</a></li>
-            <li><a routerLink="/san-pham">Profender</a></li>
-            <li><a routerLink="/san-pham">Simparica Trio</a></li>
+            <li><a routerLink="/san-pham" [queryParams]="{ brandId: 1 }">Bravecto</a></li>
+            <li><a routerLink="/san-pham" [queryParams]="{ brandId: 2 }">Capstar</a></li>
+            <li><a routerLink="/san-pham" [queryParams]="{ brandId: 3 }">Frontline Plus</a></li>
+            <li><a routerLink="/san-pham" [queryParams]="{ brandId: 4 }">Profender</a></li>
+            <li><a routerLink="/san-pham" [queryParams]="{ brandId: 5 }">Simparica Trio</a></li>
           </ul>
         </li>
 

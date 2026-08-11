@@ -1,0 +1,212 @@
+<app-header />
+
+<main class="NoiDungChinh">
+  @if (dangTai()) {
+    <div class="KhungSanPham"><p class="TrangThaiTai">Loading product...</p></div>
+  } @else if (khongTimThay()) {
+    <div class="KhungSanPham"><p class="TrangThaiTai">Product not found.</p></div>
+  } @else if (sanPham(); as sp) {
+    <div class="ThanhDieuHuongPhu">
+      <div class="KhungSanPham">
+        <a routerLink="/"><i class="fa-solid fa-house"></i></a>
+        <i class="fa-solid fa-chevron-right icon-mui-ten"></i>
+        <a routerLink="/san-pham" [queryParams]="{ categoryId: sp.categoryId }">Products</a>
+        <i class="fa-solid fa-chevron-right icon-mui-ten"></i>
+        <span class="active">{{ sp.ten }}</span>
+      </div>
+    </div>
+
+    <div class="KhungSanPham">
+      <div class="KhungBannerSP">
+        <img src="/img/banner5.png" alt="Get 40% Off" class="AnhBannerChinh">
+      </div>
+    </div>
+
+    <div class="KhungSanPham">
+      <section class="CumThongTinSanpham">
+        <div class="HangTieuDeChinh">
+          <div class="KhoiBenTrai">
+            <h1 class="TenSanPham">{{ sp.ten }}</h1>
+            <div class="GiaThuong">
+              <span>Starts From:</span>
+              <strong>{{ quyDoiUSD(sp.giaTu) | currency:'USD':'symbol':'1.2-2' }}</strong>
+            </div>
+            @if (sp.lieuLuong) {
+              <p class="LieuLuong">{{ sp.lieuLuong }}</p>
+            }
+          </div>
+
+          <div class="KhoiBenPhai">
+            <div class="CumDanhGia">
+              <div class="SaoVang">
+                @for (s of saoArr; track s) {
+                  <i class="fa-solid fa-star" [class.SaoMo]="s > Math.round(sp.diemDanhGiaTb)"></i>
+                }
+              </div>
+              <span class="SoDanhGia">{{ sp.diemDanhGiaTb }} ({{ sp.soLuongDanhGia }} reviews)</span>
+            </div>
+
+            <div class="GiaPawVip">
+              <img src="/img/pawvip_white.png" alt="PawVip" class="IconVipNho">
+              <span>$24.38</span>
+            </div>
+
+            @if (tokenService.isLoggedIn()) {
+              <button
+                class="NutYeuThich"
+                [class.active]="dangYeuThich()"
+                [disabled]="dangXuLyYeuThich()"
+                (click)="toggleYeuThich()">
+                <i class="fa-solid fa-heart"></i>
+                {{ dangYeuThich() ? 'Wishlisted' : 'Add to Wishlist' }}
+              </button>
+            }
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="KhungSanPham">
+      <div class="KhungVungMuaHang">
+        <div class="TieuDeBangVip">Choose a Variant</div>
+
+        <div class="NoiDungBangMuaHang">
+          <div class="CotAnhSanPhamLon">
+            <img [src]="anhDangChon() ?? sp.images[0]?.url ?? '/img/logo1.png'" [alt]="sp.ten" class="AnhLonSP">
+          </div>
+
+          <div class="CotThongTinGia">
+            <div class="HangTieuDeGrid">
+              <div>Variant</div>
+              <div>Price</div>
+              <div><img src="/img/pawvip_white.png" alt="Vip" class="IconVipBang"></div>
+              <div>Qty.</div>
+              <div></div>
+            </div>
+
+            @for (v of sp.variants; track v.variantId) {
+              @if (v.dangKinhDoanh) {
+                <div class="HangDuLieuGrid">
+                  <div class="PackSizeTxt">{{ v.tenBienThe }} <span class="TonKhoNho">({{ v.soLuongTon > 0 ? v.soLuongTon + ' in stock' : 'Out of stock' }})</span></div>
+                  <div class="PriceTxt">{{ quyDoiUSD(v.gia) | currency:'USD':'symbol':'1.2-2' }}</div>
+                  <div class="VipPriceTxt">{{ quyDoiUSD(giaVipPlaceholder(v.gia)) | currency:'USD':'symbol':'1.2-2' }}</div>
+                  <div>
+                    <select class="SelectQty" [ngModel]="soLuongCuaBienThe(v.variantId)" (ngModelChange)="doiSoLuong(v.variantId, $event)">
+                      @for (n of [0, 1, 2, 3]; track n) {
+                        <option [value]="n">{{ n }}</option>
+                      }
+                    </select>
+                  </div>
+                  <div><button class="NutAddNho" [disabled]="v.soLuongTon === 0" (click)="themVaoGioTam(v.variantId)">ADD</button></div>
+                </div>
+              }
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="KhungSanPham">
+      <section class="KhungSauLyDo">
+        <div class="TieuDeSauLyDo">6 Reasons to Choose {{ sp.ten }}?</div>
+        <div class="LuoiLyDo">
+          <div class="ItemLyDo"><div class="VongTronSo SoVang">1</div><p>Effective flea and tick collar.</p></div>
+          <div class="ItemLyDo"><div class="VongTronSo SoXanh">2</div><p>Repels fleas and ticks.</p></div>
+          <div class="ItemLyDo"><div class="VongTronSo SoHong">3</div><p>Easy to wear and flexible to fit.</p></div>
+          <div class="ItemLyDo"><div class="VongTronSo SoXanhDam">4</div><p>Odorless and waterproof collar.</p></div>
+          <div class="ItemLyDo"><div class="VongTronSo SoCam">5</div><p>Provides protection for upto 8 months.</p></div>
+          <div class="ItemLyDo"><div class="VongTronSo SoVangNhat">6</div><p>Non-irritant collar.</p></div>
+        </div>
+      </section>
+    </div>
+
+    <div class="KhungSanPham">
+      <div class="KhungVungTabChon">
+        <button class="NutTab" [class.active]="tabMoTa() === 'overview'" (click)="tabMoTa.set('overview')">Overview</button>
+        <button class="NutTab" [class.active]="tabMoTa() === 'benefits'" (click)="tabMoTa.set('benefits')">Benefits</button>
+        <button class="NutTab" [class.active]="tabMoTa() === 'direction'" (click)="tabMoTa.set('direction')">Direction</button>
+        <button class="NutTab" [class.active]="tabMoTa() === 'safety'" (click)="tabMoTa.set('safety')">Safety</button>
+        <button class="NutTab" [class.active]="tabMoTa() === 'ingredients'" (click)="tabMoTa.set('ingredients')">Ingredients</button>
+      </div>
+
+      <div class="NoiDungChiTietSP">
+        @if (tabMoTa() === 'overview') {
+          <h2 class="TieuDeSanphamChinh">{{ sp.ten }}</h2>
+          @if (sp.moTa) {
+            <p class="DoanVanDetail">{{ sp.moTa }}</p>
+          } @else {
+            <p class="DoanVanDetail">No description available for this product.</p>
+          }
+          @if (sp.lieuLuong) {
+            <h3 class="TieuDePhuDetail">Dosage / Ingredients</h3>
+            <p class="DoanVanDetail">{{ sp.lieuLuong }}</p>
+          }
+        } @else {
+          <p class="DoanVanDetail">
+            No content available for this section yet - the database only stores one
+            description field (products.mo_ta) and one dosage field (products.lieu_luong)
+            per product, not split into Benefits/Direction/Safety/Ingredients like the
+            original design.
+          </p>
+        }
+
+        <table class="BangThongSoKyThuat">
+          <thead>
+            <tr>
+              <th>Size</th>
+              <th>Flea Protection</th>
+              <th>Tick Protection</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Small (up to 18 lbs)</td>
+              <td>8 Months</td>
+              <td>4 Months</td>
+            </tr>
+            <tr>
+              <td>Large (over 18 lbs)</td>
+              <td>8 Months</td>
+              <td>4 Months</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <app-danh-gia-san-pham
+      [productId]="sp.productId"
+      [diemDanhGiaTb]="sp.diemDanhGiaTb"
+      [soLuongDanhGia]="sp.soLuongDanhGia" />
+
+    @if (sanPhamCungDanhMuc().length > 0) {
+      <div class="KhungSanPham">
+        <div class="VungGoiY">
+          <div class="ThanhTabGoiY">
+            <button class="NutTabGoiY" [class.active]="tabGoiY() === 'bought'" (click)="tabGoiY.set('bought')">Frequently Bought</button>
+            <button class="NutTabGoiY" [class.active]="tabGoiY() === 'related'" (click)="tabGoiY.set('related')">Related Items</button>
+          </div>
+
+          <div class="DanhSachGoiY">
+            @for (item of sanPhamCungDanhMuc(); track item.productId) {
+              <a class="CardGoiY" [routerLink]="['/san-pham', item.productId]">
+                <div class="KhungTrangGoiY">
+                  <img [src]="item.images[0]?.url ?? '/img/logo1.png'" [alt]="item.ten">
+                </div>
+                <div class="StarGoiY"><i class="fa-solid fa-star"></i> <span>{{ item.diemDanhGiaTb }}</span></div>
+                <b>{{ item.ten }}</b>
+                <div class="GiaGoiY">
+                  <div class="GiaVip"><b>{{ quyDoiUSD(item.giaTu) | currency:'USD':'symbol':'1.2-2' }}</b></div>
+                </div>
+                <div class="NutShopNowGoiY"><i class="fas fa-cart-shopping"></i> SHOP NOW</div>
+              </a>
+            }
+          </div>
+        </div>
+      </div>
+    }
+  }
+</main>
+
+<app-footer />
+<app-chat-ai />

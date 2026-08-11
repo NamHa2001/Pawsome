@@ -1,0 +1,240 @@
+:host {
+  display: contents;
+}
+
+.KhungSanPham {
+  width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.VungDanhGiaKhachHang { width: 100%; margin-top: 20px; padding-bottom: 50px; }
+.TieuDeLonReview { text-align: center; font-size: 36px; font-weight: 800; color: #2F2D2E; margin-bottom: 50px; }
+.ChuDo { color: #FF0000; }
+
+.KhungTongQuanReview {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: 40px;
+  border-bottom: 1px solid var(--MauDoDam);
+}
+
+.CotRatingSummary { flex: 1; }
+.TieuDeNhoReview { font-size: 24px; font-weight: 800; margin-bottom: 10px; }
+.TongSoReview { color: #555; font-weight: 600; margin-bottom: 20px; }
+
+.HangSao { display: flex; align-items: center; gap: 15px; margin-bottom: 8px; font-size: 14px; font-weight: 700; color: #2F2D2E; }
+.ThanhPhanTram { width: 200px; height: 8px; background: #F0F0F0; border-radius: 4px; overflow: hidden; }
+.MucDo { height: 100%; background: #FFA500; }
+
+.CotOverallRating { flex: 1; text-align: center; }
+.ChuOverall { font-size: 18px; font-weight: 700; color: #2F2D2E; }
+.DiemSo { font-size: 64px; font-weight: 800; color: #2F2D2E; }
+.icon-sao-vang { color: #FFA500; font-size: 30px; }
+
+.CotWriteReview { flex: 1; display: flex; justify-content: flex-end; }
+
+.KhungChiTieuDanhGia { width: 100%; margin-top: 30px; padding-bottom: 20px; border-bottom: 1px solid #EEE; }
+.TieuDeTrungBinh { text-align: center; font-weight: 700; margin-bottom: 30px; }
+.LuoiChiTieu { display: flex; justify-content: space-between; }
+
+.ItemChiTieu { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; width: 30%; }
+.ItemChiTieu span { font-weight: 600; color: #555; }
+
+.CumThanhVang { display: flex; align-items: center; gap: 4px; }
+.OVuongVang { width: 40px; height: 10px; background: #EEE; border-radius: 2px; }
+.OVuongVang.active { background: #FFA500; }
+.ConSo { margin-left: 10px; font-weight: 700 !important; color: #2F2D2E !important; }
+
+.NutWriteReview {
+  background-color: var(--MauDoDam);
+  color: white;
+  padding: 12px 25px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+  &:hover { background-color: #C62828; transform: translateY(-2px); }
+  &:disabled { opacity: 0.6; cursor: default; transform: none; }
+}
+
+.KhungGuiDanhGia {
+  width: 100%;
+  padding: 25px 0;
+  border-bottom: 1px solid #EEE;
+}
+
+.HangChonSao {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 15px;
+  font-weight: 600;
+}
+
+.ChonSao {
+  color: #E0E0E0;
+  font-size: 22px;
+  cursor: pointer;
+
+  &.active { color: #FFD700; }
+}
+
+.OTextareaDanhGia {
+  width: 100%;
+  min-height: 90px;
+  border: 1px solid #DDD;
+  border-radius: 8px;
+  padding: 12px;
+  font-family: 'Sora', sans-serif;
+  font-size: 14px;
+  margin-bottom: 15px;
+  resize: vertical;
+}
+
+.ThongBaoThanhCong { color: #2E7D32; font-weight: 600; }
+.ThongBaoLoi { color: var(--MauDoDam); font-weight: 600; margin-bottom: 10px; }
+
+.DuongGachDoDuoi {
+  width: 100%;
+  height: 1px;
+  background-color: var(--MauDoDam);
+  margin: 20px 0;
+}
+
+.VungBoLocReview {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  padding: 15px 0;
+}
+
+.CumSortBy { display: flex; align-items: center; gap: 12px; }
+.ChuSortBy { font-size: 15px; font-weight: 700; color: #2F2D2E; }
+
+.SelectSortBy {
+  padding: 8px 12px;
+  border: 1px solid #CCC;
+  border-radius: 8px;
+  font-family: 'Sora', sans-serif;
+  font-size: 14px;
+  color: #444;
+  outline: none;
+  cursor: pointer;
+}
+
+.VungDanhSachNhanXet { width: 100%; margin-top: 10px; }
+
+.TrangThaiTai {
+  padding: 60px 0;
+  color: #888;
+  font-size: 16px;
+}
+
+.KhoiReviewCaNhan {
+  display: flex;
+  justify-content: space-between;
+  padding: 25px 0;
+  border-bottom: 1px solid #E0E0E0;
+}
+
+.PhanNoiDungReview { width: 65%; }
+
+.TuongTacHuuIch {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+  color: #999;
+  margin-top: 10px;
+}
+
+.NutBamHuuIch {
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: #999;
+  font-weight: 700;
+  transition: 0.2s;
+
+  &:hover { color: #8A191C; }
+}
+
+.PhanChiSoReview {
+  width: 30%;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: flex-end;
+}
+
+.DongChiSo {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  width: 100%;
+  justify-content: flex-end;
+
+  span { font-size: 13px; font-weight: 600; color: #555; }
+}
+
+.ThanhVachXam {
+  width: 130px;
+  height: 7px;
+  background-color: #F0F0F0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.VachCamChay { height: 100%; background-color: #FFA500; }
+
+.ConSoDiem {
+  font-weight: 700;
+  color: #2F2D2E;
+  min-width: 25px;
+  text-align: right;
+}
+
+.CumDauReview {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 10px;
+}
+
+.AvatarNguoiDung {
+  width: 45px;
+  height: 45px;
+  background-color: #D1D1D1;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: 18px;
+}
+
+.SaoVangNho { color: #FFA500; font-size: 13px; }
+.SaoVangNho .SaoMo { color: #E0E0E0; }
+
+.DongNguoiDang { font-size: 13px; color: #888; margin-bottom: 10px; }
+.TieuDeCmtReview { color: #8A191C; font-size: 16px; font-weight: 600; }
+
+.VungPhanTrangBenPhai {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  padding: 30px 0;
+}
+
+.CumNutPhanTrang { display: flex; gap: 8px; }
