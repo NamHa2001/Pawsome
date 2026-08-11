@@ -65,4 +65,17 @@ public class AuthController : ControllerBase
             return BadRequest(ApiResponse<object>.Fail(ex.Message));
         }
     }
+    [HttpPost("google-login")]
+    public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginRequestDto dto)
+    {
+        try
+        {
+            var result = await _authService.GoogleLoginAsync(dto);
+            return Ok(ApiResponse<AuthResponseDto>.Ok(result, "Đăng nhập bằng Google thành công."));
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ApiResponse<AuthResponseDto>.Fail(ex.Message));
+        }
+    }
 }
