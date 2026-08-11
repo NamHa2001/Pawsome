@@ -8,6 +8,8 @@ import { RouterLink } from '@angular/router';
   styleUrl: './banner-noi-bat.scss'
 })
 export class BannerNoiBat {
+  readonly productIdTrai = input.required<number>();
+  readonly productIdPhai = input.required<number>();
   readonly anhTrungTam = input.required<string>();
   readonly altTrungTam = input.required<string>();
   readonly anhNhoTrai = input.required<string>();

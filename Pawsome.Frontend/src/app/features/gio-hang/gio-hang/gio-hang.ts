@@ -6,11 +6,14 @@ import { AutoOrderService } from '../dat-hang-tu-dong/services/auto-order.servic
 import { Cart, Coupon, NHAN_TAN_SUAT, TanSuatDonTuDong } from './models/gio-hang.model';
 import { CartService } from './services/cart.service';
 import { CouponService } from './services/coupon.service';
+import { ChatAi } from '../../../shared/components/chat-ai/chat-ai';
+import { Footer } from '../../../shared/components/footer/footer';
+import { Header } from '../../../shared/components/header/header';
 
 @Component({
   selector: 'app-gio-hang',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, Header, Footer, ChatAi],
   templateUrl: './gio-hang.html',
   styleUrl: './gio-hang.css'
 })
