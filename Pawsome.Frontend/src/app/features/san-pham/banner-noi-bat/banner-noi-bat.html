@@ -1,0 +1,75 @@
+<section class="SanPhamNoiBat">
+  <div class="VungAnToan">
+    <div class="KhungNenDo">
+      <div class="CumSanPham Trai">
+        <div class="HinhVuongLon">
+          <div class="NoiDungTrong">
+            <div class="PhanChu">
+              <div class="TieuDeSP">Heartgard Plus</div>
+              <div class="KhungGia">
+                <span class="GiaCu">$41.74</span>
+                <div class="GiaMoi">
+                  <span class="ConSoGia">$25.04</span>
+                  <img src="/img/pawvip2.png" alt="PawVip" class="LogoVipGia">
+                </div>
+              </div>
+              <div class="DiemNoiBat">
+                <div class="NhanPhu">Key Takeaways</div>
+                <ul class="DanhSachDiem">
+                  <li>#1 Dog-preferred chew</li>
+                  <li>Proven heartworm disease protection</li>
+                  <li>Treats and controls roundworms</li>
+                </ul>
+              </div>
+            </div>
+            <div class="KhungAnhNhoHero">
+              @for (anh of anhHeroTrai(); track anh; let i = $index) {
+                <div class="OAnhNhoHero" [class.active]="i === 0"><img [src]="anh" alt="a"></div>
+              }
+            </div>
+          </div>
+        </div>
+        <div class="CumVatPham">
+          <div class="HinhVuongNho"><img [src]="anhNhoTrai()" alt="Hero"></div>
+          <a routerLink="/san-pham" class="NutShopNow">Shop Now</a>
+        </div>
+      </div>
+
+      <img [src]="anhTrungTam()" [alt]="altTrungTam()" class="AnhChoTrungTam">
+
+      <div class="CumSanPham Phai">
+        <div class="CumVatPham">
+          <div class="HinhVuongNho"><img [src]="anhNhoPhai()" alt="Hero"></div>
+          <a routerLink="/san-pham" class="NutShopNow">Shop Now</a>
+        </div>
+        <div class="HinhVuongLon">
+          <div class="NoiDungTrong">
+            <div class="PhanChu">
+              <div class="TieuDeSP">Heartgard Plus</div>
+              <div class="KhungGia">
+                <span class="GiaCu">$41.74</span>
+                <div class="GiaMoi">
+                  <span class="ConSoGia">$25.04</span>
+                  <img src="/img/pawvip2.png" alt="PawVip" class="LogoVipGia">
+                </div>
+              </div>
+              <div class="DiemNoiBat">
+                <div class="NhanPhu">Key Takeaways</div>
+                <ul class="DanhSachDiem">
+                  <li>#1 Dog-preferred chew</li>
+                  <li>Proven heartworm disease protection</li>
+                  <li>Treats and controls roundworms</li>
+                </ul>
+              </div>
+            </div>
+            <div class="KhungAnhNhoHero">
+              @for (anh of anhHeroPhai(); track anh; let i = $index) {
+                <div class="OAnhNhoHero" [class.active]="i === 0"><img [src]="anh" alt="a"></div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

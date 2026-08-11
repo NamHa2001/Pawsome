@@ -11,6 +11,8 @@ import { DanhMuc, SanPham, dichTenDanhMuc, quyDoiUSD } from '../models/san-pham.
 import { BrandService } from '../services/brand.service';
 import { CategoryService } from '../services/category.service';
 import { ProductService } from '../services/product.service';
+import { BannerNoiBat } from '../banner-noi-bat/banner-noi-bat';
+import { WelcomeBonus } from '../welcome-bonus/welcome-bonus';
 
 interface BaiVietBlog {
   postId: number;
@@ -26,7 +28,7 @@ interface NhomDanhMuc {
 
 @Component({
   selector: 'app-trang-chu',
-  imports: [Header, Footer, ChatAi, RouterLink, CurrencyPipe],
+  imports: [Header, Footer, ChatAi, RouterLink, CurrencyPipe, BannerNoiBat, WelcomeBonus],
   templateUrl: './trang-chu.html',
   styleUrl: './trang-chu.scss'
 })

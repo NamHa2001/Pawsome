@@ -1,0 +1,144 @@
+<div class="KhungSanPham">
+  <section class="VungDanhGiaKhachHang">
+    <h2 class="TieuDeLonReview"><span class="ChuDo">Customer</span> Reviews</h2>
+
+    <div class="KhungTongQuanReview">
+      <div class="CotRatingSummary">
+        <h3 class="TieuDeNhoReview">Reviews</h3>
+        <p class="TongSoReview">{{ soLuongDanhGia() }} Review(s)</p>
+        <div class="DanhSachThanhSao">
+          @for (s of [5, 4, 3, 2, 1]; track s) {
+            <div class="HangSao">
+              <span>{{ s }} star</span>
+              <div class="ThanhPhanTram"><div class="MucDo" [style.width.%]="tongPhanTramSao()[s]"></div></div>
+              <span>{{ tongPhanTramSao()[s] | number:'1.0-1' }}%</span>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="CotOverallRating">
+        <p class="ChuOverall">Overall Rating</p>
+        <div class="DiemSo">{{ diemDanhGiaTb() }} <i class="fa-solid fa-star icon-sao-vang"></i></div>
+      </div>
+
+      <div class="CotWriteReview">
+        @if (tokenService.isLoggedIn()) {
+          <button class="NutWriteReview" (click)="guiThanhCong.set(false)"><i class="fa-solid fa-pen"></i> Write Review</button>
+        } @else {
+          <a routerLink="/tai-khoan/dang-nhap" class="NutWriteReview"><i class="fa-solid fa-pen"></i> Log In to Review</a>
+        }
+      </div>
+    </div>
+
+    <div class="KhungChiTieuDanhGia">
+      <h4 class="TieuDeTrungBinh">Average Customer Ratings</h4>
+      <div class="LuoiChiTieu">
+        <div class="ItemChiTieu">
+          <span>Quality of Product</span>
+          <div class="CumThanhVang">
+            <div class="OVuongVang active"></div><div class="OVuongVang active"></div><div class="OVuongVang active"></div><div class="OVuongVang active"></div><div class="OVuongVang"></div>
+            <span class="ConSo">3.9</span>
+          </div>
+        </div>
+        <div class="ItemChiTieu">
+          <span>Value of Product</span>
+          <div class="CumThanhVang">
+            <div class="OVuongVang active"></div><div class="OVuongVang active"></div><div class="OVuongVang active"></div><div class="OVuongVang active"></div><div class="OVuongVang active"></div>
+            <span class="ConSo">4.2</span>
+          </div>
+        </div>
+        <div class="ItemChiTieu">
+          <span>Pet Satisfaction</span>
+          <div class="CumThanhVang">
+            <div class="OVuongVang active"></div><div class="OVuongVang active"></div><div class="OVuongVang active"></div><div class="OVuongVang active"></div><div class="OVuongVang"></div>
+            <span class="ConSo">4.1</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    @if (tokenService.isLoggedIn()) {
+      <div class="KhungGuiDanhGia">
+        @if (guiThanhCong()) {
+          <p class="ThongBaoThanhCong">Review submitted successfully, pending approval.</p>
+        } @else {
+          <div class="HangChonSao">
+            <span>Rating:</span>
+            @for (s of saoArr; track s) {
+              <i class="fa-solid fa-star ChonSao" [class.active]="s <= soSaoMoi" (click)="soSaoMoi = s"></i>
+            }
+          </div>
+          <textarea class="OTextareaDanhGia" placeholder="Share your thoughts..." [(ngModel)]="binhLuanMoi"></textarea>
+          @if (loiGuiDanhGia()) {
+            <p class="ThongBaoLoi">{{ loiGuiDanhGia() }}</p>
+          }
+          <button class="NutWriteReview" [disabled]="dangGuiDanhGia()" (click)="guiDanhGia()">
+            {{ dangGuiDanhGia() ? 'Submitting...' : 'Submit Review' }}
+          </button>
+        }
+      </div>
+    }
+
+    <div class="DuongGachDoDuoi"></div>
+
+    <div class="VungBoLocReview">
+      <div class="CumSortBy">
+        <span class="ChuSortBy">Sort By:</span>
+        <select class="SelectSortBy" [ngModel]="sapXepDanhGia()" (ngModelChange)="sapXepDanhGia.set($event)">
+          <option value="recent">Most recent</option>
+          <option value="highest">Highest rating</option>
+          <option value="lowest">Lowest rating</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="VungDanhSachNhanXet">
+      @for (r of reviewsDaSapXep(); track r.reviewId) {
+        <div class="KhoiReviewCaNhan">
+          <div class="PhanNoiDungReview">
+            <div class="CumDauReview">
+              <div class="AvatarNguoiDung"><i class="fa-solid fa-user"></i></div>
+              <div class="ThongTinNhanh">
+                <div class="SaoVangNho">
+                  @for (s of saoArr; track s) {
+                    <i class="fa-solid fa-star" [class.SaoMo]="s > r.soSao"></i>
+                  }
+                </div>
+              </div>
+            </div>
+            <p class="DongNguoiDang">submitted by <strong>{{ r.tenNguoiDanhGia }}</strong> on <strong>{{ r.ngayTao | date:'dd/MM/yyyy' }}</strong></p>
+            @if (r.binhLuan) {
+              <h5 class="TieuDeCmtReview">{{ r.binhLuan }}</h5>
+            }
+            <div class="TuongTacHuuIch">
+              <span>Was this review helpful?</span>
+              <button class="NutBamHuuIch" type="button"><i class="fa-solid fa-thumbs-up"></i> 0</button>
+              <button class="NutBamHuuIch" type="button"><i class="fa-solid fa-thumbs-down"></i> 0</button>
+            </div>
+          </div>
+
+          <div class="PhanChiSoReview">
+            <div class="DongChiSo"><span>Quality of Product</span><div class="ThanhVachXam"><div class="VachCamChay" style="width: 40%;"></div></div><span class="ConSoDiem">2.0</span></div>
+            <div class="DongChiSo"><span>Value of Product</span><div class="ThanhVachXam"><div class="VachCamChay" style="width: 40%;"></div></div><span class="ConSoDiem">2.0</span></div>
+            <div class="DongChiSo"><span>Pet Satisfaction</span><div class="ThanhVachXam"><div class="VachCamChay" style="width: 40%;"></div></div><span class="ConSoDiem">2.0</span></div>
+          </div>
+        </div>
+      } @empty {
+        <p class="TrangThaiTai">No approved reviews yet for this product.</p>
+      }
+    </div>
+
+    @if (reviewTotalPages() > 1) {
+      <div class="VungPhanTrangBenPhai">
+        <div class="CumNutPhanTrang">
+          <button class="NutPhanTrang" [disabled]="reviewPage() === 1" (click)="doiTrangDanhGia(reviewPage() - 1)">Prev</button>
+          @for (p of Array(reviewTotalPages()); track $index) {
+            <button class="NutPhanTrang" [class.active]="reviewPage() === $index + 1" (click)="doiTrangDanhGia($index + 1)">{{ $index + 1 }}</button>
+          }
+          <button class="NutPhanTrang" [disabled]="reviewPage() === reviewTotalPages()" (click)="doiTrangDanhGia(reviewPage() + 1)">Next</button>
+        </div>
+      </div>
+    }
+  </section>
+</div>

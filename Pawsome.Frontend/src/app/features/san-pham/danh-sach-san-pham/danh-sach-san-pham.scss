@@ -1,0 +1,170 @@
+
+:host {
+  display: contents;
+}
+
+.ThanhDieuHuongPhu {
+  width: 100%;
+  padding: 20px 0;
+  display: flex;
+  justify-content: center;
+}
+
+.KhungBreadcrumb {
+  width: 1200px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  a, span {
+    text-decoration: none;
+    color: #666;
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  i { font-size: 10px; color: #CCC; }
+  .active { color: var(--MauDoDam); font-weight: 700; }
+}
+
+.KhungTrangDanhSach {
+  width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  gap: 30px;
+  align-items: flex-start;
+  padding-bottom: 60px;
+}
+
+.SidebarLoc {
+  width: 260px;
+  flex-shrink: 0;
+  background: var(--MauHongNhat);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.KhoiLoc {
+  margin-bottom: 25px;
+
+  &:last-of-type { margin-bottom: 15px; }
+}
+
+.TieuDeLoc {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--MauDen);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+}
+
+.DanhSachLoc {
+  list-style: none;
+
+  li {
+    padding: 8px 10px;
+    font-size: 14px;
+    color: #555;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: 0.2s;
+
+    &:hover { background: var(--MauHongDam); }
+    &.active { background: var(--MauDoDam); color: white; font-weight: 600; }
+  }
+}
+
+.icon-sao-nho { color: #FFA500; font-size: 12px; }
+
+.HangGiaLoc {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+
+  input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #DDD;
+    border-radius: 6px;
+    font-size: 13px;
+  }
+}
+
+.NutApDungGia {
+  width: 100%;
+  padding: 8px;
+  background: var(--MauDoDam);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.NutXoaLoc {
+  width: 100%;
+  padding: 10px;
+  background: none;
+  border: 1px solid var(--MauDoDam);
+  color: var(--MauDoDam);
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  &:hover { background: var(--MauDoDam); color: white; }
+}
+
+.VungKetQua {
+  flex: 1;
+}
+
+.HangTieuDeKetQua {
+  font-size: 15px;
+  color: #555;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.TrangThaiTai {
+  padding: 60px 0;
+  text-align: center;
+  color: #888;
+}
+
+.KhungDanhSachSP {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.KeNgang {
+  width: 100%;
+  height: 1.5px;
+  background-color: #c1b9b9;
+  margin-bottom: 10px;
+}
+
+.CumGia {
+  width: 100%;
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.GiaChinhGrid {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--MauDoDam);
+}
+
+.VungPhanTrang {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
