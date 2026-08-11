@@ -28,4 +28,8 @@ public interface IProductService
     // lượng tồn kho mới, phải query lại (không dùng entity/biến đã đọc từ trước, nó vẫn giữ số cũ).
     Task TruTonKhoAsync(int variantId, int soLuong);
     Task HoanKhoAsync(int variantId, int soLuong);
+
+    // Dùng chung cho Phần 3, 4, 5 — trả về thông tin rút gọn  để hiển thị.
+    // Trả về null nếu không tồn tại HOẶC sản phẩm/biến thể đã ngừng kinh doanh.
+    Task<ProductVariantInfoDto?> LayThongTinBienTheAsync(int variantId);
 }
