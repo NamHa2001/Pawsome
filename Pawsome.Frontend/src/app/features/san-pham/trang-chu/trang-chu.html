@@ -6,13 +6,13 @@
       <div class="KhungVuaSlide">
         <div class="DanhSachSlide" [style.transform]="'translateX(-' + (slideIndex() * 1200) + 'px)'">
           @for (anh of slideAnh; track anh) {
-            <div class="SlideItem"><img [src]="anh" alt="Promotional banner"></div>
+          <div class="SlideItem"><img [src]="anh" alt="Promotional banner"></div>
           }
         </div>
       </div>
       <div class="CumDauCham">
         @for (anh of slideAnh; track anh; let i = $index) {
-          <span class="DauCham" [class.active]="slideIndex() === i" (click)="chonSlide(i)"></span>
+        <span class="DauCham" [class.active]="slideIndex() === i" (click)="chonSlide(i)"></span>
         }
       </div>
     </div>
@@ -131,50 +131,52 @@
   </section>
 
   @if (nhomTheoDanhMuc().length > 0) {
-    <div class="KhungChuaLon">
-      <div class="HeaderSanPham">
-        <div class="TieuDeChinh">{{ dichTenDanhMuc(nhomTheoDanhMuc()[0].danhMuc.tenDanhMuc) }} Healthcare</div>
-        <div class="BoLoc">
-          <div class="BoLocHienTai">
-            <span>Flea & Tick</span>
-            <i class="fas fa-chevron-down"></i>
-            <div class="DuongGachChan"></div>
-          </div>
-          <ul class="MenuDropdown">
-            <li class="active">Flea & Tick</li>
-            <li>Wormers</li>
-            <li>Joint Care</li>
-            <li>Skin & Coat</li>
-            <li>Behavioural</li>
-          </ul>
+  <div class="KhungChuaLon">
+    <div class="HeaderSanPham">
+      <div class="TieuDeChinh">{{ dichTenDanhMuc(nhomTheoDanhMuc()[0].danhMuc.tenDanhMuc) }} Healthcare</div>
+      <div class="BoLoc">
+        <div class="BoLocHienTai">
+          <span>Flea & Tick</span>
+          <i class="fas fa-chevron-down"></i>
+          <div class="DuongGachChan"></div>
         </div>
+        <ul class="MenuDropdown">
+          <li class="active">Flea & Tick</li>
+          <li>Wormers</li>
+          <li>Joint Care</li>
+          <li>Skin & Coat</li>
+          <li>Behavioural</li>
+        </ul>
       </div>
     </div>
+  </div>
 
-    <div class="KhungDanhSachSP">
-      @for (sp of nhomTheoDanhMuc()[0].sanPham; track sp.productId) {
-        <a class="TheSanPham" [routerLink]="['/san-pham', sp.productId]">
-          <div class="KhungAnhTrang">
-            <img [src]="sp.images[0]?.url ?? '/img/logo1.png'" [alt]="sp.ten">
+  <div class="KhungDanhSachSP">
+    @for (sp of nhomTheoDanhMuc()[0].sanPham; track sp.productId) {
+    <a class="TheSanPham" [routerLink]="['/san-pham', sp.productId]">
+      <div class="KhungAnhTrang">
+        <img [src]="sp.images[0]?.url ?? '/img/logo1.png'" [alt]="sp.ten">
+      </div>
+      <div class="NoiDungSP">
+        <div class="RatingSao">
+          <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
+            class="fas fa-star"></i>
+          <span>{{ sp.diemDanhGiaTb }}</span>
+        </div>
+        <div class="TenSanPhamGrid">{{ sp.ten }}</div>
+        <hr class="KeNgang">
+        <div class="CumGia">
+          <div class="GiaMoiHang">
+            <span class="GiaMoiGrid">{{ sp.giaTu ? (quyDoiUSD(sp.giaTu) | currency:'USD':'symbol':'1.2-2') : 'Contact
+              us' }}</span>
+            <img src="/img/pawvip.png" alt="PawVip" class="VipIconGrid">
           </div>
-          <div class="NoiDungSP">
-            <div class="RatingSao">
-              <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
-              <span>{{ sp.diemDanhGiaTb }}</span>
-            </div>
-            <div class="TenSanPhamGrid">{{ sp.ten }}</div>
-            <hr class="KeNgang">
-            <div class="CumGia">
-              <div class="GiaMoiHang">
-                <span class="GiaMoiGrid">{{ sp.giaTu ? (quyDoiUSD(sp.giaTu) | currency:'USD':'symbol':'1.2-2') : 'Contact us' }}</span>
-                <img src="/img/pawvip.png" alt="PawVip" class="VipIconGrid">
-              </div>
-            </div>
-            <button class="NutShopNowGrid"><i class="fas fa-shopping-cart"></i> SHOP NOW</button>
-          </div>
-        </a>
-      }
-    </div>
+        </div>
+        <button class="NutShopNowGrid"><i class="fas fa-shopping-cart"></i> SHOP NOW</button>
+      </div>
+    </a>
+    }
+  </div>
   }
 
   <div class="ContainerBannerVip">
@@ -212,126 +214,128 @@
   </div>
 
   @if (nhomTheoDanhMuc().length > 1) {
-    <section class="SanPhamNoiBat">
-      <div class="VungAnToan">
-        <div class="KhungNenDo">
-          <div class="CumSanPham Trai">
-            <div class="HinhVuongLon">
-              <div class="NoiDungTrong">
-                <div class="PhanChu">
-                  <div class="TieuDeSP">Heartgard Plus</div>
-                  <div class="KhungGia">
-                    <span class="GiaCu">$41.74</span>
-                    <div class="GiaMoi">
-                      <span class="ConSoGia">$25.04</span>
-                      <img src="/img/pawvip2.png" alt="PawVip" class="LogoVipGia">
-                    </div>
-                  </div>
-                  <div class="DiemNoiBat">
-                    <div class="NhanPhu">Key Takeaways</div>
-                    <ul class="DanhSachDiem">
-                      <li>#1 Dog-preferred chew</li>
-                      <li>Proven heartworm disease protection</li>
-                      <li>Treats and controls roundworms</li>
-                    </ul>
+  <section class="SanPhamNoiBat">
+    <div class="VungAnToan">
+      <div class="KhungNenDo">
+        <div class="CumSanPham Trai">
+          <div class="HinhVuongLon">
+            <div class="NoiDungTrong">
+              <div class="PhanChu">
+                <div class="TieuDeSP">Heartgard Plus</div>
+                <div class="KhungGia">
+                  <span class="GiaCu">$41.74</span>
+                  <div class="GiaMoi">
+                    <span class="ConSoGia">$25.04</span>
+                    <img src="/img/pawvip2.png" alt="PawVip" class="LogoVipGia">
                   </div>
                 </div>
-                <div class="KhungAnhNhoHero">
-                  <div class="OAnhNhoHero active"><img src="/img/TM1.png" alt="a"></div>
-                  <div class="OAnhNhoHero"><img src="/img/TM2.png" alt="b"></div>
-                  <div class="OAnhNhoHero"><img src="/img/TM3.png" alt="c"></div>
+                <div class="DiemNoiBat">
+                  <div class="NhanPhu">Key Takeaways</div>
+                  <ul class="DanhSachDiem">
+                    <li>#1 Dog-preferred chew</li>
+                    <li>Proven heartworm disease protection</li>
+                    <li>Treats and controls roundworms</li>
+                  </ul>
                 </div>
               </div>
-            </div>
-            <div class="CumVatPham">
-              <div class="HinhVuongNho"><img src="/img/meo0.png" alt="Hero"></div>
-              <a routerLink="/san-pham" class="NutShopNow">Shop Now</a>
+              <div class="KhungAnhNhoHero">
+                <div class="OAnhNhoHero active"><img src="/img/TM1.png" alt="a"></div>
+                <div class="OAnhNhoHero"><img src="/img/TM2.png" alt="b"></div>
+                <div class="OAnhNhoHero"><img src="/img/TM3.png" alt="c"></div>
+              </div>
             </div>
           </div>
+          <div class="CumVatPham">
+            <div class="HinhVuongNho"><img src="/img/meo0.png" alt="Hero"></div>
+            <a routerLink="/san-pham" class="NutShopNow">Shop Now</a>
+          </div>
+        </div>
 
-          <img src="/img/nenmeo.png" alt="Featured Cat" class="AnhChoTrungTam">
+        <img src="/img/nenmeo.png" alt="Featured Cat" class="AnhChoTrungTam">
 
-          <div class="CumSanPham Phai">
-            <div class="CumVatPham">
-              <div class="HinhVuongNho"><img src="/img/meo00.png" alt="Hero"></div>
-              <a routerLink="/san-pham" class="NutShopNow">Shop Now</a>
-            </div>
-            <div class="HinhVuongLon">
-              <div class="NoiDungTrong">
-                <div class="PhanChu">
-                  <div class="TieuDeSP">Heartgard Plus</div>
-                  <div class="KhungGia">
-                    <span class="GiaCu">$41.74</span>
-                    <div class="GiaMoi">
-                      <span class="ConSoGia">$25.04</span>
-                      <img src="/img/pawvip2.png" alt="PawVip" class="LogoVipGia">
-                    </div>
-                  </div>
-                  <div class="DiemNoiBat">
-                    <div class="NhanPhu">Key Takeaways</div>
-                    <ul class="DanhSachDiem">
-                      <li>#1 Dog-preferred chew</li>
-                      <li>Proven heartworm disease protection</li>
-                      <li>Treats and controls roundworms</li>
-                    </ul>
+        <div class="CumSanPham Phai">
+          <div class="CumVatPham">
+            <div class="HinhVuongNho"><img src="/img/meo00.png" alt="Hero"></div>
+            <a routerLink="/san-pham" class="NutShopNow">Shop Now</a>
+          </div>
+          <div class="HinhVuongLon">
+            <div class="NoiDungTrong">
+              <div class="PhanChu">
+                <div class="TieuDeSP">Heartgard Plus</div>
+                <div class="KhungGia">
+                  <span class="GiaCu">$41.74</span>
+                  <div class="GiaMoi">
+                    <span class="ConSoGia">$25.04</span>
+                    <img src="/img/pawvip2.png" alt="PawVip" class="LogoVipGia">
                   </div>
                 </div>
-                <div class="KhungAnhNhoHero">
-                  <div class="OAnhNhoHero active"><img src="/img/TM4.png" alt="a"></div>
-                  <div class="OAnhNhoHero"><img src="/img/TM5.png" alt="b"></div>
-                  <div class="OAnhNhoHero"><img src="/img/TM6.png" alt="c"></div>
+                <div class="DiemNoiBat">
+                  <div class="NhanPhu">Key Takeaways</div>
+                  <ul class="DanhSachDiem">
+                    <li>#1 Dog-preferred chew</li>
+                    <li>Proven heartworm disease protection</li>
+                    <li>Treats and controls roundworms</li>
+                  </ul>
                 </div>
+              </div>
+              <div class="KhungAnhNhoHero">
+                <div class="OAnhNhoHero active"><img src="/img/TM4.png" alt="a"></div>
+                <div class="OAnhNhoHero"><img src="/img/TM5.png" alt="b"></div>
+                <div class="OAnhNhoHero"><img src="/img/TM6.png" alt="c"></div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <div class="KhungChuaLon">
-      <div class="HeaderSanPham">
-        <div class="TieuDeChinh">{{ dichTenDanhMuc(nhomTheoDanhMuc()[1].danhMuc.tenDanhMuc) }} Healthcare</div>
-        <div class="BoLoc">
-          <div class="BoLocHienTai">
-            <span>Flea & Tick</span>
-            <i class="fas fa-chevron-down"></i>
-            <div class="DuongGachChan"></div>
-          </div>
-          <ul class="MenuDropdown">
-            <li class="active">Flea & Tick</li>
-            <li>Wormers</li>
-            <li>Joint Care</li>
-            <li>Skin & Coat</li>
-            <li>Behavioural</li>
-          </ul>
+  <div class="KhungChuaLon">
+    <div class="HeaderSanPham">
+      <div class="TieuDeChinh">{{ dichTenDanhMuc(nhomTheoDanhMuc()[1].danhMuc.tenDanhMuc) }} Healthcare</div>
+      <div class="BoLoc">
+        <div class="BoLocHienTai">
+          <span>Flea & Tick</span>
+          <i class="fas fa-chevron-down"></i>
+          <div class="DuongGachChan"></div>
         </div>
+        <ul class="MenuDropdown">
+          <li class="active">Flea & Tick</li>
+          <li>Wormers</li>
+          <li>Joint Care</li>
+          <li>Skin & Coat</li>
+          <li>Behavioural</li>
+        </ul>
       </div>
     </div>
+  </div>
 
-    <div class="KhungDanhSachSP">
-      @for (sp of nhomTheoDanhMuc()[1].sanPham; track sp.productId) {
-        <a class="TheSanPham" [routerLink]="['/san-pham', sp.productId]">
-          <div class="KhungAnhTrang">
-            <img [src]="sp.images[0]?.url ?? '/img/logo1.png'" [alt]="sp.ten">
+  <div class="KhungDanhSachSP">
+    @for (sp of nhomTheoDanhMuc()[1].sanPham; track sp.productId) {
+    <a class="TheSanPham" [routerLink]="['/san-pham', sp.productId]">
+      <div class="KhungAnhTrang">
+        <img [src]="sp.images[0]?.url ?? '/img/logo1.png'" [alt]="sp.ten">
+      </div>
+      <div class="NoiDungSP">
+        <div class="RatingSao">
+          <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
+            class="fas fa-star"></i>
+          <span>{{ sp.diemDanhGiaTb }}</span>
+        </div>
+        <div class="TenSanPhamGrid">{{ sp.ten }}</div>
+        <hr class="KeNgang">
+        <div class="CumGia">
+          <div class="GiaMoiHang">
+            <span class="GiaMoiGrid">{{ sp.giaTu ? (quyDoiUSD(sp.giaTu) | currency:'USD':'symbol':'1.2-2') : 'Contact
+              us' }}</span>
+            <img src="/img/pawvip.png" alt="PawVip" class="VipIconGrid">
           </div>
-          <div class="NoiDungSP">
-            <div class="RatingSao">
-              <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
-              <span>{{ sp.diemDanhGiaTb }}</span>
-            </div>
-            <div class="TenSanPhamGrid">{{ sp.ten }}</div>
-            <hr class="KeNgang">
-            <div class="CumGia">
-              <div class="GiaMoiHang">
-                <span class="GiaMoiGrid">{{ sp.giaTu ? (quyDoiUSD(sp.giaTu) | currency:'USD':'symbol':'1.2-2') : 'Contact us' }}</span>
-                <img src="/img/pawvip.png" alt="PawVip" class="VipIconGrid">
-              </div>
-            </div>
-            <button class="NutShopNowGrid"><i class="fas fa-shopping-cart"></i> SHOP NOW</button>
-          </div>
-        </a>
-      }
-    </div>
+        </div>
+        <button class="NutShopNowGrid"><i class="fas fa-shopping-cart"></i> SHOP NOW</button>
+      </div>
+    </a>
+    }
+  </div>
   }
 
   <div class="KhungDealMonth">
@@ -370,43 +374,43 @@
     </div>
 
     @if (blogList().length > 0) {
-      <div class="VungAnToan KhungChuaBlog">
-        @for (bai of blogList(); track bai.postId; let i = $index) {
-          <a class="O_Blog" routerLink="/blog/{{ bai.postId }}">
-            <div class="AnhBlog">
-              <img [src]="bai.anhDaiDien ?? anhBlogMacDinh(i)" [alt]="bai.tieuDe">
-            </div>
-            <div class="NoiDungBlog">
-              <h3 class="TenBlog">{{ bai.tieuDe }}</h3>
-              <span class="ReadNow">Read Now...</span>
-            </div>
-          </a>
-        }
-      </div>
+    <div class="VungAnToan KhungChuaBlog">
+      @for (bai of blogList(); track bai.postId; let i = $index) {
+      <a class="O_Blog" routerLink="/blog/{{ bai.postId }}">
+        <div class="AnhBlog">
+          <img [src]="bai.anhDaiDien ?? anhBlogMacDinh(i)" [alt]="bai.tieuDe">
+        </div>
+        <div class="NoiDungBlog">
+          <h3 class="TenBlog">{{ bai.tieuDe }}</h3>
+          <span class="ReadNow">Read Now...</span>
+        </div>
+      </a>
+      }
+    </div>
     } @else {
-      <div class="VungAnToan KhungChuaBlog">
-        <div class="O_Blog">
-          <div class="AnhBlog"><img src="/img/blog1.png" alt="Blog 1"></div>
-          <div class="NoiDungBlog">
-            <h3 class="TenBlog">Front Plus vs. Simparica Trio - Which One to Choose for Your Dog?</h3>
-            <span class="ReadNow">Read Now...</span>
-          </div>
-        </div>
-        <div class="O_Blog">
-          <div class="AnhBlog"><img src="/img/blog2.png" alt="Blog 2"></div>
-          <div class="NoiDungBlog">
-            <h3 class="TenBlog">A Quick Guide to Dog's Skin & Coat Care</h3>
-            <span class="ReadNow">Read Now...</span>
-          </div>
-        </div>
-        <div class="O_Blog">
-          <div class="AnhBlog"><img src="/img/blog3.png" alt="Blog 3"></div>
-          <div class="NoiDungBlog">
-            <h3 class="TenBlog">Why Dogs Lick and Chew Their Paws and When to Worry</h3>
-            <span class="ReadNow">Read Now...</span>
-          </div>
+    <div class="VungAnToan KhungChuaBlog">
+      <div class="O_Blog">
+        <div class="AnhBlog"><img src="/img/blog1.png" alt="Blog 1"></div>
+        <div class="NoiDungBlog">
+          <h3 class="TenBlog">Front Plus vs. Simparica Trio - Which One to Choose for Your Dog?</h3>
+          <span class="ReadNow">Read Now...</span>
         </div>
       </div>
+      <div class="O_Blog">
+        <div class="AnhBlog"><img src="/img/blog2.png" alt="Blog 2"></div>
+        <div class="NoiDungBlog">
+          <h3 class="TenBlog">A Quick Guide to Dog's Skin & Coat Care</h3>
+          <span class="ReadNow">Read Now...</span>
+        </div>
+      </div>
+      <div class="O_Blog">
+        <div class="AnhBlog"><img src="/img/blog3.png" alt="Blog 3"></div>
+        <div class="NoiDungBlog">
+          <h3 class="TenBlog">Why Dogs Lick and Chew Their Paws and When to Worry</h3>
+          <span class="ReadNow">Read Now...</span>
+        </div>
+      </div>
+    </div>
     }
 
     <div class="NutViewAllContainer">
