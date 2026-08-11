@@ -1,0 +1,76 @@
+<div class="TrangAutoOrder">
+  <div class="VungAnToan KhungTieuDe">
+    <h1 class="TieuDeTrang">Đơn đặt hàng tự động</h1>
+    <p class="MoTaTrang">Quản lý các sản phẩm bạn muốn mua lại định kỳ.</p>
+  </div>
+
+  @if (dangTai()) {
+    <div class="VungAnToan"><p class="DangTai">Đang tải...</p></div>
+  } @else if (loi()) {
+    <div class="VungAnToan"><p class="ThongBaoLoi">{{ loi() }}</p></div>
+  } @else if (danhSach().length === 0) {
+    <div class="VungAnToan KhungTrong">
+      <p>Bạn chưa thiết lập đơn đặt hàng tự động nào.</p>
+      <a routerLink="/gio-hang" class="NutChinh">Chọn sản phẩm từ giỏ hàng</a>
+    </div>
+  } @else {
+    <div class="VungAnToan DanhSachAutoOrder">
+      @for (don of danhSach(); track don.autoOrderId) {
+        <div class="TheAutoOrder">
+          <img [src]="don.hinhAnh || '/img/no-image.png'" [alt]="don.tenSanPham" class="AnhSanPhamAuto" />
+
+          <div class="ThongTinAuto">
+            <span class="TenSanPhamAuto">{{ don.tenSanPham }}</span>
+
+            @if (dongDangSua() === don.autoOrderId) {
+              <div class="FormSua">
+                <label>
+                  Số lượng
+                  <input type="number" min="1" [ngModel]="soLuongSua()" (ngModelChange)="soLuongSua.set($event)" />
+                </label>
+                <label>
+                  Tần suất
+                  <select [ngModel]="tanSuatSua()" (ngModelChange)="tanSuatSua.set($event)">
+                    @for (ts of tanSuatOptions; track ts) {
+                      <option [value]="ts">{{ nhanTanSuat[ts] }}</option>
+                    }
+                  </select>
+                </label>
+                <div class="NutFormSua">
+                  <button type="button" class="NutChinh NutNho" [disabled]="dangXuLy() === don.autoOrderId" (click)="luuSua(don.autoOrderId)">Lưu</button>
+                  <button type="button" class="NutPhu NutNho" (click)="huySua()">Hủy bỏ</button>
+                </div>
+              </div>
+            } @else {
+              <span class="ChiTietAuto">Số lượng: {{ don.soLuong }} · {{ nhanTanSuat[don.tanSuat] }}</span>
+              <span class="NgayKeTiepAuto">Lần xử lý tiếp theo: {{ don.ngayKeTiep }}</span>
+              <span
+                class="TrangThaiAuto"
+                [class.DangHoatDong]="don.trangThai === 'active'"
+                [class.DaTamDung]="don.trangThai === 'paused'"
+                [class.DaHuy]="don.trangThai === 'cancelled'">
+                {{ nhanTrangThai[don.trangThai] }}
+              </span>
+            }
+          </div>
+
+          @if (dongDangSua() !== don.autoOrderId) {
+            <div class="HanhDongAuto">
+              <button type="button" class="NutPhu NutNho" (click)="moSua(don)" [disabled]="don.trangThai === 'cancelled'">Chỉnh sửa</button>
+
+              @if (don.trangThai === 'active') {
+                <button type="button" class="NutPhu NutNho" [disabled]="dangXuLy() === don.autoOrderId" (click)="tamDung(don.autoOrderId)">Tạm dừng</button>
+              } @else if (don.trangThai === 'paused') {
+                <button type="button" class="NutPhu NutNho" [disabled]="dangXuLy() === don.autoOrderId" (click)="kichHoat(don.autoOrderId)">Kích hoạt lại</button>
+              }
+
+              @if (don.trangThai !== 'cancelled') {
+                <button type="button" class="NutNguyHiem NutNho" [disabled]="dangXuLy() === don.autoOrderId" (click)="huy(don.autoOrderId)">Hủy đơn</button>
+              }
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>
