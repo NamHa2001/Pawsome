@@ -1,0 +1,66 @@
+.KhungQuanTri {
+  display: flex;
+  min-height: 100vh;
+}
+
+.SidebarQuanTri {
+  width: 240px;
+  flex-shrink: 0;
+  background: #1f2937;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 16px;
+}
+
+.LogoQuanTri {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 32px;
+}
+
+.MenuQuanTri {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+
+  a {
+    color: #d1d5db;
+    text-decoration: none;
+    padding: 10px 12px;
+    border-radius: 6px;
+
+    &:hover {
+      background: #374151;
+      color: #fff;
+    }
+
+    &.active {
+      background: #4b5563;
+      color: #fff;
+      font-weight: 600;
+    }
+  }
+}
+
+.NutDangXuat {
+  margin-top: auto;
+  background: transparent;
+  border: 1px solid #4b5563;
+  color: #d1d5db;
+  padding: 10px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+
+  &:hover {
+    background: #374151;
+    color: #fff;
+  }
+}
+
+.NoiDungQuanTri {
+  flex: 1;
+  padding: 32px;
+  background: #f9fafb;
+}
