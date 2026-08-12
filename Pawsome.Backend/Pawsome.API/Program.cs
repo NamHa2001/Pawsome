@@ -121,6 +121,7 @@ builder.Services.AddScoped<ICouponService, CouponService>();
 builder.Services.AddScoped<IAutoOrderService, AutoOrderService>();
 // Phần 4 - Đơn hàng:       
 builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IPawPointsService, PawPointsService>();
 // Phần 5 - Blog/Quản trị:
 builder.Services.AddScoped<IBlogService, BlogService>();
 builder.Services.AddScoped<IWishlistService, WishlistService>();

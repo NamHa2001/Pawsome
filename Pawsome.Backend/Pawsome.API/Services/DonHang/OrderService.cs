@@ -2,6 +2,7 @@
 using Pawsome.API.Common;
 using Pawsome.API.Common.AuditLog;
 using Pawsome.API.DTOs.DonHang;
+using Pawsome.API.Services.GioHang;
 using Pawsome.API.Services.SanPham;
 using Pawsome.Domain.Entities.DonHang;
 using Pawsome.Infrastructure;
@@ -21,12 +22,17 @@ public class OrderService : IOrderService
     private readonly PawsomeDbContext _dbContext;
     private readonly IProductService _productService;
     private readonly IAuditLogService _auditLogService;
+    private readonly ICartService _cartService;
+    private readonly ICouponService _couponService;
 
-    public OrderService(PawsomeDbContext dbContext, IProductService productService, IAuditLogService auditLogService)
+    public OrderService(PawsomeDbContext dbContext, IProductService productService,
+        IAuditLogService auditLogService, ICartService cartService, ICouponService couponService)
     {
         _dbContext = dbContext;
         _productService = productService;
         _auditLogService = auditLogService;
+        _cartService = cartService;
+        _couponService = couponService;
     }
 
     public async Task<OrderDto> CreateFromCartAsync(int userId, CreateOrderRequestDto dto)
@@ -67,6 +73,7 @@ public class OrderService : IOrderService
                 ? Math.Round(tienHang * coupon.GiaTri / 100, 0)
                 : coupon.GiaTri;
             giamGia = Math.Min(giamGia, tienHang);
+            await _couponService.SuDungMaAsync(coupon.MaCode);
         }
 
         // Phí vận chuyển: tạm tính cố định theo tỉnh/thành nơi giao
@@ -119,10 +126,7 @@ public class OrderService : IOrderService
             });
             await _dbContext.SaveChangesAsync();
         }
-
-        // TODO (chờ Phần 3): sau khi đặt hàng thành công, gọi _cartService.ClearCartAsync(userId)
-        // để xóa sạch cart_items - hiện tạm chưa xóa vì ICartService chưa được code.
-
+        await _cartService.XoaSachGioHangAsync(userId);
         await _auditLogService.LogAsync(userId, "TAO_DON_HANG", "orders", order.OrderId,
             $"Đặt hàng thành công, thành tiền {thanhTien:N0}đ");
 
@@ -196,6 +200,13 @@ public class OrderService : IOrderService
                 Loai = "earn", // ghi âm để hoàn tác điểm của chính giao dịch earn ở trên
                 NgayGiaoDich = DateTime.UtcNow
             });
+        }
+
+        if (order.CouponId.HasValue)
+        {
+            var coupon = await _dbContext.Coupons.FindAsync(order.CouponId.Value);
+            if (coupon != null)
+                await _couponService.HoanLuotSuDungMaAsync(coupon.MaCode);
         }
 
         await _dbContext.SaveChangesAsync();
