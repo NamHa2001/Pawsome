@@ -73,6 +73,9 @@ builder.Services.AddCors(options =>
     });
 });
 
+//HttpClient: dùng chung để gọi API bên thứ 3 (MoMo, VNPay, GHN...) ────
+builder.Services.AddHttpClient();
+
 // ── Auth (Custom Authentication + JWT, KHÔNG dùng ASP.NET Core Identity -
 // schema mặc định của Identity không khớp bảng users/roles đã thiết kế) ──
 var jwtSection = builder.Configuration.GetSection("Jwt");
@@ -122,6 +125,7 @@ builder.Services.AddScoped<IAutoOrderService, AutoOrderService>();
 // Phần 4 - Đơn hàng:       
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IPawPointsService, PawPointsService>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
 // Phần 5 - Blog/Quản trị:
 builder.Services.AddScoped<IBlogService, BlogService>();
 builder.Services.AddScoped<IWishlistService, WishlistService>();
