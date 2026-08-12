@@ -16,6 +16,8 @@ public class OrderService : IOrderService
     private const string DaGiaoVan = "da_giao_van";
     private const string DaGiao = "da_giao";
     private const string DaHuy = "da_huy";
+    private const string ChoTraHang = "cho_tra_hang";
+    private const string DaTraHang = "da_tra_hang";
 
     private static readonly HashSet<string> TrangThaiChoPhepHuy = new() { ChoXuLy, DangXuLy };
 
@@ -111,7 +113,7 @@ public class OrderService : IOrderService
         foreach (var item in cart.CartItems)
             await _productService.TruTonKhoAsync(item.VariantId, item.SoLuong);
 
-        // Cộng PawPoints: 1 điểm / 10.000đ (YC-5.1). Bảng diem_pawpoints trên users tự đồng bộ
+        // Cộng PawPoints: 1 điểm / 10.000đ. Bảng diem_pawpoints trên users tự đồng bộ
         // qua trigger trg_pawpoints_sync_balance - KHÔNG tự sửa users.diem_pawpoints ở đây.
         var soDiem = (int)(thanhTien / 10000);
         if (soDiem > 0)
@@ -254,4 +256,85 @@ public class OrderService : IOrderService
             DonGia = oi.DonGia
         }).ToList()
     };
+
+    //Admin/nhân viên vận chuyển gọi khi đơn được gửi đi
+    public async Task<OrderDto> CapNhatVanDonAsync(int orderId, UpdateShippingRequestDto dto)
+    {
+        var order = await _dbContext.Orders
+            .Include(o => o.OrderItems).ThenInclude(oi => oi.Variant).ThenInclude(v => v.Product)
+            .FirstOrDefaultAsync(o => o.OrderId == orderId);
+        if (order == null)
+            throw new KeyNotFoundException("Không tìm thấy đơn hàng.");
+
+        order.DonViVanChuyen = dto.DonViVanChuyen;
+        order.MaVanDon = dto.MaVanDon;
+        order.TrangThai = DaGiaoVan;
+        await _dbContext.SaveChangesAsync();
+
+        return MapToDto(order);
+    }
+
+    // khách yêu cầu trả hàng, chỉ khi đơn đã giao (da_giao)
+    public async Task<OrderDto> YeuCauTraHangAsync(int userId, int orderId, ReturnRequestDto dto)
+    {
+        var order = await _dbContext.Orders
+            .Include(o => o.OrderItems).ThenInclude(oi => oi.Variant).ThenInclude(v => v.Product)
+            .FirstOrDefaultAsync(o => o.OrderId == orderId && o.UserId == userId);
+        if (order == null)
+            throw new KeyNotFoundException("Không tìm thấy đơn hàng.");
+
+        if (order.TrangThai != DaGiao)
+            throw new InvalidOperationException("Chỉ có thể yêu cầu trả hàng đối với đơn đã giao thành công.");
+
+        order.TrangThai = ChoTraHang;
+        await _dbContext.SaveChangesAsync();
+        await _auditLogService.LogAsync(userId, "YEU_CAU_TRA_HANG", "orders", orderId, dto.LyDo);
+
+        return MapToDto(order);
+    }
+
+    // Admin duyệt/từ chối yêu cầu trả hàng 
+    public async Task<OrderDto> DuyetTraHangAsync(int orderId, bool dongY)
+    {
+        var order = await _dbContext.Orders
+            .Include(o => o.OrderItems).ThenInclude(oi => oi.Variant).ThenInclude(v => v.Product)
+            .FirstOrDefaultAsync(o => o.OrderId == orderId);
+        if (order == null)
+            throw new KeyNotFoundException("Không tìm thấy đơn hàng.");
+
+        if (order.TrangThai != ChoTraHang)
+            throw new InvalidOperationException("Đơn hàng không ở trạng thái chờ trả hàng.");
+
+        if (dongY)
+        {
+            order.TrangThai = DaTraHang;
+
+            // Hoàn kho
+            foreach (var item in order.OrderItems)
+                await _productService.HoanKhoAsync(item.VariantId, item.SoLuong);
+
+            // Hoàn PawPoints đã cộng lúc đặt đơn
+            var giaoDichCong = await _dbContext.PawPointsTransactions
+                .Where(t => t.OrderId == orderId && t.Loai == "earn")
+                .SumAsync(t => (int?)t.SoDiem) ?? 0;
+            if (giaoDichCong > 0)
+            {
+                _dbContext.PawPointsTransactions.Add(new PawPointsTransaction
+                {
+                    UserId = order.UserId,
+                    OrderId = orderId,
+                    SoDiem = -giaoDichCong,
+                    Loai = "earn",
+                    NgayGiaoDich = DateTime.UtcNow
+                });
+            }
+        }
+        else
+        {
+            order.TrangThai = DaGiao; // từ chối, trả đơn về trạng thái đã giao như cũ
+        }
+
+        await _dbContext.SaveChangesAsync();
+        return MapToDto(order);
+    }
 }
