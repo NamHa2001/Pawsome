@@ -71,4 +71,16 @@ public class OrdersController : ControllerBase
             return BadRequest(ApiResponse<OrderDto>.Fail(ex.Message));
         }
     }
+
+    [HttpPost("{id}/return-request")]
+    public async Task<IActionResult> RequestReturn(int id, [FromBody] ReturnRequestDto dto)
+    {
+        try
+        {
+            var result = await _orderService.YeuCauTraHangAsync(CurrentUserId, id, dto);
+            return Ok(ApiResponse<OrderDto>.Ok(result, "Đã gửi yêu cầu trả hàng, chờ duyệt."));
+        }
+        catch (KeyNotFoundException ex) { return NotFound(ApiResponse<OrderDto>.Fail(ex.Message)); }
+        catch (InvalidOperationException ex) { return BadRequest(ApiResponse<OrderDto>.Fail(ex.Message)); }
+    }
 }
