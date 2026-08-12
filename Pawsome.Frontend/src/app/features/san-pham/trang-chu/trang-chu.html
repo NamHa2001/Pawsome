@@ -54,81 +54,15 @@
     </div>
   </section>
 
-  <section class="SanPhamNoiBat">
-    <div class="VungAnToan">
-      <div class="KhungNenDo">
-        <div class="CumSanPham Trai">
-          <div class="HinhVuongLon">
-            <div class="NoiDungTrong">
-              <div class="PhanChu">
-                <div class="TieuDeSP">Heartgard Plus</div>
-                <div class="KhungGia">
-                  <span class="GiaCu">$41.74</span>
-                  <div class="GiaMoi">
-                    <span class="ConSoGia">$25.04</span>
-                    <img src="/img/pawvip2.png" alt="PawVip" class="LogoVipGia">
-                  </div>
-                </div>
-                <div class="DiemNoiBat">
-                  <div class="NhanPhu">Key Takeaways</div>
-                  <ul class="DanhSachDiem">
-                    <li>#1 Dog-preferred chew</li>
-                    <li>Proven heartworm disease protection</li>
-                    <li>Treats and controls roundworms</li>
-                  </ul>
-                </div>
-              </div>
-              <div class="KhungAnhNhoHero">
-                <div class="OAnhNhoHero active"><img src="/img/cho4.png" alt="a"></div>
-                <div class="OAnhNhoHero"><img src="/img/cho5.png" alt="b"></div>
-                <div class="OAnhNhoHero"><img src="/img/cho6.png" alt="c"></div>
-              </div>
-            </div>
-          </div>
-          <div class="CumVatPham">
-            <div class="HinhVuongNho"><img src="/img/cho00.png" alt="Hero"></div>
-            <a routerLink="/san-pham" class="NutShopNow">Shop Now</a>
-          </div>
-        </div>
-
-        <img src="/img/nencho.png" alt="Featured Dog" class="AnhChoTrungTam">
-
-        <div class="CumSanPham Phai">
-          <div class="CumVatPham">
-            <div class="HinhVuongNho"><img src="/img/cho0.png" alt="Hero"></div>
-            <a routerLink="/san-pham" class="NutShopNow">Shop Now</a>
-          </div>
-          <div class="HinhVuongLon">
-            <div class="NoiDungTrong">
-              <div class="PhanChu">
-                <div class="TieuDeSP">Heartgard Plus</div>
-                <div class="KhungGia">
-                  <span class="GiaCu">$41.74</span>
-                  <div class="GiaMoi">
-                    <span class="ConSoGia">$25.04</span>
-                    <img src="/img/pawvip2.png" alt="PawVip" class="LogoVipGia">
-                  </div>
-                </div>
-                <div class="DiemNoiBat">
-                  <div class="NhanPhu">Key Takeaways</div>
-                  <ul class="DanhSachDiem">
-                    <li>#1 Dog-preferred chew</li>
-                    <li>Proven heartworm disease protection</li>
-                    <li>Treats and controls roundworms</li>
-                  </ul>
-                </div>
-              </div>
-              <div class="KhungAnhNhoHero">
-                <div class="OAnhNhoHero active"><img src="/img/cho1.png" alt="a"></div>
-                <div class="OAnhNhoHero"><img src="/img/cho2.png" alt="b"></div>
-                <div class="OAnhNhoHero"><img src="/img/cho3.png" alt="c"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
+  <app-banner-noi-bat
+    [productIdTrai]="16"
+    [productIdPhai]="15"
+    anhTrungTam="/img/nencho.png"
+    altTrungTam="Featured Dog"
+    anhNhoTrai="/img/cho00.png"
+    anhNhoPhai="/img/cho0.png"
+    [anhHeroTrai]="['/img/cho4.png', '/img/cho5.png', '/img/cho6.png']"
+    [anhHeroPhai]="['/img/cho1.png', '/img/cho2.png', '/img/cho3.png']" />
 
   @if (nhomTheoDanhMuc().length > 0) {
   <div class="KhungChuaLon">
@@ -214,81 +148,15 @@
   </div>
 
   @if (nhomTheoDanhMuc().length > 1) {
-  <section class="SanPhamNoiBat">
-    <div class="VungAnToan">
-      <div class="KhungNenDo">
-        <div class="CumSanPham Trai">
-          <div class="HinhVuongLon">
-            <div class="NoiDungTrong">
-              <div class="PhanChu">
-                <div class="TieuDeSP">Heartgard Plus</div>
-                <div class="KhungGia">
-                  <span class="GiaCu">$41.74</span>
-                  <div class="GiaMoi">
-                    <span class="ConSoGia">$25.04</span>
-                    <img src="/img/pawvip2.png" alt="PawVip" class="LogoVipGia">
-                  </div>
-                </div>
-                <div class="DiemNoiBat">
-                  <div class="NhanPhu">Key Takeaways</div>
-                  <ul class="DanhSachDiem">
-                    <li>#1 Dog-preferred chew</li>
-                    <li>Proven heartworm disease protection</li>
-                    <li>Treats and controls roundworms</li>
-                  </ul>
-                </div>
-              </div>
-              <div class="KhungAnhNhoHero">
-                <div class="OAnhNhoHero active"><img src="/img/TM1.png" alt="a"></div>
-                <div class="OAnhNhoHero"><img src="/img/TM2.png" alt="b"></div>
-                <div class="OAnhNhoHero"><img src="/img/TM3.png" alt="c"></div>
-              </div>
-            </div>
-          </div>
-          <div class="CumVatPham">
-            <div class="HinhVuongNho"><img src="/img/meo0.png" alt="Hero"></div>
-            <a routerLink="/san-pham" class="NutShopNow">Shop Now</a>
-          </div>
-        </div>
-
-        <img src="/img/nenmeo.png" alt="Featured Cat" class="AnhChoTrungTam">
-
-        <div class="CumSanPham Phai">
-          <div class="CumVatPham">
-            <div class="HinhVuongNho"><img src="/img/meo00.png" alt="Hero"></div>
-            <a routerLink="/san-pham" class="NutShopNow">Shop Now</a>
-          </div>
-          <div class="HinhVuongLon">
-            <div class="NoiDungTrong">
-              <div class="PhanChu">
-                <div class="TieuDeSP">Heartgard Plus</div>
-                <div class="KhungGia">
-                  <span class="GiaCu">$41.74</span>
-                  <div class="GiaMoi">
-                    <span class="ConSoGia">$25.04</span>
-                    <img src="/img/pawvip2.png" alt="PawVip" class="LogoVipGia">
-                  </div>
-                </div>
-                <div class="DiemNoiBat">
-                  <div class="NhanPhu">Key Takeaways</div>
-                  <ul class="DanhSachDiem">
-                    <li>#1 Dog-preferred chew</li>
-                    <li>Proven heartworm disease protection</li>
-                    <li>Treats and controls roundworms</li>
-                  </ul>
-                </div>
-              </div>
-              <div class="KhungAnhNhoHero">
-                <div class="OAnhNhoHero active"><img src="/img/TM4.png" alt="a"></div>
-                <div class="OAnhNhoHero"><img src="/img/TM5.png" alt="b"></div>
-                <div class="OAnhNhoHero"><img src="/img/TM6.png" alt="c"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
+  <app-banner-noi-bat
+    [productIdTrai]="18"
+    [productIdPhai]="18"
+    anhTrungTam="/img/nenmeo.png"
+    altTrungTam="Featured Cat"
+    anhNhoTrai="/img/meo0.png"
+    anhNhoPhai="/img/meo00.png"
+    [anhHeroTrai]="['/img/TM1.png', '/img/TM2.png', '/img/TM3.png']"
+    [anhHeroPhai]="['/img/TM4.png', '/img/TM5.png', '/img/TM6.png']" />
 
   <div class="KhungChuaLon">
     <div class="HeaderSanPham">
@@ -418,34 +286,7 @@
     </div>
   </div>
 
-  <div class="WelcomeBonusSection">
-    <div class="VungAnToan BonusFlex">
-      <div class="WelcomeLeft">
-        <div class="BonusHeader">
-          <i class="fas fa-gift"></i>
-          <span>Welcome Bonus</span>
-        </div>
-        <p class="BonusText">Join Today & Earn <span>20 PawPoints</span> Instantly!</p>
-        <a class="NutSignUp" routerLink="/tai-khoan/dang-ky">Sign Up</a>
-      </div>
-
-      <div class="KhungSubscribeTrang">
-        <div class="SubContent">
-          <p class="SubSmallTitle">Subscribe & Get</p>
-          <h2 class="SubBigTitle">Instant 15% Discount</h2>
-          <input type="email" placeholder="Enter Your Email Id" class="InputEmail">
-          <div class="SubBottom">
-            <div class="CaptchaGia">
-              <input type="checkbox" id="robot">
-              <label for="robot">I'm not a Robot</label>
-              <img src="/img/capcha.png" alt="captcha" class="CaptchaIcon">
-            </div>
-            <button class="NutSubscribe">Subscribe</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <app-welcome-bonus />
 </main>
 
 <app-footer />

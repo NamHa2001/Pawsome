@@ -1,3 +1,7 @@
+:host {
+  display: contents;
+}
+
 .TrangAutoOrder {
   width: 100%;
   padding: 40px 0 80px;

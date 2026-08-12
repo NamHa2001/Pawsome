@@ -1,0 +1,116 @@
+:host {
+  display: contents;
+}
+
+.WelcomeBonusSection {
+  width: 1200px;
+  background-color: #A51F1F;
+  height: 254px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 40px auto;
+}
+
+.BonusFlex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  height: 100%;
+}
+
+.WelcomeLeft { color: white; padding-left: 50px; }
+
+.BonusHeader {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  font-size: 32px;
+  font-weight: 700;
+}
+
+.BonusText {
+  font-size: 18px;
+  margin: 15px 0 25px 0;
+
+  span { color: #FFD700; font-weight: 700; }
+}
+
+.NutSignUp {
+  width: 110px;
+  height: 37px;
+  background-color: white;
+  color: black;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+
+  &:hover { background-color: #fde42a; }
+}
+
+.KhungSubscribeTrang {
+  width: 541px;
+  height: 285px;
+  background-color: white;
+  position: absolute;
+  right: 50px;
+  top: -60px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  padding: 30px;
+  box-sizing: border-box;
+}
+
+.SubSmallTitle { font-size: 18px; color: #333; margin-bottom: 5px; }
+.SubBigTitle { font-size: 28px; font-weight: 800; color: #000; margin-bottom: 20px; }
+
+.InputEmail {
+  width: 100%;
+  height: 45px;
+  border: 1px solid #ddd;
+  padding: 0 15px;
+  margin-bottom: 20px;
+  box-sizing: border-box;
+}
+
+.SubBottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.CaptchaGia {
+  border: 1px solid #ddd;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  width: 250px;
+  height: 60px;
+}
+
+.CaptchaIcon {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+  margin-left: auto;
+}
+
+.NutSubscribe {
+  width: 130px;
+  height: 40px;
+  background-color: #A51F1F;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover { background-color: #FF7A00; }
+}
