@@ -43,7 +43,7 @@ namespace Pawsome.API.Controllers.GioHang
         }
 
         [HttpGet]
-        [Authorize(Roles = "QuanTri")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> LayTatCa()
         {
             var data = await _couponService.LayTatCaAsync();
@@ -51,7 +51,7 @@ namespace Pawsome.API.Controllers.GioHang
         }
 
         [HttpPost]
-        [Authorize(Roles = "QuanTri")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Tao([FromBody] CreateCouponDto dto)
         {
             var data = await _couponService.TaoAsync(dto);
@@ -59,7 +59,7 @@ namespace Pawsome.API.Controllers.GioHang
         }
 
         [HttpPut("{id}")]
-        [Authorize(Roles = "QuanTri")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CapNhat(int id, [FromBody] UpdateCouponDto dto)
         {
             var data = await _couponService.CapNhatAsync(id, dto);
@@ -67,7 +67,7 @@ namespace Pawsome.API.Controllers.GioHang
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "QuanTri")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Xoa(int id)
         {
             await _couponService.XoaAsync(id);
