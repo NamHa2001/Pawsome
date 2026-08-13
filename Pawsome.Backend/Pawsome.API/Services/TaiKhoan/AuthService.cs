@@ -120,10 +120,20 @@ public class AuthService : IAuthService
 
         var resetToken = new JwtSecurityTokenHandler().WriteToken(token);
 
-        await _emailService.SendAsync(
-            user.Email,
-            "Mã xác thực đặt lại mật khẩu Pawsome",
-            $"Mã OTP của bạn là: {otp}\n\nMã có hiệu lực trong 10 phút. Nếu bạn không yêu cầu đặt lại mật khẩu, vui lòng bỏ qua email này.");
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                await _emailService.SendAsync(
+                    user.Email,
+                    "Mã xác thực đặt lại mật khẩu Pawsome",
+                    $"Mã OTP của bạn là: {otp}\n\nMã có hiệu lực trong 10 phút. Nếu bạn không yêu cầu đặt lại mật khẩu, vui lòng bỏ qua email này.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Lỗi gửi email OTP: {ex.Message}");
+            }
+        });
 
         return resetToken;
     }

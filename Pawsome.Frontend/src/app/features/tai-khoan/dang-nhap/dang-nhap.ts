@@ -59,7 +59,7 @@ export class DangNhapComponent implements AfterViewInit {
     this.authService.login(this.form.getRawValue()).subscribe({
       next: () => {
         this.dangGui = false;
-        this.router.navigate(['/']);
+        this.router.navigate(['/tai-khoan/ho-so']);
       },
       error: (err) => {
         this.dangGui = false;
@@ -70,10 +70,13 @@ export class DangNhapComponent implements AfterViewInit {
 
   private xuLyGoogleLogin(idToken: string): void {
     this.loiChung = null;
+
     this.authService.googleLogin({ idToken }).subscribe({
-      next: () => this.router.navigate(['/']),
+      next: () => this.router.navigate(['/tai-khoan/ho-so']),
       error: (err) => {
-        this.loiChung = err?.error?.message ?? 'Google sign-in failed. Please try again.';
+        this.loiChung =
+          err?.error?.message ??
+          'Google sign-in failed. Please try again.';
       }
     });
   }
