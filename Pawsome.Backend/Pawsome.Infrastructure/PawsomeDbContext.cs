@@ -26,6 +26,8 @@ public class PawsomeDbContext : DbContext
     public DbSet<ProductVariant> ProductVariants => Set<ProductVariant>();
     public DbSet<ProductImage> ProductImages => Set<ProductImage>();
     public DbSet<Review> Reviews => Set<Review>();
+    public DbSet<Condition> Conditions => Set<Condition>();
+    public DbSet<ProductCondition> ProductConditions => Set<ProductCondition>();
 
     // GioHang
     public DbSet<Cart> Carts => Set<Cart>();
