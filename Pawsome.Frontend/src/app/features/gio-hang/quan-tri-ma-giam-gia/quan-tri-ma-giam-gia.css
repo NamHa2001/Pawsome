@@ -1,0 +1,175 @@
+.TrangQuanTriCoupon {
+  width: 100%;
+}
+
+.KhungTieuDeQuanTri {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.TieuDeQuanTri {
+  font-size: 24px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.MoTaQuanTri {
+  margin-top: 4px;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.NutChinhQT {
+  background-color: #A51F1F;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+
+  &:hover { opacity: 0.88; }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+}
+
+.NutPhuQT {
+  background: none;
+  border: 1px solid #d1d5db;
+  color: #374151;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+
+  &:hover { background: #f3f4f6; }
+}
+
+.NutNguyHiemQT {
+  background: none;
+  border: 1px solid #dc2626;
+  color: #dc2626;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover { background: #fef2f2; }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+}
+
+.NutNhoQT { padding: 6px 14px; font-size: 13px; border-radius: 6px; }
+
+.ThongBaoThanhCong {
+  background: #ecfdf5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+  padding: 10px 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+.ThongBaoLoiForm {
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+  padding: 10px 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+.DangTaiQT, .KhungTrongQT {
+  text-align: center;
+  padding: 60px 0;
+  color: #6b7280;
+}
+
+.TheFormCoupon {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+
+  h3 { margin-bottom: 16px; color: #111827; }
+}
+
+.LuoiForm {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+
+  label {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #374151;
+  }
+
+  input, select {
+    padding: 9px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: inherit;
+  }
+}
+
+.NutFormCoupon {
+  display: flex;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.BangCoupon {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+
+  th, td {
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 14px;
+    border-bottom: 1px solid #f3f4f6;
+  }
+
+  th {
+    background: #f9fafb;
+    font-weight: 700;
+    color: #374151;
+  }
+
+  input, select {
+    width: 100%;
+    padding: 6px 8px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 13px;
+    font-family: inherit;
+  }
+}
+
+.OMaCode { font-weight: 700; color: #A51F1F; }
+
+.DongDangSua { background: #fffbeb; }
+
+.NhanTrangThaiQT {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.HieuLuc { background: #ecfdf5; color: #047857; }
+.HetHieuLuc { background: #f3f4f6; color: #6b7280; }
