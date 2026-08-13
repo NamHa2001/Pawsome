@@ -15,6 +15,7 @@ using Pawsome.API.Services.TaiKhoan;
 using Pawsome.Infrastructure;
 using System.Text;
 using Pawsome.API.Common.Email;
+using Microsoft.IdentityModel.JsonWebTokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -97,7 +98,9 @@ builder.Services
             ValidateIssuerSigningKey = true,
             ValidIssuer = jwtSection["Issuer"],
             ValidAudience = jwtSection["Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSection["Key"]!))
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSection["Key"]!)),
+            RoleClaimType = "role",
+            NameClaimType = JwtRegisteredClaimNames.Sub
         };
     });
 builder.Services.AddAuthorization();
