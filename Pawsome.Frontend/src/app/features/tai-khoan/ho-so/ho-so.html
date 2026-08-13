@@ -1,0 +1,116 @@
+<app-header />
+
+<div class="TrangHoSo">
+
+  <!-- MENU BÊN TRÁI -->
+  <aside class="ThanhBen">
+
+    <div class="ThePawPoints">
+      <h3>Loyalty Credit</h3>
+
+      <div class="VongDiem">
+        <span>0</span>
+      </div>
+
+      <p>
+        You're only 0<br>
+        Pawpoints away from<br>
+        $50 off your order
+      </p>
+
+      <small>*Terms & Conditions Apply</small>
+    </div>
+
+    <div class="MenuTaiKhoan">
+
+      <a routerLink="/tai-khoan/ho-so" class="MucMenu active">
+        <i class="fa-solid fa-table-cells-large"></i>
+        <span>Dashboard</span>
+      </a>
+
+      <a routerLink="/tai-khoan/ho-so" class="MucMenu">
+        <i class="fa-solid fa-user"></i>
+        <span>Manage Account</span>
+      </a>
+
+      <a href="#" class="MucMenu">
+        <i class="fa-solid fa-clock-rotate-left"></i>
+        <span>Order History</span>
+      </a>
+
+      <a href="#" class="MucMenu">
+        <i class="fa-solid fa-clock-rotate-left"></i>
+        <span>Payment Pending</span>
+      </a>
+
+      <a href="#" class="MucMenu">
+        <i class="fa-regular fa-credit-card"></i>
+        <span>Auto Orders</span>
+      </a>
+
+      <a href="#" class="MucMenu">
+        <i class="fa-solid fa-medal"></i>
+        <span>PawPoints</span>
+      </a>
+
+      <a href="#" class="MucMenu">
+        <i class="fa-solid fa-paw"></i>
+        <span>My Pets</span>
+      </a>
+
+      <a href="#" class="MucMenu">
+        <i class="fa-solid fa-ticket"></i>
+        <span>PetCare+ Membership</span>
+      </a>
+
+      <button type="button" class="MucMenu NutDangXuat">
+        <i class="fa-solid fa-power-off"></i>
+        <span>Sign Out</span>
+      </button>
+    </div>
+  </aside>
+  <main class="NoiDungHoSo">
+    <h1>Manage Account</h1>
+    <section class="TheThongTin">
+      <div class="ThongTinUser">
+        <h3>Anh Thu</h3>
+        <p>Customer Since : Jan 15, 2026</p>
+        <p>Email : ndthu@gmail.com</p>
+        <p>Customer ID: 111854689</p>
+        <p>Phone : 0347601876</p>
+      </div>
+      <div class="PawVip">
+        <div class="LogoPawVip">PawVip</div>
+        <strong>Membership</strong>
+      </div>
+      <div class="UuDai">
+        <h3>Get 40% Discount!</h3>
+        <p>Enjoy Exclusive Perks & Priority Service</p>
+        <button type="button">JOIN NOW</button>
+      </div>
+    </section>
+
+    <section class="TheThongTin Nho">
+      <div>
+        <h3>Password</h3>
+        <p class="MatKhau"><i class="fa-solid fa-lock"></i>************</p>
+      </div>
+      <button type="button"class="NutEdit"routerLink="/tai-khoan/quen-mat-khau">Edit</button>
+    </section>
+
+    <section class="TheThongTin Nho">
+      <div class="TieuDeAddress">
+        <h3>Shipping Address</h3>
+        <a routerLink="/tai-khoan/dia-chi">Add New Address</a>
+      </div>
+    </section>
+    <section class="TheThongTin Nho">
+      <div>
+        <h3>Billing Address</h3>
+      </div>
+      <button type="button" class="NutEdit">Edit</button>
+    </section>
+  </main>
+</div>
+<app-footer />
+<app-chat-ai />

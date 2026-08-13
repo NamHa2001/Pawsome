@@ -65,8 +65,15 @@ export class AuthService {
     return this.http.post<ApiResponse<null>>(`${this.baseUrl}/reset-password`, dto);
   }
 
-  logout(): void {
-    this.tokenService.clear();
+  logout(): Observable<ApiResponse<object>> {
+    return this.http.post<ApiResponse<object>>(
+      `${this.baseUrl}/logout`,
+      {}
+    ).pipe(
+      tap(() => {
+        this.tokenService.clear();
+      })
+    );
   }
 
   private simpanNeuThanhCong(res: ApiResponse<AuthUser>): void {

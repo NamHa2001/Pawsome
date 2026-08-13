@@ -12,6 +12,10 @@ export const routes: Routes = [
   {
     path: 'quen-mat-khau',
     loadComponent: () => import('./quen-mat-khau/quen-mat-khau').then(m => m.QuenMatKhauComponent)
+  },
+  {
+    path: 'ho-so',
+    loadComponent: () =>import('./ho-so/ho-so').then(m => m.HoSoComponent)
   }
   // 'quen-mat-khau', 'dia-chi' sẽ thêm ở bước sau
 ];

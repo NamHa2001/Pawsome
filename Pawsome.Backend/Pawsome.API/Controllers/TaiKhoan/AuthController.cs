@@ -77,4 +77,14 @@ public class AuthController : ControllerBase
             return BadRequest(ApiResponse<AuthResponseDto>.Fail(ex.Message));
         }
     }
+    [HttpPost("logout")]
+    public IActionResult Logout()
+    {
+        return Ok(
+            ApiResponse<object>.Ok(
+                null!,
+                "Đăng xuất thành công."
+            )
+        );
+    }
 }
