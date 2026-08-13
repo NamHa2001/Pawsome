@@ -1,0 +1,136 @@
+<div class="TrangQuanTriCoupon">
+  <div class="KhungTieuDeQuanTri">
+    <div>
+      <h1 class="TieuDeQuanTri">Manage Coupons</h1>
+      <p class="MoTaQuanTri">Create, edit and delete coupon codes applicable in the cart.</p>
+    </div>
+    <button type="button" class="NutChinhQT" (click)="moFormThem()">+ Add Coupon</button>
+  </div>
+
+  @if (thongBao()) {
+    <p class="ThongBaoThanhCong">{{ thongBao() }}</p>
+  }
+
+  @if (dangMoFormThem()) {
+    <div class="TheFormCoupon">
+      <h3>New Coupon</h3>
+
+      @if (loiForm()) {
+        <p class="ThongBaoLoiForm">{{ loiForm() }}</p>
+      }
+      <div class="LuoiForm">
+        <label>
+          Coupon Code
+          <input type="text" [ngModel]="formThem().maCode" (ngModelChange)="formThem.update(f => ({ ...f, maCode: $event }))" placeholder="e.g. PCSUMR20" />
+        </label>
+
+        <label>
+          Discount Type
+          <select [ngModel]="formThem().loaiGiam" (ngModelChange)="formThem.update(f => ({ ...f, loaiGiam: $event }))">
+            <option value="percent">Percentage (%)</option>
+            <option value="fixed">Fixed Amount (đ)</option>
+          </select>
+        </label>
+
+        <label>
+          Discount Value
+          <input type="number" min="0.01" step="0.01" [ngModel]="formThem().giaTri" (ngModelChange)="formThem.update(f => ({ ...f, giaTri: $event }))" />
+        </label>
+
+        <label>
+          Remaining Uses
+          <input type="number" min="0" [ngModel]="formThem().soLuong" (ngModelChange)="formThem.update(f => ({ ...f, soLuong: $event }))" placeholder="Leave blank for unlimited" />
+        </label>
+
+        <label>
+          Start Date
+          <input type="date" [ngModel]="formThem().ngayBatDau" (ngModelChange)="formThem.update(f => ({ ...f, ngayBatDau: $event }))" />
+        </label>
+
+        <label>
+          End Date
+          <input type="date" [ngModel]="formThem().ngayKetThuc" (ngModelChange)="formThem.update(f => ({ ...f, ngayKetThuc: $event }))" />
+        </label>
+      </div>
+
+      <div class="NutFormCoupon">
+        <button type="button" class="NutChinhQT" [disabled]="dangLuu()" (click)="luuThem()">
+          {{ dangLuu() ? 'Saving...' : 'Save Coupon' }}
+        </button>
+        <button type="button" class="NutPhuQT" (click)="dongFormThem()">Cancel</button>
+      </div>
+    </div>
+  }
+
+  @if (dangTai()) {
+    <p class="DangTaiQT">Loading coupons...</p>
+  } @else if (loi()) {
+    <p class="ThongBaoLoiForm">{{ loi() }}</p>
+  } @else if (danhSach().length === 0) {
+    <p class="KhungTrongQT">No coupons yet. Click "Add Coupon" to create one.</p>
+  } @else {
+    <table class="BangCoupon">
+      <thead>
+        <tr>
+          <th>Code</th>
+          <th>Type</th>
+          <th>Value</th>
+          <th>Start Date</th>
+          <th>End Date</th>
+          <th>Remaining Uses</th>
+          <th>Status</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (c of danhSach(); track c.couponId) {
+          @if (idDangSua() === c.couponId) {
+            <tr class="DongDangSua">
+              <td>{{ c.maCode }}</td>
+              <td>
+                <select [ngModel]="formSua().loaiGiam" (ngModelChange)="formSua.update(f => ({ ...f, loaiGiam: $event }))">
+                  <option value="percent">Percentage (%)</option>
+                  <option value="fixed">Fixed (đ)</option>
+                </select>
+              </td>
+              <td>
+                <input type="number" min="0.01" step="0.01" [ngModel]="formSua().giaTri" (ngModelChange)="formSua.update(f => ({ ...f, giaTri: $event }))" />
+              </td>
+              <td><input type="date" [ngModel]="formSua().ngayBatDau" (ngModelChange)="formSua.update(f => ({ ...f, ngayBatDau: $event }))" /></td>
+              <td><input type="date" [ngModel]="formSua().ngayKetThuc" (ngModelChange)="formSua.update(f => ({ ...f, ngayKetThuc: $event }))" /></td>
+              <td><input type="number" min="0" [ngModel]="formSua().soLuong" (ngModelChange)="formSua.update(f => ({ ...f, soLuong: $event }))" /></td>
+              <td colspan="2">
+                <div class="NutFormCoupon">
+                  <button type="button" class="NutChinhQT NutNhoQT" [disabled]="dangLuu()" (click)="luuSua(c.couponId)">Save</button>
+                  <button type="button" class="NutPhuQT NutNhoQT" (click)="huySua()">Cancel</button>
+                </div>
+              </td>
+            </tr>
+          } @else {
+            <tr>
+              <td class="OMaCode">{{ c.maCode }}</td>
+              <td>{{ c.loaiGiam === 'percent' ? 'Percentage' : 'Fixed' }}</td>
+              <td>{{ c.loaiGiam === 'percent' ? (c.giaTri + '%') : (c.giaTri | number:'1.0-0') + ' đ' }}</td>
+              <td>{{ c.ngayBatDau || '—' }}</td>
+              <td>{{ c.ngayKetThuc || '—' }}</td>
+              <td>{{ c.soLuong ?? 'Unlimited' }}</td>
+              <td>
+                <span class="NhanTrangThaiQT" [class.HieuLuc]="c.dangHieuLuc" [class.HetHieuLuc]="!c.dangHieuLuc">
+                  {{ c.dangHieuLuc ? 'Active' : 'Expired' }}
+                </span>
+              </td>
+              <td>
+                <div class="NutFormCoupon">
+                  <button type="button" class="NutPhuQT NutNhoQT" (click)="moFormSua(c)">Edit</button>
+                  <button type="button" class="NutNguyHiemQT NutNhoQT" [disabled]="dangXoa() === c.couponId" (click)="xoa(c)">
+                    {{ dangXoa() === c.couponId ? 'Deleting...' : 'Delete' }}
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  }
+</div>

@@ -7,6 +7,7 @@ export interface CartItem {
   hinhAnh: string | null;
   thuocTinh: string;
   donGia: number;
+  donGiaGoc?: number | null;
   soLuong: number;
   thanhTien: number;
 }
@@ -46,12 +47,31 @@ export interface ApplyCouponResult {
 export interface Coupon {
   couponId: number;
   maCode: string;
-  loaiGiam: string; 
+  loaiGiam: string;
   giaTri: number;
   ngayBatDau: string | null;
   ngayKetThuc: string | null;
   soLuong: number | null;
   dangHieuLuc: boolean;
+}
+
+export type LoaiGiamCoupon = 'percent' | 'fixed';
+
+export interface CreateCoupon {
+  maCode: string;
+  loaiGiam: LoaiGiamCoupon;
+  giaTri: number;
+  ngayBatDau: string | null;
+  ngayKetThuc: string | null;
+  soLuong: number | null;
+}
+
+export interface UpdateCoupon {
+  loaiGiam: LoaiGiamCoupon;
+  giaTri: number;
+  ngayBatDau: string | null;
+  ngayKetThuc: string | null;
+  soLuong: number | null;
 }
 
 export type TanSuatDonTuDong = 'weekly' | 'monthly' | 'quarterly' | 'yearly';
@@ -80,14 +100,14 @@ export interface UpdateAutoOrder {
 }
 
 export const NHAN_TAN_SUAT: Record<TanSuatDonTuDong, string> = {
-  weekly: 'Hàng tuần',
-  monthly: 'Hàng tháng',
-  quarterly: 'Hàng quý',
-  yearly: 'Hàng năm'
+  weekly: 'Weekly',
+  monthly: 'Monthly',
+  quarterly: 'Quarterly',
+  yearly: 'Yearly'
 };
 
 export const NHAN_TRANG_THAI_AUTO_ORDER: Record<TrangThaiAutoOrder, string> = {
-  active: 'Đang hoạt động',
-  paused: 'Đã tạm dừng',
-  cancelled: 'Đã hủy'
+  active: 'Active',
+  paused: 'Paused',
+  cancelled: 'Cancelled'
 };

@@ -55,6 +55,7 @@ export class DatHangTuDongComponent {
     this.dongDangSua.set(donHang.autoOrderId);
     this.soLuongSua.set(donHang.soLuong);
     this.tanSuatSua.set(donHang.tanSuat);
+    this.loi.set(null);
   }
 
   huySua(): void {
@@ -62,6 +63,11 @@ export class DatHangTuDongComponent {
   }
 
   luuSua(id: number): void {
+    if (!Number.isInteger(this.soLuongSua()) || this.soLuongSua() < 1) {
+      this.loi.set('Quantity must be a whole number of at least 1.');
+      return;
+    }
+
     this.dangXuLy.set(id);
 
     this.autoOrderService.capNhat(id, { soLuong: this.soLuongSua(), tanSuat: this.tanSuatSua() }).subscribe({
