@@ -11,30 +11,23 @@ namespace Pawsome.API.Services.DonHang;
 
 public class OrderService : IOrderService
 {
-    private const string ChoXuLy = "cho_xu_ly";
-    private const string DangXuLy = "dang_xu_ly";
-    private const string DaGiaoVan = "da_giao_van";
-    private const string DaGiao = "da_giao";
-    private const string DaHuy = "da_huy";
-    private const string ChoTraHang = "cho_tra_hang";
-    private const string DaTraHang = "da_tra_hang";
-
-    private static readonly HashSet<string> TrangThaiChoPhepHuy = new() { ChoXuLy, DangXuLy };
-
     private readonly PawsomeDbContext _dbContext;
     private readonly IProductService _productService;
     private readonly IAuditLogService _auditLogService;
     private readonly ICartService _cartService;
     private readonly ICouponService _couponService;
+    private readonly IPawPointsService _pawPointsService;
 
     public OrderService(PawsomeDbContext dbContext, IProductService productService,
-        IAuditLogService auditLogService, ICartService cartService, ICouponService couponService)
+        IAuditLogService auditLogService, ICartService cartService, ICouponService couponService,
+        IPawPointsService pawPointsService)
     {
         _dbContext = dbContext;
         _productService = productService;
         _auditLogService = auditLogService;
         _cartService = cartService;
         _couponService = couponService;
+        _pawPointsService = pawPointsService;
     }
 
     public async Task<OrderDto> CreateFromCartAsync(int userId, CreateOrderRequestDto dto)
@@ -60,7 +53,7 @@ public class OrderService : IOrderService
 
         var tienHang = cart.CartItems.Sum(ci => ci.Variant.Gia * ci.SoLuong);
 
-        decimal giamGia = 0;
+        decimal giamGiaCoupon = 0;
         if (dto.CouponId.HasValue)
         {
             var coupon = await _dbContext.Coupons.FindAsync(dto.CouponId.Value);
@@ -71,12 +64,22 @@ public class OrderService : IOrderService
                 || (coupon.SoLuong.HasValue && coupon.SoLuong.Value <= 0))
                 throw new InvalidOperationException("Mã giảm giá không hợp lệ hoặc đã hết hạn.");
 
-            giamGia = coupon.LoaiGiam == "percent"
+            giamGiaCoupon = coupon.LoaiGiam == "percent"
                 ? Math.Round(tienHang * coupon.GiaTri / 100, 0)
                 : coupon.GiaTri;
-            giamGia = Math.Min(giamGia, tienHang);
-            await _couponService.SuDungMaAsync(coupon.MaCode);
+            giamGiaCoupon = Math.Min(giamGiaCoupon, tienHang);
         }
+
+        // quy đổi PawPoints thành giảm giá (tùy chọn) - chỉ VALIDATE ở đây (đọc số dư),
+        // chưa ghi transaction trừ điểm - việc ghi thật nằm trong khối transaction bên dưới,
+        // để chắc chắn đơn tạo thành công thì điểm mới thực sự bị trừ.
+        decimal giamGiaDiem = 0;
+        if (dto.SoDiemMuonDoi is > 0)
+        {
+            giamGiaDiem = await _pawPointsService.KiemTraVaTinhQuyDoiAsync(userId, dto.SoDiemMuonDoi.Value);
+        }
+
+        var giamGia = Math.Min(giamGiaCoupon + giamGiaDiem, tienHang);
 
         // Phí vận chuyển: tạm tính cố định theo tỉnh/thành nơi giao
         var phiVanChuyen = address.TinhThanh.Trim().Equals("Hồ Chí Minh", StringComparison.OrdinalIgnoreCase)
@@ -85,54 +88,96 @@ public class OrderService : IOrderService
 
         var thanhTien = Math.Max(0, tienHang + phiVanChuyen - giamGia);
 
-        var order = new Order
+
+        await using var transaction = await _dbContext.Database.BeginTransactionAsync();
+        int newOrderId;
+        try
         {
-            UserId = userId,
-            AddressId = dto.AddressId,
-            CouponId = dto.CouponId,
-            NgayDat = DateTime.UtcNow,
-            TienHang = tienHang,
-            PhiVanChuyen = phiVanChuyen,
-            GiamGia = giamGia,
-            ThanhTien = thanhTien,
-            TrangThai = ChoXuLy,
-            DonViVanChuyen = dto.DonViVanChuyen,
-            NgayCapNhat = DateTime.UtcNow,
-            OrderItems = cart.CartItems.Select(ci => new OrderItem
-            {
-                VariantId = ci.VariantId,
-                SoLuong = ci.SoLuong,
-                DonGia = ci.Variant.Gia // chốt giá tại thời điểm mua
-            }).ToList()
-        };
-
-        _dbContext.Orders.Add(order);
-        await _dbContext.SaveChangesAsync();
-
-        // Trừ tồn kho qua hàm dùng chung của Phần 2 (không tự UPDATE bảng product_variants)
-        foreach (var item in cart.CartItems)
-            await _productService.TruTonKhoAsync(item.VariantId, item.SoLuong);
-
-        // Cộng PawPoints: 1 điểm / 10.000đ. Bảng diem_pawpoints trên users tự đồng bộ
-        // qua trigger trg_pawpoints_sync_balance - KHÔNG tự sửa users.diem_pawpoints ở đây.
-        var soDiem = (int)(thanhTien / 10000);
-        if (soDiem > 0)
-        {
-            _dbContext.PawPointsTransactions.Add(new PawPointsTransaction
+            var order = new Order
             {
                 UserId = userId,
-                OrderId = order.OrderId,
-                SoDiem = soDiem,
-                Loai = "earn",
-                NgayGiaoDich = DateTime.UtcNow
-            });
-            await _dbContext.SaveChangesAsync();
-        }
-        await _cartService.XoaSachGioHangAsync(userId);
-        await _auditLogService.LogAsync(userId, "TAO_DON_HANG", "orders", order.OrderId,
-            $"Đặt hàng thành công, thành tiền {thanhTien:N0}đ");
+                AddressId = dto.AddressId,
+                CouponId = dto.CouponId,
+                NgayDat = DateTime.UtcNow,
+                TienHang = tienHang,
+                PhiVanChuyen = phiVanChuyen,
+                GiamGia = giamGia,
+                ThanhTien = thanhTien,
+                TrangThai = OrderStatus.ChoXuLy,
+                DonViVanChuyen = dto.DonViVanChuyen,
+                NgayCapNhat = DateTime.UtcNow,
+                OrderItems = cart.CartItems.Select(ci => new OrderItem
+                {
+                    VariantId = ci.VariantId,
+                    SoLuong = ci.SoLuong,
+                    DonGia = ci.Variant.Gia // chốt giá tại thời điểm mua
+                }).ToList()
+            };
 
-        return await GetByIdAsync(userId, order.OrderId) ?? throw new InvalidOperationException("Lỗi tạo đơn hàng.");
+            _dbContext.Orders.Add(order);
+            await _dbContext.SaveChangesAsync(); // cần OrderId trước khi ghi pawpoints_transactions (FK order_id)
+
+            // Trừ tồn kho qua hàm dùng chung của Phần 2 (ExecuteUpdateAsync vẫn tham gia
+            // transaction đang mở vì dùng chung PawsomeDbContext/connection)
+            foreach (var item in cart.CartItems)
+                await _productService.TruTonKhoAsync(item.VariantId, item.SoLuong);
+
+            // Trừ lượt dùng coupon - gọi hàm của Phần 3 (cũng dùng chung DbContext nên vẫn nằm trong transaction này)
+            if (dto.CouponId.HasValue)
+            {
+                var coupon = await _dbContext.Coupons.FindAsync(dto.CouponId.Value);
+                await _couponService.SuDungMaAsync(coupon!.MaCode);
+            }
+
+            /* Cộng PawPoints: 1 điểm / 10.000đ CHI TIÊU CHO HÀNG (không tính phí ship, và tính
+             trên số tiền hàng SAU khi trừ giảm giá - không phải trên thanh_tien vì thanh_tien
+             còn cộng thêm phí vận chuyển). Bảng diem_pawpoints trên users tự đồng bộ qua
+             trigger trg_pawpoints_sync_balance - KHÔNG tự sửa users.diem_pawpoints ở đây.*/
+            var tienHangThucChi = Math.Max(0, tienHang - giamGia);
+            var soDiemTich = (int)(tienHangThucChi / 10000);
+            if (soDiemTich > 0)
+            {
+                _dbContext.PawPointsTransactions.Add(new PawPointsTransaction
+                {
+                    UserId = userId,
+                    OrderId = order.OrderId,
+                    SoDiem = soDiemTich,
+                    Loai = "earn",
+                    NgayGiaoDich = DateTime.UtcNow
+                });
+            }
+
+            // Trừ điểm nếu khách chọn quy đổi PawPoints ngay lúc đặt hàng 
+            if (dto.SoDiemMuonDoi is > 0)
+            {
+                _dbContext.PawPointsTransactions.Add(new PawPointsTransaction
+                {
+                    UserId = userId,
+                    OrderId = order.OrderId,
+                    SoDiem = -dto.SoDiemMuonDoi.Value,
+                    Loai = "redeem",
+                    NgayGiaoDich = DateTime.UtcNow
+                });
+            }
+
+            await _dbContext.SaveChangesAsync();
+
+            // Xóa giỏ hàng - gọi hàm của Phần 3 (chỉ sau khi mọi bước trên đã chắc chắn ổn)
+            await _cartService.XoaSachGioHangAsync(userId);
+
+            await _auditLogService.LogAsync(userId, "TAO_DON_HANG", "orders", order.OrderId,
+                $"Đặt hàng thành công, thành tiền {thanhTien:N0}đ");
+
+            await transaction.CommitAsync();
+            newOrderId = order.OrderId;
+        }
+        catch
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
+
+        return await GetByIdAsync(userId, newOrderId) ?? throw new InvalidOperationException("Lỗi tạo đơn hàng.");
     }
 
     public async Task<PagedResult<OrderDto>> GetByUserAsync(int userId, OrderFilterRequestDto filter)
@@ -179,10 +224,10 @@ public class OrderService : IOrderService
         if (order == null)
             throw new KeyNotFoundException("Không tìm thấy đơn hàng.");
 
-        if (!TrangThaiChoPhepHuy.Contains(order.TrangThai))
+        if (!OrderStatus.ChoPhepKhachHuy.Contains(order.TrangThai))
             throw new InvalidOperationException("Đơn hàng đã giao vận, không thể tự hủy. Vui lòng liên hệ hỗ trợ để yêu cầu trả hàng.");
 
-        order.TrangThai = DaHuy;
+        order.TrangThai = OrderStatus.DaHuy;
 
         // Hoàn kho qua hàm dùng chung của Phần 2
         foreach (var item in order.OrderItems)
@@ -219,6 +264,9 @@ public class OrderService : IOrderService
 
     public async Task<OrderDto> UpdateTrangThaiAsync(int orderId, string trangThaiMoi)
     {
+        if (!OrderStatus.TatCa.Contains(trangThaiMoi))
+            throw new InvalidOperationException($"Trạng thái '{trangThaiMoi}' không hợp lệ.");
+
         var order = await _dbContext.Orders
             .Include(o => o.OrderItems).ThenInclude(oi => oi.Variant).ThenInclude(v => v.Product)
             .FirstOrDefaultAsync(o => o.OrderId == orderId);
@@ -268,7 +316,7 @@ public class OrderService : IOrderService
 
         order.DonViVanChuyen = dto.DonViVanChuyen;
         order.MaVanDon = dto.MaVanDon;
-        order.TrangThai = DaGiaoVan;
+        order.TrangThai = OrderStatus.DaGiaoVan;
         await _dbContext.SaveChangesAsync();
 
         return MapToDto(order);
@@ -283,10 +331,10 @@ public class OrderService : IOrderService
         if (order == null)
             throw new KeyNotFoundException("Không tìm thấy đơn hàng.");
 
-        if (order.TrangThai != DaGiao)
+        if (order.TrangThai != OrderStatus.DaGiao)
             throw new InvalidOperationException("Chỉ có thể yêu cầu trả hàng đối với đơn đã giao thành công.");
 
-        order.TrangThai = ChoTraHang;
+        order.TrangThai = OrderStatus.ChoTraHang;
         await _dbContext.SaveChangesAsync();
         await _auditLogService.LogAsync(userId, "YEU_CAU_TRA_HANG", "orders", orderId, dto.LyDo);
 
@@ -302,12 +350,12 @@ public class OrderService : IOrderService
         if (order == null)
             throw new KeyNotFoundException("Không tìm thấy đơn hàng.");
 
-        if (order.TrangThai != ChoTraHang)
+        if (order.TrangThai != OrderStatus.ChoTraHang)
             throw new InvalidOperationException("Đơn hàng không ở trạng thái chờ trả hàng.");
 
         if (dongY)
         {
-            order.TrangThai = DaTraHang;
+            order.TrangThai = OrderStatus.DaTraHang;
 
             // Hoàn kho
             foreach (var item in order.OrderItems)
@@ -331,7 +379,7 @@ public class OrderService : IOrderService
         }
         else
         {
-            order.TrangThai = DaGiao; // từ chối, trả đơn về trạng thái đã giao như cũ
+            order.TrangThai = OrderStatus.DaGiao; // từ chối, trả đơn về trạng thái đã giao như cũ
         }
 
         await _dbContext.SaveChangesAsync();
