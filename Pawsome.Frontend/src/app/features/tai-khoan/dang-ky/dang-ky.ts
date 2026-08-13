@@ -72,7 +72,7 @@ export class DangKyComponent implements AfterViewInit {
       },
       error: (err) => {
         this.dangGui = false;
-        this.loiChung = err?.error?.message ?? 'Đăng ký thất bại. Vui lòng thử lại.';
+        this.loiChung = err?.error?.message ?? 'Sign up failed. Please try again.';
       }
     });
   }
@@ -82,7 +82,7 @@ export class DangKyComponent implements AfterViewInit {
     this.authService.googleLogin({ idToken }).subscribe({
       next: () => this.router.navigate(['/']),
       error: (err) => {
-        this.loiChung = err?.error?.message ?? 'Đăng ký bằng Google thất bại. Vui lòng thử lại.';
+        this.loiChung = err?.error?.message ?? 'Google sign-up failed. Please try again.';
       }
     });
   }

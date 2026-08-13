@@ -14,6 +14,7 @@ using Pawsome.API.Services.SanPham;
 using Pawsome.API.Services.TaiKhoan;
 using Pawsome.Infrastructure;
 using System.Text;
+using Pawsome.API.Common.Email;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -105,6 +106,7 @@ builder.Services.AddAuthorization();
 builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 builder.Services.AddScoped<IAuditLogService, AuditLogService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 // ── DI của từng Phần: mỗi Phần tự thêm AddScoped<...>() của mình vào đây ──
 // (đúng mục 5.8 Pawsome_KhungDuAn.md - chỗ duy nhất mọi Phần đều phải đụng

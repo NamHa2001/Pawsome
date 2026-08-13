@@ -1,0 +1,19 @@
+<div class="KhungQuanTri">
+  <aside class="SidebarQuanTri">
+    <div class="LogoQuanTri">PawSome Admin</div>
+
+    <nav class="MenuQuanTri">
+      <a routerLink="dashboard" routerLinkActive="active">Tổng quan</a>
+      <a routerLink="san-pham" routerLinkActive="active">Sản phẩm</a>
+      <a routerLink="don-hang" routerLinkActive="active">Đơn hàng</a>
+      <a routerLink="nguoi-dung" routerLinkActive="active">Người dùng</a>
+      <a routerLink="kiem-duyet-danh-gia" routerLinkActive="active">Kiểm duyệt đánh giá</a>
+    </nav>
+
+    <button type="button" class="NutDangXuat" (click)="dangXuat()">Đăng xuất</button>
+  </aside>
+
+  <section class="NoiDungQuanTri">
+    <router-outlet></router-outlet>
+  </section>
+</div>

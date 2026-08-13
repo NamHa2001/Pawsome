@@ -3,40 +3,40 @@
 <div class="auth-page">
   <main class="form-panel">
     <div class="form-wrap">
-      <h2 class="form-title">Đăng ký</h2>
-      <p class="form-sub">Tạo tài khoản để bắt đầu chăm sóc thú cưng cùng Pawsome.</p>
+      <h2 class="form-title">Sign up</h2>
+      <p class="form-sub">Create an account to start caring for your pet with Pawsome.</p>
 
       <div #googleBtn class="google-btn"></div>
 
-      <div class="divider"><span>hoặc</span></div>
+      <div class="divider"><span>or</span></div>
 
       <form [formGroup]="form" (ngSubmit)="submit()">
         <div class="field">
-          <label for="hoTen">Họ và tên*</label>
-          <input id="hoTen" type="text" placeholder="Nguyễn Văn A" formControlName="hoTen" />
+          <label for="hoTen">Full name*</label>
+          <input id="hoTen" type="text" placeholder="John Smith" formControlName="hoTen" />
           @if (form.controls.hoTen.touched && form.controls.hoTen.invalid) {
-            <small class="error">Vui lòng nhập họ tên.</small>
+            <small class="error">Please enter your full name.</small>
           }
         </div>
 
         <div class="field">
-          <label for="email">Địa chỉ email*</label>
-          <input id="email" type="email" placeholder="ban@gmail.com" formControlName="email" />
+          <label for="email">Email address*</label>
+          <input id="email" type="email" placeholder="you@gmail.com" formControlName="email" />
           @if (form.controls.email.touched && form.controls.email.invalid) {
-            <small class="error">Vui lòng nhập email hợp lệ.</small>
+            <small class="error">Please enter a valid email address.</small>
           }
         </div>
 
         <div class="field">
-          <label for="soDienThoai">Số điện thoại</label>
+          <label for="soDienThoai">Phone number</label>
           <input id="soDienThoai" type="tel" placeholder="09xx xxx xxx" formControlName="soDienThoai" />
         </div>
 
         <div class="field">
-          <label for="password">Mật khẩu*</label>
-          <input id="password" type="password" placeholder="Tối thiểu 6 ký tự" formControlName="password" />
+          <label for="password">Password*</label>
+          <input id="password" type="password" placeholder="At least 6 characters" formControlName="password" />
           @if (form.controls.password.touched && form.controls.password.invalid) {
-            <small class="error">Mật khẩu phải có ít nhất 6 ký tự.</small>
+            <small class="error">Password must be at least 6 characters.</small>
           }
         </div>
 
@@ -45,12 +45,12 @@
         }
 
         <button type="submit" class="btn-primary" [disabled]="dangGui">
-          {{ dangGui ? 'Đang đăng ký...' : 'Đăng ký' }}
+          {{ dangGui ? 'Signing up...' : 'Sign up' }}
         </button>
       </form>
 
       <p class="switch-link">
-        Đã có tài khoản? <a routerLink="/tai-khoan/dang-nhap">Đăng nhập</a>
+        Already have an account? <a routerLink="/tai-khoan/dang-nhap">Sign in</a>
       </p>
     </div>
   </main>
@@ -81,8 +81,8 @@
     <div class="brand-content">
       <span class="brand-logo">PawVip</span>
       <p class="brand-script">Join us</p>
-      <h1 class="brand-heading">Bắt đầu hành trình<br>chăm sóc thú cưng</h1>
-      <p class="brand-sub">Tích điểm PawPoints trên mỗi đơn hàng, theo dõi lịch sử mua sắm và nhận ưu đãi độc quyền.</p>
+      <h1 class="brand-heading">Start your journey<br>of caring for your pet</h1>
+      <p class="brand-sub">Earn PawPoints on every order, track your purchase history, and unlock exclusive offers.</p>
     </div>
   </aside>
 </div>

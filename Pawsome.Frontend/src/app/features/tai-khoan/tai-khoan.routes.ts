@@ -8,6 +8,10 @@ export const routes: Routes = [
   {
     path: 'dang-ky',
     loadComponent: () => import('./dang-ky/dang-ky').then(m => m.DangKyComponent)
+  },
+  {
+    path: 'quen-mat-khau',
+    loadComponent: () => import('./quen-mat-khau/quen-mat-khau').then(m => m.QuenMatKhauComponent)
   }
   // 'quen-mat-khau', 'dia-chi' sẽ thêm ở bước sau
 ];

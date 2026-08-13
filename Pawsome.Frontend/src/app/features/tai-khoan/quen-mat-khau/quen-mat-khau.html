@@ -1,0 +1,72 @@
+<app-header />
+
+<div class="auth-page single-column">
+  <main class="form-panel">
+    <div class="form-wrap">
+
+      @if (buoc === 'nhap-email') {
+        <h2 class="form-title">Forgot password</h2>
+        <p class="form-sub">Enter the email linked to your account and we'll send you a verification code.</p>
+
+        <form [formGroup]="emailForm" (ngSubmit)="submitEmail()">
+          <div class="field">
+            <label for="email">Email address*</label>
+            <input id="email" type="email" placeholder="you@gmail.com" formControlName="email" />
+            @if (emailForm.controls.email.touched && emailForm.controls.email.invalid) {
+              <small class="error">Please enter a valid email address.</small>
+            }
+          </div>
+
+          @if (loiChung) {
+            <div class="error error-chung">{{ loiChung }}</div>
+          }
+
+          <button type="submit" class="btn-primary" [disabled]="dangGui">
+            {{ dangGui ? 'Sending...' : 'Send verification code' }}
+          </button>
+        </form>
+
+        <p class="switch-link">
+          Remembered your password? <a routerLink="/tai-khoan/dang-nhap">Sign in</a>
+        </p>
+      } @else {
+        <h2 class="form-title">Enter verification code</h2>
+        <p class="form-sub">We sent a 6-digit code to <strong>{{ emailDaNhap }}</strong>. Enter it below along with your new password.</p>
+
+        <form [formGroup]="otpForm" (ngSubmit)="submitOtp()">
+          <div class="field">
+            <label for="otp">Verification code*</label>
+            <input id="otp" type="text" inputmode="numeric" maxlength="6" placeholder="123456" formControlName="otp" />
+            @if (otpForm.controls.otp.touched && otpForm.controls.otp.invalid) {
+              <small class="error">Please enter the 6-digit code.</small>
+            }
+          </div>
+
+          <div class="field">
+            <label for="newPassword">New password*</label>
+            <input id="newPassword" type="password" placeholder="At least 6 characters" formControlName="newPassword" />
+            @if (otpForm.controls.newPassword.touched && otpForm.controls.newPassword.invalid) {
+              <small class="error">Password must be at least 6 characters.</small>
+            }
+          </div>
+
+          @if (loiChung) {
+            <div class="error error-chung">{{ loiChung }}</div>
+          }
+
+          <button type="submit" class="btn-primary" [disabled]="dangGui">
+            {{ dangGui ? 'Saving...' : 'Reset password' }}
+          </button>
+        </form>
+
+        <p class="switch-link">
+          Didn't get a code? <a (click)="quayLaiNhapEmail()">Try again</a>
+        </p>
+      }
+
+    </div>
+  </main>
+</div>
+
+<app-footer />
+<app-chat-ai />
