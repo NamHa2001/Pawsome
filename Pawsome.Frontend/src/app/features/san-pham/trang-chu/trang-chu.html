@@ -133,15 +133,23 @@
       <div class="BannerVip Cam">
         <img src="/img/nen2.png" alt="Coupon" class="AnhNenBanner">
         <div class="NoiDungCoupon">
-          <div class="CumSale">
-            <span class="ChuSave">Save</span>
-            <h2 class="PhanTram">35% off</h2>
-            <p class="FirstOrder">On First Auto Order</p>
-          </div>
-          <div class="KhungCoupon">
-            <span class="LabelCoupon">Coupon:</span>
-            <div class="MaCoupon">AUTOSAVE35</div>
-          </div>
+          @if (couponNoiBat(); as cp) {
+            <div class="CumSale">
+              <span class="ChuSave">Save</span>
+              <h2 class="PhanTram">{{ hienThiUuDai(cp) }}</h2>
+              <p class="FirstOrder">On Your Next Order</p>
+            </div>
+            <div class="KhungCoupon">
+              <span class="LabelCoupon">Coupon:</span>
+              <div class="MaCoupon">{{ cp.maCode }}</div>
+            </div>
+          } @else {
+            <div class="CumSale">
+              <span class="ChuSave">Stay Tuned</span>
+              <h2 class="PhanTram">New Offers</h2>
+              <p class="FirstOrder">Coming soon</p>
+            </div>
+          }
         </div>
       </div>
     </div>
