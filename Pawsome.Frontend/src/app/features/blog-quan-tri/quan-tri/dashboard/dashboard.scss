@@ -1,0 +1,61 @@
+.TieuDeTrang {
+  margin-bottom: 22px;
+
+  h1 { font-size: 24px; font-weight: 800; color: var(--MauDen); margin: 0 0 4px; }
+}
+
+.MoTaTrang { font-size: 14px; color: #888; margin: 0; }
+
+.LuoiTheThongKe {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+  margin-bottom: 26px;
+}
+
+.TheThongKe {
+  background: var(--MauTrang);
+  border-radius: 0.35rem;
+  padding: 20px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+  border-left: 4px solid transparent;
+
+  &.TheDo { border-left-color: var(--MauDoDam); }
+  &.TheHong { border-left-color: #E97C7C; }
+  &.TheVang { border-left-color: #FFB800; }
+  &.TheDen { border-left-color: var(--MauDen); }
+}
+
+.NoiDungThe { display: flex; flex-direction: column; gap: 6px; }
+.NhanThe { font-size: 12.5px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.3px; color: var(--MauDen); }
+.GiaTriThe { font-size: 24px; font-weight: 800; color: var(--MauDen); }
+.IconThe { font-size: 28px; color: #E8DADA; }
+
+.TheQuanTri {
+  background: var(--MauTrang);
+  border-radius: 0.35rem;
+  box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+  overflow: hidden;
+}
+
+.TieuDeThe {
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid #F0E5E5;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--MauDoDam);
+}
+
+.ThanThe { padding: 22px; }
+.ThanTheRong {
+  color: #999;
+  font-size: 14px;
+  text-align: center;
+  min-height: 340px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
