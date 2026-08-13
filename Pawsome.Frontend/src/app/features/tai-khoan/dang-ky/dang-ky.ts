@@ -13,7 +13,14 @@ declare const google: any;
 @Component({
   selector: 'app-dang-ky',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink,Header,Footer,ChatAi],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    RouterLink,
+    Header,
+    Footer,
+    ChatAi
+  ],
   templateUrl: './dang-ky.html',
   styleUrl: './dang-ky.scss'
 })
