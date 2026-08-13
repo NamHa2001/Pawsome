@@ -1,0 +1,150 @@
+<app-header />
+
+<main class="NoiDungChinh">
+<div class="CheckoutPage">
+  <div class="VungAnToan PageTitleBar">
+    <h1 class="PageTitle">Checkout</h1>
+  </div>
+
+  @if (loading()) {
+    <div class="VungAnToan"><p class="StateText">Loading your order...</p></div>
+  } @else if (isCartEmpty()) {
+    <div class="VungAnToan StateBox">
+      <p>Your cart is empty. Add some products before checking out.</p>
+      <a routerLink="/" class="PrimaryButton">Continue Shopping</a>
+    </div>
+  } @else {
+    <div class="VungAnToan CheckoutLayout">
+
+      <div class="LeftColumn">
+
+        <section class="Card">
+          <h2 class="CardTitle">Shipping Address</h2>
+
+          @for (addr of addresses(); track addr.addressId) {
+            <label class="AddressOption" [class.Selected]="selectedAddressId() === addr.addressId">
+              <input type="radio" name="address" [checked]="selectedAddressId() === addr.addressId"
+                     (change)="selectAddress(addr.addressId)" />
+              <div class="AddressDetails">
+                <span class="AddressName">{{ addr.nguoiNhan }} — {{ addr.soDienThoai }}</span>
+                <span class="AddressLine">
+                  {{ addr.diaChiChiTiet }}@if (addr.phuongXa) {, {{ addr.phuongXa }}}@if (addr.quanHuyen) {, {{ addr.quanHuyen }}}, {{ addr.tinhThanh }}
+                </span>
+                @if (addr.laMacDinh) { <span class="DefaultBadge">Default</span> }
+              </div>
+            </label>
+          }
+
+          <button type="button" class="SecondaryButton AddAddressButton" (click)="toggleAddAddressForm()">
+            {{ showAddAddressForm() ? '− Cancel' : '+ Add a new address' }}
+          </button>
+
+          @if (showAddAddressForm()) {
+            <div class="AddAddressForm">
+              <input type="text" placeholder="Recipient name" [(ngModel)]="newRecipientName" />
+              <input type="text" placeholder="Phone number" [(ngModel)]="newPhone" />
+              <input type="text" placeholder="Address (street, house number)" [(ngModel)]="newAddressDetail" />
+              <div class="FormRow">
+                <input type="text" placeholder="Ward" [(ngModel)]="newWard" />
+                <input type="text" placeholder="District" [(ngModel)]="newDistrict" />
+              </div>
+              <input type="text" placeholder="Province / City" [(ngModel)]="newProvince" />
+              <label class="CheckboxLine">
+                <input type="checkbox" [(ngModel)]="newSetAsDefault" />
+                Set as default address
+              </label>
+              <button type="button" class="PrimaryButton" [disabled]="savingAddress()" (click)="saveNewAddress()">
+                {{ savingAddress() ? 'Saving...' : 'Save Address' }}
+              </button>
+            </div>
+          }
+        </section>
+
+        <section class="Card">
+          <h2 class="CardTitle">Shipping Carrier</h2>
+          <div class="CarrierOptions">
+            @for (carrier of shippingCarriers; track carrier) {
+              <label class="CarrierOption" [class.Selected]="selectedCarrier() === carrier">
+                <input type="radio" name="carrier" [checked]="selectedCarrier() === carrier"
+                       (change)="selectCarrier(carrier)" />
+                {{ shippingCarrierLabels[carrier] }}
+              </label>
+            }
+          </div>
+        </section>
+
+        <section class="Card">
+          <h2 class="CardTitle">Order Items ({{ cart()!.items.length }})</h2>
+          @for (item of cart()!.items; track item.cartItemId) {
+            <div class="OrderItemRow">
+              <img [src]="item.hinhAnh || '/img/no-image.png'" [alt]="item.tenSanPham" class="ItemImage" />
+              <div class="ItemInfo">
+                <span class="ItemName">{{ item.tenSanPham }}</span>
+                <span class="ItemVariant">{{ item.thuocTinh }}</span>
+              </div>
+              <span class="ItemQty">x{{ item.soLuong }}</span>
+              <span class="ItemTotal">{{ item.thanhTien | number:'1.0-0' }} VND</span>
+            </div>
+          }
+        </section>
+      </div>
+
+      <div class="RightColumn">
+        <div class="Card OrderSummaryCard">
+          <h2 class="CardTitle">Order Summary</h2>
+
+          <div class="SummaryLine">
+            <span>Subtotal</span>
+            <span>{{ cart()!.tienHang | number:'1.0-0' }} VND</span>
+          </div>
+
+          @if (cart()!.giamGia > 0) {
+            <div class="SummaryLine Discount">
+              <span>Discount @if (cart()!.maCouponDangApDung) { ({{ cart()!.maCouponDangApDung }}) }</span>
+              <span>−{{ cart()!.giamGia | number:'1.0-0' }} VND</span>
+            </div>
+          }
+
+          <div class="SummaryLine">
+            <span>Estimated Shipping</span>
+            <span>{{ cart()!.phiVanChuyenTamTinh | number:'1.0-0' }} VND</span>
+          </div>
+
+          <div class="SummaryLine Total">
+            <span>Total</span>
+            <span>{{ cart()!.tongTien | number:'1.0-0' }} VND</span>
+          </div>
+
+          <p class="SummaryNote">* Final shipping fee is confirmed after placing the order.</p>
+        </div>
+
+        <div class="Card">
+          <h2 class="CardTitle">Payment Method</h2>
+          <label class="PaymentOption" [class.Selected]="selectedPaymentMethod() === 'momo'">
+            <input type="radio" name="payment" [checked]="selectedPaymentMethod() === 'momo'"
+                   (change)="selectPaymentMethod('momo')" />
+            MoMo Wallet
+          </label>
+          <label class="PaymentOption" [class.Selected]="selectedPaymentMethod() === 'vnpay'">
+            <input type="radio" name="payment" [checked]="selectedPaymentMethod() === 'vnpay'"
+                   (change)="selectPaymentMethod('vnpay')" />
+            VNPay (ATM / Visa / Mastercard)
+          </label>
+        </div>
+
+        @if (errorMessage()) {
+          <p class="ErrorMessage">{{ errorMessage() }}</p>
+        }
+
+        <button type="button" class="PrimaryButton PlaceOrderButton"
+                [disabled]="placingOrder()" (click)="placeOrder()">
+          {{ placingOrder() ? 'Processing...' : 'Place Order' }}
+        </button>
+      </div>
+    </div>
+  }
+</div>
+</main>
+
+<app-footer />
+<app-chat-ai />

@@ -22,8 +22,13 @@ export interface ForgotPasswordRequest {
   email: string;
 }
 
+export interface ForgotPasswordResponse {
+  resetToken: string;
+}
+
 export interface ResetPasswordRequest {
   token: string;
+  otp: string;
   newPassword: string;
 }
 
@@ -52,8 +57,8 @@ export class AuthService {
       .pipe(tap(res => this.simpanNeuThanhCong(res)));
   }
 
-  forgotPassword(dto: ForgotPasswordRequest): Observable<ApiResponse<{ devToken: string }>> {
-    return this.http.post<ApiResponse<{ devToken: string }>>(`${this.baseUrl}/forgot-password`, dto);
+  forgotPassword(dto: ForgotPasswordRequest): Observable<ApiResponse<ForgotPasswordResponse>> {
+    return this.http.post<ApiResponse<ForgotPasswordResponse>>(`${this.baseUrl}/forgot-password`, dto);
   }
 
   resetPassword(dto: ResetPasswordRequest): Observable<ApiResponse<null>> {
