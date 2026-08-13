@@ -16,6 +16,7 @@ using Pawsome.Infrastructure;
 using System.Text;
 using Pawsome.API.Common.Email;
 using Microsoft.IdentityModel.JsonWebTokens;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -99,7 +100,12 @@ builder.Services
             ValidIssuer = jwtSection["Issuer"],
             ValidAudience = jwtSection["Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSection["Key"]!)),
-            RoleClaimType = "role",
+            // Phải khớp đúng loại claim mà JwtTokenGenerator.cs thực sự phát hành
+            // (new Claim(ClaimTypes.Role, role) - URI dài, không phải chuỗi "role"
+            // ngắn). Đặt sai giá trị này khiến [Authorize(Roles=...)] luôn trả 403
+            // dù JWT hợp lệ và đúng vai trò, vì User.IsInRole tìm claim type khác
+            // với claim thực sự có trong token.
+            RoleClaimType = ClaimTypes.Role,
             NameClaimType = JwtRegisteredClaimNames.Sub
         };
     });
