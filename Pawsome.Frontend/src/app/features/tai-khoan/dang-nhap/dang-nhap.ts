@@ -13,7 +13,7 @@ declare const google: any;
 @Component({
   selector: 'app-dang-nhap',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink,Header,Footer,ChatAi],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, Header, Footer, ChatAi],
   templateUrl: './dang-nhap.html',
   styleUrl: './dang-nhap.scss'
 })
@@ -63,7 +63,7 @@ export class DangNhapComponent implements AfterViewInit {
       },
       error: (err) => {
         this.dangGui = false;
-        this.loiChung = err?.error?.message ?? 'Đăng nhập thất bại. Vui lòng thử lại.';
+        this.loiChung = err?.error?.message ?? 'Sign in failed. Please try again.';
       }
     });
   }
@@ -73,7 +73,7 @@ export class DangNhapComponent implements AfterViewInit {
     this.authService.googleLogin({ idToken }).subscribe({
       next: () => this.router.navigate(['/']),
       error: (err) => {
-        this.loiChung = err?.error?.message ?? 'Đăng nhập Google thất bại. Vui lòng thử lại.';
+        this.loiChung = err?.error?.message ?? 'Google sign-in failed. Please try again.';
       }
     });
   }

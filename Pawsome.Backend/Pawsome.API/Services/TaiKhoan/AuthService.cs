@@ -8,6 +8,7 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using Google.Apis.Auth;
+using Pawsome.API.Common.Email;
 
 namespace Pawsome.API.Services.TaiKhoan;
 
@@ -20,18 +21,16 @@ public class AuthService : IAuthService
     private readonly IJwtTokenGenerator _jwtTokenGenerator;
     private readonly IConfiguration _configuration;
     private readonly string _googleClientId;
+    private readonly IEmailService _emailService;
 
-    public AuthService(
-        PawsomeDbContext dbContext,
-        IPasswordHasher passwordHasher,
-        IJwtTokenGenerator jwtTokenGenerator,
-        IConfiguration configuration)
+    public AuthService(PawsomeDbContext dbContext,IPasswordHasher passwordHasher,IJwtTokenGenerator jwtTokenGenerator,IConfiguration configuration,IEmailService emailService)
     {
         _dbContext = dbContext;
         _passwordHasher = passwordHasher;
         _jwtTokenGenerator = jwtTokenGenerator;
         _configuration = configuration;
-        _googleClientId = configuration["GoogleAuth:ClientId"]!; 
+        _googleClientId = configuration["GoogleAuth:ClientId"]!;
+        _emailService = emailService;
     }
 
     public async Task<AuthResponseDto> RegisterAsync(RegisterRequestDto dto)
@@ -94,9 +93,11 @@ public class AuthService : IAuthService
     public async Task<string> ForgotPasswordAsync(ForgotPasswordRequestDto dto)
     {
         var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
-
         if (user == null)
             return string.Empty;
+
+        var otp = Random.Shared.Next(0, 1000000).ToString("D6");
+        var otpHash = _passwordHasher.HashPassword(otp);
 
         var jwtSection = _configuration.GetSection("Jwt");
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSection["Key"]!));
@@ -106,6 +107,7 @@ public class AuthService : IAuthService
         {
             new Claim(JwtRegisteredClaimNames.Sub, user.UserId.ToString()),
             new Claim("purpose", "password_reset"),
+            new Claim("otpHash", otpHash),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 
@@ -113,10 +115,17 @@ public class AuthService : IAuthService
             issuer: jwtSection["Issuer"],
             audience: jwtSection["Audience"],
             claims: claims,
-            expires: DateTime.UtcNow.AddMinutes(15),
+            expires: DateTime.UtcNow.AddMinutes(10),
             signingCredentials: credentials);
 
-        return new JwtSecurityTokenHandler().WriteToken(token);
+        var resetToken = new JwtSecurityTokenHandler().WriteToken(token);
+
+        await _emailService.SendAsync(
+            user.Email,
+            "Mã xác thực đặt lại mật khẩu Pawsome",
+            $"Mã OTP của bạn là: {otp}\n\nMã có hiệu lực trong 10 phút. Nếu bạn không yêu cầu đặt lại mật khẩu, vui lòng bỏ qua email này.");
+
+        return resetToken;
     }
 
     public async Task ResetPasswordAsync(ResetPasswordRequestDto dto)
@@ -143,17 +152,21 @@ public class AuthService : IAuthService
         }
         catch
         {
-            throw new InvalidOperationException("Token không hợp lệ hoặc đã hết hạn.");
+            throw new InvalidOperationException("Yêu cầu đặt lại mật khẩu không hợp lệ hoặc đã hết hạn.");
         }
 
         var purpose = principal.FindFirstValue("purpose");
-        if (purpose != "password_reset")
-            throw new InvalidOperationException("Token không hợp lệ hoặc đã hết hạn.");
+        var otpHash = principal.FindFirstValue("otpHash");
+        if (purpose != "password_reset" || otpHash == null)
+            throw new InvalidOperationException("Yêu cầu đặt lại mật khẩu không hợp lệ hoặc đã hết hạn.");
+
+        if (!_passwordHasher.VerifyPassword(dto.Otp, otpHash))
+            throw new InvalidOperationException("Mã OTP không đúng.");
 
         var userId = int.Parse(principal.FindFirstValue(JwtRegisteredClaimNames.Sub)!);
         var user = await _dbContext.Users.FindAsync(userId);
         if (user == null)
-            throw new InvalidOperationException("Token không hợp lệ hoặc đã hết hạn.");
+            throw new InvalidOperationException("Yêu cầu đặt lại mật khẩu không hợp lệ hoặc đã hết hạn.");
 
         user.PasswordHash = _passwordHasher.HashPassword(dto.NewPassword);
         await _dbContext.SaveChangesAsync();

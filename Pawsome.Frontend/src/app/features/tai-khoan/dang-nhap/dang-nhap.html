@@ -27,50 +27,50 @@
     <div class="brand-content">
       <span class="brand-logo">PawVip</span>
       <p class="brand-script">Welcome back</p>
-      <h1 class="brand-heading">Thú cưng nhà bạn<br>đang chờ được chăm sóc</h1>
-      <p class="brand-sub">Đăng nhập để tiếp tục theo dõi đơn hàng, điểm PawPoints và ưu đãi dành riêng cho bạn.</p>
+      <h1 class="brand-heading">Your pet<br>is waiting to be cared for</h1>
+      <p class="brand-sub">Sign in to track your orders, PawPoints balance, and exclusive offers made just for you.</p>
     </div>
   </aside>
 
   <main class="form-panel">
     <div class="form-wrap">
-      <h2 class="form-title">Đăng nhập</h2>
-      <p class="form-sub">Nhập email và mật khẩu để vào tài khoản của bạn.</p>
+      <h2 class="form-title">Sign in</h2>
+      <p class="form-sub">Enter your email and password to access your account.</p>
 
       <div #googleBtn class="google-btn"></div>
 
-      <div class="divider"><span>hoặc</span></div>
+      <div class="divider"><span>or</span></div>
 
       <form [formGroup]="form" (ngSubmit)="submit()">
         <div class="field">
-          <label for="email">Địa chỉ email*</label>
-          <input id="email" type="email" placeholder="ban@gmail.com" formControlName="email" />
+          <label for="email">Email address*</label>
+          <input id="email" type="email" placeholder="you@gmail.com" formControlName="email" />
           @if (form.controls.email.touched && form.controls.email.invalid) {
-            <small class="error">Vui lòng nhập email hợp lệ.</small>
+            <small class="error">Please enter a valid email address.</small>
           }
         </div>
 
         <div class="field">
-          <label for="password">Mật khẩu*</label>
+          <label for="password">Password*</label>
           <input id="password" type="password" placeholder="••••••••" formControlName="password" />
           @if (form.controls.password.touched && form.controls.password.invalid) {
-            <small class="error">Vui lòng nhập mật khẩu.</small>
+            <small class="error">Please enter your password.</small>
           }
         </div>
 
-        <a class="forgot-link" routerLink="/tai-khoan/quen-mat-khau">Quên mật khẩu? Bấm vào đây</a>
+        <a class="forgot-link" routerLink="/tai-khoan/quen-mat-khau">Forgot password? Click here</a>
 
         @if (loiChung) {
           <div class="error error-chung">{{ loiChung }}</div>
         }
 
         <button type="submit" class="btn-primary" [disabled]="dangGui">
-          {{ dangGui ? 'Đang đăng nhập...' : 'Đăng nhập' }}
+          {{ dangGui ? 'Signing in...' : 'Sign in' }}
         </button>
       </form>
 
       <p class="switch-link">
-        Chưa có tài khoản? <a routerLink="/tai-khoan/dang-ky">Đăng ký ngay</a>
+        Don't have an account? <a routerLink="/tai-khoan/dang-ky">Sign up</a>
       </p>
     </div>
   </main>
