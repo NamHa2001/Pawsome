@@ -1,3 +1,15 @@
 :host {
   display: contents;
 }
+
+// Khu vực quản trị (/quan-tri) cần trải hết chiều rộng màn hình, không bị bó
+// khung 1512px + căn giữa kiểu trang khách hàng (.TrangChinh gốc trong
+// styles.scss). Ghi đè cục bộ tại đây (component app-root, không sửa file
+// dùng chung) để không ảnh hưởng các trang khác.
+.TrangChinhQuanTri {
+  max-width: none;
+  width: 100%;
+  align-items: stretch;
+  background-color: transparent;
+  box-shadow: none;
+}

@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, signal } from '@angular/core';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -8,4 +9,13 @@ import { RouterOutlet } from '@angular/router';
   styleUrl: './app.scss'
 })
 export class App {
+  readonly laKhuVucQuanTri = signal(false);
+
+  constructor(router: Router) {
+    this.laKhuVucQuanTri.set(router.url.startsWith('/quan-tri'));
+
+    router.events
+      .pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd))
+      .subscribe(e => this.laKhuVucQuanTri.set(e.urlAfterRedirects.startsWith('/quan-tri')));
+  }
 }

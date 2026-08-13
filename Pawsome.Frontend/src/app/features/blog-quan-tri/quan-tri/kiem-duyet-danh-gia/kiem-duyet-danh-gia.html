@@ -1,2 +1,64 @@
-<h1>Kiểm duyệt đánh giá</h1>
-<p>Danh sách đánh giá chờ duyệt, nút duyệt/từ chối sẽ hiển thị ở đây.</p>
+<div class="TieuDeTrang">
+  <h1>Review Moderation</h1>
+  <p class="MoTaTrang">Approve or reject customer reviews before they go public.</p>
+</div>
+
+@if (loiHanhDong()) {
+  <p class="ThongBaoLoi">{{ loiHanhDong() }}</p>
+}
+
+<div class="TheQuanTri">
+  <div class="TieuDeThe">Pending Reviews</div>
+
+  <div class="ThanThe">
+    @if (dangTai()) {
+      <p class="ThongBaoRong">Loading...</p>
+    } @else if (loiTai()) {
+      <p class="ThongBaoLoi">{{ loiTai() }}</p>
+    } @else if (danhSach().length === 0) {
+      <p class="ThongBaoRong">No reviews pending approval.</p>
+    } @else {
+      <div class="BangCuon">
+        <table class="BangKiemDuyet">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Reviewer</th>
+              <th>Rating</th>
+              <th>Comment</th>
+              <th>Submitted</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (dg of danhSach(); track dg.reviewId) {
+              <tr>
+                <td>Product #{{ dg.productId }}</td>
+                <td>{{ dg.tenNguoiDanhGia }}</td>
+                <td class="OSoSao">{{ dg.soSao }} ★</td>
+                <td class="OBinhLuan">{{ dg.binhLuan || '(no comment)' }}</td>
+                <td>{{ dg.ngayTao | date:'dd/MM/yyyy HH:mm' }}</td>
+                <td class="OHanhDong">
+                  <button
+                    type="button"
+                    class="NutDuyet"
+                    [disabled]="dangXuLyDong(dg.reviewId)"
+                    (click)="duyet(dg.reviewId)">
+                    Approve
+                  </button>
+                  <button
+                    type="button"
+                    class="NutTuChoi"
+                    [disabled]="dangXuLyDong(dg.reviewId)"
+                    (click)="tuChoi(dg.reviewId)">
+                    Reject
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</div>

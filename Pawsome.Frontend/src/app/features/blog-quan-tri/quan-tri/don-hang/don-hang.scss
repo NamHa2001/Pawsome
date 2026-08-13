@@ -1,0 +1,25 @@
+.TieuDeTrang {
+  margin-bottom: 22px;
+
+  h1 { font-size: 24px; font-weight: 800; color: var(--MauDen); margin: 0 0 4px; }
+}
+
+.MoTaTrang { font-size: 14px; color: #888; margin: 0; }
+
+.TheQuanTri {
+  background: var(--MauTrang);
+  border-radius: 0.35rem;
+  box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+  overflow: hidden;
+}
+
+.TieuDeThe {
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid #F0E5E5;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--MauDoDam);
+}
+
+.ThanThe { padding: 22px; }
+.ThanTheRong { color: #999; font-size: 14px; text-align: center; padding: 50px 22px; }
