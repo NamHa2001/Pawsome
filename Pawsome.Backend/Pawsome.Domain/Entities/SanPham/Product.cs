@@ -22,4 +22,5 @@ public class Product
     public ICollection<ProductImage> Images { get; set; } = new List<ProductImage>();
     public ICollection<Review> Reviews { get; set; } = new List<Review>();
     public ICollection<Wishlist> Wishlists { get; set; } = new List<Wishlist>();
+    public ICollection<ProductCondition> ProductConditions { get; set; } = new List<ProductCondition>();
 }
