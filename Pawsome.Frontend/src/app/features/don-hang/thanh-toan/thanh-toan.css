@@ -1,0 +1,173 @@
+:host {
+  display: contents;
+}
+
+.CheckoutPage {
+  width: 100%;
+  padding: 40px 0 80px;
+}
+
+.PageTitleBar {
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 30px;
+}
+
+.PageTitle {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--MauDen);
+}
+
+.StateText { padding: 60px 0; text-align: center; width: 100%; }
+
+.StateBox {
+  flex-direction: column;
+  gap: 20px;
+  padding: 80px 0;
+}
+
+.PrimaryButton {
+  display: inline-block;
+  background-color: var(--MauDoDam);
+  color: var(--MauTrang);
+  padding: 12px 28px;
+  border-radius: 25px;
+  text-decoration: none;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s;
+
+  &:hover { opacity: 0.85; }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+}
+
+.SecondaryButton {
+  background: none;
+  border: 1px solid var(--MauDoDam);
+  color: var(--MauDoDam);
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover { background-color: var(--MauHongNhat); }
+}
+
+.CheckoutLayout {
+  align-items: flex-start;
+  gap: 30px;
+}
+
+.LeftColumn { flex: 1.4; display: flex; flex-direction: column; gap: 20px; }
+.RightColumn { flex: 1; display: flex; flex-direction: column; gap: 20px; position: sticky; top: 20px; }
+
+.Card {
+  width: 100%;
+  background-color: var(--MauTrang);
+  border: 1px solid var(--MauHongNhat);
+  border-radius: 12px;
+  padding: 22px;
+}
+
+.CardTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--MauDen);
+  margin-bottom: 16px;
+}
+
+.AddressOption, .CarrierOption, .PaymentOption {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--MauHongNhat);
+  border-radius: 8px;
+  margin-bottom: 10px;
+  cursor: pointer;
+
+  &.Selected { border-color: var(--MauDoDam); background-color: var(--MauHongNhat); }
+}
+
+.AddressDetails { display: flex; flex-direction: column; gap: 2px; }
+.AddressName { font-weight: 600; color: var(--MauDen); }
+.AddressLine { font-size: 13px; color: #888; }
+.DefaultBadge {
+  align-self: flex-start;
+  background-color: var(--MauDoDam);
+  color: var(--MauTrang);
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  margin-top: 4px;
+}
+
+.AddAddressButton { margin-top: 4px; }
+
+.AddAddressForm {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 14px;
+
+  input[type="text"] {
+    padding: 10px 12px;
+    border: 1px solid var(--MauHongNhat);
+    border-radius: 8px;
+    font-size: 14px;
+  }
+}
+
+.FormRow { display: flex; gap: 10px; }
+.FormRow input { flex: 1; }
+
+.CheckboxLine { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--MauDen); }
+
+.OrderItemRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--MauHongNhat);
+
+  &:last-child { border-bottom: none; }
+}
+
+.ItemImage { width: 56px; height: 56px; object-fit: cover; border-radius: 8px; background-color: var(--MauHongNhat); }
+.ItemInfo { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.ItemName { font-weight: 600; color: var(--MauDen); font-size: 14px; }
+.ItemVariant { font-size: 12px; color: #888; }
+.ItemQty { font-size: 14px; color: #666; }
+.ItemTotal { font-weight: 700; color: var(--MauDoDam); }
+
+.SummaryLine {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  font-size: 14px;
+  color: var(--MauDen);
+}
+
+.SummaryLine.Discount { color: var(--MauDoDam); }
+
+.SummaryLine.Total {
+  border-top: 1px solid var(--MauHongNhat);
+  margin-top: 8px;
+  padding-top: 14px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.SummaryNote { font-size: 12px; color: #999; margin-top: 10px; }
+
+.ErrorMessage {
+  color: var(--MauDoDam);
+  background-color: var(--MauHongNhat);
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.PlaceOrderButton { width: 100%; padding: 14px; font-size: 16px; }
