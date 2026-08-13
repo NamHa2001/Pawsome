@@ -44,3 +44,18 @@ export const SHIPPING_CARRIER_LABELS: Record<ShippingCarrier, string> = {
 };
 
 export type PaymentMethod = 'momo' | 'vnpay';
+
+// Dùng cho trang Order History (lịch sử đơn hàng)
+export interface OrderFilter {
+  trangThai?: string;
+  page?: number;
+  pageSize?: number;
+}
+
+export interface CancelOrderRequest {
+  lyDo?: string;
+}
+
+export interface ReturnOrderRequest {
+  lyDo: string;
+}

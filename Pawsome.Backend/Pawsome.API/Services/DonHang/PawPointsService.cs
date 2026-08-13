@@ -61,4 +61,42 @@ public class PawPointsService : IPawPointsService
             PageSize = soDong
         };
     }
+
+    // Tỉ lệ quy đổi khi TIÊU điểm - đề xuất đối xứng với tỉ lệ TÍCH điểm ở YC-5.1
+    // (1 điểm được cộng mỗi 10.000đ chi tiêu). CẦN CHỐT LẠI với nhóm nếu muốn tỉ lệ khác.
+    private const decimal VndMoiDiem = 10000m;
+
+    public async Task<decimal> KiemTraVaTinhQuyDoiAsync(int userId, int soDiemMuonDoi)
+    {
+        if (soDiemMuonDoi <= 0)
+            throw new InvalidOperationException("Số điểm quy đổi phải lớn hơn 0.");
+
+        var soDuHienTai = await _dbContext.Users
+            .Where(u => u.UserId == userId)
+            .Select(u => u.DiemPawpoints)
+            .FirstOrDefaultAsync();
+
+        if (soDiemMuonDoi > soDuHienTai)
+            throw new InvalidOperationException($"Số dư PawPoints không đủ. Bạn hiện có {soDuHienTai} điểm.");
+
+        return soDiemMuonDoi * VndMoiDiem;
+    }
+
+    // Gọi từ AuthService.RegisterAsync (Phần 1) ngay sau khi tạo user thành công - xem
+    // Pawsome_KhungDuAn.md/SRS YC-5.2. Nhờ bạn làm Phần 1 thêm 1 dòng:
+    //   await _pawPointsService.CongDiemThuongDangKyAsync(user.UserId);
+    // vào cuối RegisterAsync (cần inject thêm IPawPointsService vào constructor của AuthService).
+    public async Task CongDiemThuongDangKyAsync(int userId)
+    {
+        _dbContext.PawPointsTransactions.Add(new Pawsome.Domain.Entities.DonHang.PawPointsTransaction
+        {
+            UserId = userId,
+            OrderId = null,
+            SoDiem = 20,
+            Loai = "bonus",
+            NgayGiaoDich = DateTime.UtcNow
+        });
+
+        await _dbContext.SaveChangesAsync();
+    }
 }

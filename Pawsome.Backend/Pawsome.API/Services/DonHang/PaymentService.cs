@@ -160,6 +160,12 @@ public class PaymentService : IPaymentService
         var order = await _dbContext.Orders.FirstOrDefaultAsync(o => o.OrderId == orderId && o.UserId == userId);
         if (order == null)
             throw new KeyNotFoundException("Không tìm thấy đơn hàng.");
+
+        // Trước đây thiếu kiểm tra này: khách có thể bấm tạo thanh toán MoMo/VNPay nhiều lần
+        // cho 1 đơn đã "thanh_cong" hoặc đã "da_huy", tạo ra các dòng payments thừa/vô nghĩa.
+        if (order.TrangThai != OrderStatus.ChoXuLy)
+            throw new InvalidOperationException("Đơn hàng này không ở trạng thái chờ thanh toán.");
+
         return order;
     }
 
@@ -170,7 +176,7 @@ public class PaymentService : IPaymentService
             OrderId = orderId,
             PhuongThuc = phuongThuc,
             SoTien = soTien,
-            TrangThai = "cho_thanh_toan",
+            TrangThai = PaymentStatus.ChoThanhToan,
             MaGiaoDich = maGiaoDich
         };
         _dbContext.Payments.Add(payment);
@@ -185,14 +191,14 @@ public class PaymentService : IPaymentService
 
         if (thanhCong)
         {
-            payment.TrangThai = "thanh_cong";
+            payment.TrangThai = PaymentStatus.ThanhCong;
             payment.NgayThanhToan = DateTime.UtcNow;
             await _dbContext.SaveChangesAsync();
-            await _orderService.UpdateTrangThaiAsync(payment.OrderId, "dang_xu_ly");
+            await _orderService.UpdateTrangThaiAsync(payment.OrderId, OrderStatus.DangXuLy);
         }
         else
         {
-            payment.TrangThai = "that_bai";
+            payment.TrangThai = PaymentStatus.ThatBai;
             await _dbContext.SaveChangesAsync();
         }
     }

@@ -1,0 +1,154 @@
+<app-header />
+
+<main class="NoiDungChinh">
+<div class="OrderHistoryPage">
+  <div class="VungAnToan PageTitleBar">
+    <h1 class="PageTitle">Order History</h1>
+  </div>
+
+  <div class="VungAnToan FilterBar">
+    @for (item of statusFilters; track item.value) {
+      <button
+        type="button"
+        class="FilterChip"
+        [class.Active]="selectedStatus() === item.value"
+        (click)="selectStatus(item.value)">
+        {{ item.label }}
+      </button>
+    }
+  </div>
+
+  @if (loading()) {
+    <div class="VungAnToan"><p class="StateText">Loading your orders...</p></div>
+  } @else if (errorMessage()) {
+    <div class="VungAnToan"><p class="StateText ErrorText">{{ errorMessage() }}</p></div>
+  } @else if (!hasOrders()) {
+    <div class="VungAnToan StateBox">
+      <p>You don't have any orders in this category yet.</p>
+      <a routerLink="/" class="PrimaryButton">Continue Shopping</a>
+    </div>
+  } @else {
+    <div class="VungAnToan OrderList">
+      @for (order of orders(); track order.orderId) {
+        <div class="OrderCard">
+
+          <div class="OrderCardHeader" (click)="toggleExpand(order.orderId)">
+            <div class="OrderCardHeaderLeft">
+              <span class="OrderCode">Order #{{ order.orderId }}</span>
+              <span class="OrderDate">{{ order.ngayDat | date:'MMM d, y, h:mm a' }}</span>
+            </div>
+            <div class="OrderCardHeaderRight">
+              <span class="StatusBadge" [ngClass]="orderStatusCssClass(order.trangThai)">
+                {{ orderStatusLabel(order.trangThai) }}
+              </span>
+              <span class="OrderTotal">{{ order.thanhTien | number:'1.0-0' }} VND</span>
+              <i class="fa-solid" [class.fa-chevron-down]="expandedOrderId() !== order.orderId"
+                 [class.fa-chevron-up]="expandedOrderId() === order.orderId"></i>
+            </div>
+          </div>
+
+          @if (expandedOrderId() === order.orderId) {
+            <div class="OrderCardBody">
+              @for (item of order.orderItems; track item.orderItemId) {
+                <div class="OrderItemRow">
+                  <div class="ItemInfo">
+                    <span class="ItemName">{{ item.tenSanPham }}</span>
+                    <span class="ItemVariant">{{ item.tenBienThe }}</span>
+                  </div>
+                  <span class="ItemQty">x{{ item.soLuong }}</span>
+                  <span class="ItemTotal">{{ item.thanhTien | number:'1.0-0' }} VND</span>
+                </div>
+              }
+
+              <div class="OrderSummaryMini">
+                <div class="SummaryLine">
+                  <span>Subtotal</span>
+                  <span>{{ order.tienHang | number:'1.0-0' }} VND</span>
+                </div>
+                @if (order.giamGia > 0) {
+                  <div class="SummaryLine Discount">
+                    <span>Discount</span>
+                    <span>−{{ order.giamGia | number:'1.0-0' }} VND</span>
+                  </div>
+                }
+                <div class="SummaryLine">
+                  <span>Shipping ({{ order.donViVanChuyen || 'N/A' }})</span>
+                  <span>{{ order.phiVanChuyen | number:'1.0-0' }} VND</span>
+                </div>
+                <div class="SummaryLine Total">
+                  <span>Total</span>
+                  <span>{{ order.thanhTien | number:'1.0-0' }} VND</span>
+                </div>
+                @if (order.maVanDon) {
+                  <div class="TrackingLine">Tracking code: <strong>{{ order.maVanDon }}</strong></div>
+                }
+              </div>
+
+              <div class="OrderActions">
+                @if (canCancelOrder(order.trangThai)) {
+                  <button type="button" class="SecondaryButton" (click)="openAction(order.orderId, 'cancel')">
+                    Cancel Order
+                  </button>
+                }
+                @if (canRequestReturn(order.trangThai)) {
+                  <button type="button" class="SecondaryButton" (click)="openAction(order.orderId, 'return')">
+                    Request Return
+                  </button>
+                }
+              </div>
+
+              @if (activeAction() && activeAction()!.orderId === order.orderId) {
+                <div class="ActionPanel">
+                  <label class="ActionLabel">
+                    {{ activeAction()!.type === 'cancel' ? 'Reason (optional)' : 'Reason for return' }}
+                  </label>
+                  <textarea
+                    class="ActionTextarea"
+                    rows="3"
+                    [(ngModel)]="reasonText"
+                    [placeholder]="activeAction()!.type === 'cancel'
+                      ? 'Let us know why you are cancelling (optional)...'
+                      : 'Please describe the issue with this order...'">
+                  </textarea>
+
+                  @if (actionError()) {
+                    <p class="ErrorMessage">{{ actionError() }}</p>
+                  }
+
+                  <div class="ActionPanelButtons">
+                    <button type="button" class="SecondaryButton" (click)="closeAction()">
+                      Nevermind
+                    </button>
+                    <button
+                      type="button"
+                      class="PrimaryButton"
+                      [disabled]="submittingAction()"
+                      (click)="confirmAction()">
+                      {{ submittingAction() ? 'Submitting...' : (activeAction()!.type === 'cancel' ? 'Confirm Cancellation' : 'Submit Return Request') }}
+                    </button>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    @if (totalPages() > 1) {
+      <div class="VungAnToan Pagination">
+        <button type="button" class="PageButton" [disabled]="page() === 1" (click)="goToPage(page() - 1)">
+          Previous
+        </button>
+        <span class="PageInfo">Page {{ page() }} of {{ totalPages() }} ({{ totalCount() }} orders)</span>
+        <button type="button" class="PageButton" [disabled]="page() === totalPages()" (click)="goToPage(page() + 1)">
+          Next
+        </button>
+      </div>
+    }
+  }
+</div>
+</main>
+
+<app-footer />
+<app-chat-ai />
