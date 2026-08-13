@@ -54,7 +54,7 @@ export class GioHangComponent {
         this.dangTai.set(false);
       },
       error: () => {
-        this.loi.set('Không tải được giỏ hàng. Vui lòng thử lại.');
+        this.loi.set('Could not load your cart. Please try again.');
         this.dangTai.set(false);
       }
     });
@@ -72,23 +72,23 @@ export class GioHangComponent {
   private capNhatSoLuong(cartItemId: number, soLuongMoi: number): void {
     this.cartService.capNhatSoLuong(cartItemId, { soLuong: soLuongMoi }).subscribe({
       next: res => this.gioHang.set(res.data),
-      error: err => this.loi.set(err?.error?.message ?? 'Cập nhật số lượng thất bại.')
+      error: err => this.loi.set(err?.error?.message ?? 'Failed to update quantity.')
     });
   }
 
   xoaSanPham(cartItemId: number): void {
     this.cartService.xoaSanPham(cartItemId).subscribe({
       next: () => this.taiGioHang(),
-      error: err => this.loi.set(err?.error?.message ?? 'Xóa sản phẩm thất bại.')
+      error: err => this.loi.set(err?.error?.message ?? 'Failed to remove item.')
     });
   }
 
   xoaSachGioHang(): void {
-    if (!confirm('Xóa toàn bộ giỏ hàng?')) return;
+    if (!confirm('Clear the entire cart?')) return;
 
     this.cartService.xoaSachGioHang().subscribe({
       next: () => this.taiGioHang(),
-      error: err => this.loi.set(err?.error?.message ?? 'Xóa giỏ hàng thất bại.')
+      error: err => this.loi.set(err?.error?.message ?? 'Failed to clear cart.')
     });
   }
 
@@ -104,7 +104,7 @@ export class GioHangComponent {
         this.dangApDungMa.set(false);
         this.thongBaoCoupon.set({
           loai: res.success ? 'thanh-cong' : 'loi',
-          noiDung: res.message ?? (res.success ? 'Áp dụng mã thành công' : 'Mã không hợp lệ')
+          noiDung: res.message ?? (res.success ? 'Coupon applied successfully' : 'Invalid coupon code')
         });
         if (res.success) {
           this.taiGioHang();
@@ -112,7 +112,7 @@ export class GioHangComponent {
       },
       error: err => {
         this.dangApDungMa.set(false);
-        this.thongBaoCoupon.set({ loai: 'loi', noiDung: err?.error?.message ?? 'Áp dụng mã thất bại.' });
+        this.thongBaoCoupon.set({ loai: 'loi', noiDung: err?.error?.message ?? 'Failed to apply coupon.' });
       }
     });
   }
@@ -132,12 +132,12 @@ export class GioHangComponent {
     this.autoOrderService.tao({ variantId, soLuong, tanSuat: this.tanSuatDaChon() }).subscribe({
       next: res => {
         this.dangGuiAutoOrder.set(false);
-        this.thongBaoAutoOrder.set(res.message ?? 'Đã thiết lập đơn đặt hàng tự động.');
+        this.thongBaoAutoOrder.set(res.message ?? 'Recurring order set up successfully.');
         this.cartItemIdDangMoAuto.set(null);
       },
       error: err => {
         this.dangGuiAutoOrder.set(false);
-        this.thongBaoAutoOrder.set(err?.error?.message ?? 'Thiết lập thất bại.');
+        this.thongBaoAutoOrder.set(err?.error?.message ?? 'Setup failed.');
       }
     });
   }

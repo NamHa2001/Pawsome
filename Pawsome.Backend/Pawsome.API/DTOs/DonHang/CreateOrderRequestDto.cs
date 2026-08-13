@@ -10,5 +10,5 @@ public class CreateOrderRequestDto
     public int? CouponId { get; set; }
 
     [Required(ErrorMessage = "Vui lòng chọn đơn vị vận chuyển")]
-    public string DonViVanChuyen { get; set; } = null!; // GHN / GHTK / ViettelPost
+    public string DonViVanChuyen { get; set; } = null!;
 }

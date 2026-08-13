@@ -45,7 +45,7 @@ export class DatHangTuDongComponent {
         this.dangTai.set(false);
       },
       error: () => {
-        this.loi.set('Không tải được danh sách đơn đặt hàng tự động.');
+        this.loi.set('Could not load your recurring orders.');
         this.dangTai.set(false);
       }
     });
@@ -73,7 +73,7 @@ export class DatHangTuDongComponent {
         this.dangXuLy.set(null);
       },
       error: err => {
-        this.loi.set(err?.error?.message ?? 'Cập nhật thất bại.');
+        this.loi.set(err?.error?.message ?? 'Update failed.');
         this.dangXuLy.set(null);
       }
     });
@@ -96,7 +96,7 @@ export class DatHangTuDongComponent {
   }
 
   huy(id: number): void {
-    if (!confirm('Hủy đơn đặt hàng tự động này?')) return;
+    if (!confirm('Cancel this recurring order?')) return;
 
     this.dangXuLy.set(id);
     this.autoOrderService.huy(id).subscribe({
