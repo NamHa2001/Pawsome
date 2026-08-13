@@ -13,6 +13,8 @@ import { CategoryService } from '../services/category.service';
 import { ProductService } from '../services/product.service';
 import { BannerNoiBat } from '../banner-noi-bat/banner-noi-bat';
 import { WelcomeBonus } from '../welcome-bonus/welcome-bonus';
+import { CouponService } from '../../gio-hang/gio-hang/services/coupon.service';
+import { Coupon } from '../../gio-hang/gio-hang/models/gio-hang.model';
 
 interface BaiVietBlog {
   postId: number;
@@ -36,12 +38,14 @@ export class TrangChu implements OnInit, OnDestroy {
   private readonly categoryService = inject(CategoryService);
   private readonly productService = inject(ProductService);
   private readonly brandService = inject(BrandService);
+  private readonly couponService = inject(CouponService);
   private readonly http = inject(HttpClient);
 
   readonly danhMucList = signal<DanhMuc[]>([]);
   readonly nhomTheoDanhMuc = signal<NhomDanhMuc[]>([]);
   readonly thuongHieuList = signal<{ brandId: number; tenThuongHieu: string; logoUrl: string | null }[]>([]);
   readonly blogList = signal<BaiVietBlog[]>([]);
+  readonly couponNoiBat = signal<Coupon | null>(null);
 
   readonly slideIndex = signal(0);
   readonly slideAnh = ['/img/banner1.png', '/img/banner3.png', '/img/banner2.png'];
@@ -64,6 +68,10 @@ export class TrangChu implements OnInit, OnDestroy {
     });
 
     this.brandService.getAll().subscribe(ds => this.thuongHieuList.set(ds.slice(0, 6)));
+
+    // Flash Sale trang chủ = coupon đang hiệu lực do Phần 3 quản lý, Phần 2 chỉ đọc để hiển thị
+    // (Pawsome_KhungDuAn.md mục 5.9) - chọn coupon % giảm cao nhất để làm nổi bật.
+    this.couponService.layDangHieuLuc().subscribe(ds => this.couponNoiBat.set(this.chonCouponNoiBat(ds)));
 
     this.http.get<{ data: { items: BaiVietBlog[] } }>(`${environment.apiUrl}/Blog`, { params: { page: 1, pageSize: 3 } })
       .subscribe({
@@ -94,5 +102,19 @@ export class TrangChu implements OnInit, OnDestroy {
   private doiSlide(buoc: number): void {
     const tong = this.slideAnh.length;
     this.slideIndex.update(i => (i + buoc + tong) % tong);
+  }
+
+  private chonCouponNoiBat(list: Coupon[]): Coupon | null {
+    if (list.length === 0) return null;
+
+    const theoPhanTram = list.filter(c => c.loaiGiam === 'percent');
+    const nguon = theoPhanTram.length > 0 ? theoPhanTram : list;
+    return nguon.reduce((noiBat, c) => (c.giaTri > noiBat.giaTri ? c : noiBat), nguon[0]);
+  }
+
+  hienThiUuDai(cp: Coupon): string {
+    return cp.loaiGiam === 'percent'
+      ? `${cp.giaTri}% off`
+      : `$${quyDoiUSD(cp.giaTri).toFixed(2)} off`;
   }
 }

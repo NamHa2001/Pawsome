@@ -2,7 +2,7 @@ import { CurrencyPipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { environment } from '../../../../environments/environment';
 import { TokenService } from '../../../core/models/token.service';
 import { ChatAi } from '../../../shared/components/chat-ai/chat-ai';
@@ -11,6 +11,7 @@ import { Header } from '../../../shared/components/header/header';
 import { SanPham, quyDoiUSD } from '../models/san-pham.model';
 import { ProductService } from '../services/product.service';
 import { DanhGiaSanPham } from '../danh-gia-san-pham/danh-gia-san-pham';
+import { CartService } from '../../gio-hang/gio-hang/services/cart.service';
 
 @Component({
   selector: 'app-chi-tiet-san-pham',
@@ -25,7 +26,9 @@ export class ChiTietSanPham implements OnInit {
   readonly saoArr = [1, 2, 3, 4, 5];
 
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly productService = inject(ProductService);
+  private readonly cartService = inject(CartService);
   private readonly http = inject(HttpClient);
   readonly tokenService = inject(TokenService);
 
@@ -92,13 +95,28 @@ export class ChiTietSanPham implements OnInit {
     });
   }
 
+  readonly dangThemGio = signal(false);
+
   themVaoGioTam(variantId: number): void {
     const soLuongThem = this.soLuongCuaBienThe(variantId);
     if (soLuongThem <= 0) return;
 
-    const soLuongHienTai = parseInt(localStorage.getItem('cartCount') || '0', 10) + soLuongThem;
-    localStorage.setItem('cartCount', String(soLuongHienTai));
-    alert('Added to cart (temporary) - the real cart feature is being built by Phần 3, no API yet.');
+    if (!this.tokenService.isLoggedIn()) {
+      this.router.navigate(['/tai-khoan/dang-nhap']);
+      return;
+    }
+
+    this.dangThemGio.set(true);
+    this.cartService.themSanPham({ variantId, soLuong: soLuongThem }).subscribe({
+      next: () => {
+        this.dangThemGio.set(false);
+        alert('Added to cart successfully.');
+      },
+      error: err => {
+        this.dangThemGio.set(false);
+        alert(err?.error?.message ?? 'Failed to add to cart.');
+      }
+    });
   }
 
   toggleYeuThich(): void {

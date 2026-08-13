@@ -97,7 +97,7 @@
                       }
                     </select>
                   </div>
-                  <div><button class="NutAddNho" [disabled]="v.soLuongTon === 0" (click)="themVaoGioTam(v.variantId)">ADD</button></div>
+                  <div><button class="NutAddNho" [disabled]="v.soLuongTon === 0 || dangThemGio()" (click)="themVaoGioTam(v.variantId)">ADD</button></div>
                 </div>
               }
             }
