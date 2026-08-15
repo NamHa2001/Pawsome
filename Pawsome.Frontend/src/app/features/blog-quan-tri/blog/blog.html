@@ -1,9 +1,107 @@
 <app-header></app-header>
 
-<main class="TrangBlog">
-  <div class="VungAnToan">
-    <h1>Blog</h1>
-    <p>Danh sách bài viết sẽ hiển thị ở đây.</p>
+<main class="TrangBlog NoiDungChinh">
+  <div class="VungAnToan VungAnToanDoc">
+    <div class="TieuDeTrang">
+      <h1>Pet Care Blog</h1>
+      <p>Tips and guides for taking care of your pets.</p>
+    </div>
+
+    <div class="ThanhCongCu">
+      <div class="OTimKiem">
+        <input
+          type="text"
+          placeholder="Search articles..."
+          [(ngModel)]="tuKhoaNhap"
+          (keyup.enter)="timKiem()"
+          name="tuKhoaNhap">
+        <button type="button" (click)="timKiem()"><i class="fa-solid fa-magnifying-glass"></i></button>
+      </div>
+
+      @if (chuDeList().length > 0) {
+        <div class="DanhSachChuDe">
+          <button
+            type="button"
+            class="NutChuDe"
+            [class.active]="!boLoc().chuDe"
+            (click)="chonChuDe(null)">
+            All
+          </button>
+          @for (cd of chuDeList(); track cd) {
+            <button
+              type="button"
+              class="NutChuDe"
+              [class.active]="boLoc().chuDe === cd"
+              (click)="chonChuDe(cd)">
+              {{ cd }}
+            </button>
+          }
+        </div>
+      } @else if (loiChuDe()) {
+        <div class="LoiChuDe">
+          <span>Failed to load topics.</span>
+          @if (boLoc().chuDe) {
+            <span>Currently filtering by: <strong>{{ boLoc().chuDe }}</strong></span>
+          }
+          <button type="button" class="NutXoaLoc" (click)="taiChuDeList()">Retry</button>
+        </div>
+      }
+
+      @if (boLoc().tuKhoa || boLoc().chuDe || (boLoc().page ?? 1) > 1) {
+        <button type="button" class="NutXoaLoc" (click)="xoaLoc()">Clear filters</button>
+      }
+    </div>
+
+    @if (dangTai()) {
+      <p class="ThongBaoRong">Loading...</p>
+    } @else if (loi()) {
+      <div class="ThongBaoRong">
+        <p class="ThongBaoLoi">{{ loi() }}</p>
+        <button type="button" class="NutXoaLoc" (click)="thuLai()">Retry</button>
+      </div>
+    } @else if (baiVietList().length === 0) {
+      <p class="ThongBaoRong">No articles found.</p>
+    } @else {
+      <p class="TongSoKetQua">{{ tongSo() }} article{{ tongSo() > 1 ? 's' : '' }} found</p>
+      <div class="LuoiBaiViet">
+        @for (bv of baiVietList(); track bv.postId) {
+          <a [routerLink]="['/blog', bv.postId]" class="TheBaiViet">
+            <div class="AnhBaiViet">
+              @if (bv.anhDaiDien) {
+                <img [src]="bv.anhDaiDien" [alt]="bv.tieuDe">
+              } @else {
+                <div class="AnhMacDinh"><i class="fa-solid fa-paw"></i></div>
+              }
+              @if (bv.chuDe) {
+                <span class="NhanChuDe">{{ bv.chuDe }}</span>
+              }
+            </div>
+            <div class="NoiDungThe">
+              <h2>{{ bv.tieuDe }}</h2>
+              <p>{{ bv.trichDoanNoiDung }}</p>
+              <div class="MetaBaiViet">
+                <span>{{ bv.tenTacGia }}</span>
+                <span>{{ bv.ngayDang | date:'dd/MM/yyyy' }}</span>
+              </div>
+            </div>
+          </a>
+        }
+      </div>
+
+      @if (tongTrang() > 1) {
+        <div class="PhanTrang">
+          <button type="button" [disabled]="boLoc().page === 1" (click)="doiTrang((boLoc().page ?? 1) - 1)">‹</button>
+          @for (t of cacTrang(); track $index) {
+            @if (t === null) {
+              <span class="DauBaCham">…</span>
+            } @else {
+              <button type="button" [class.active]="boLoc().page === t" (click)="doiTrang(t)">{{ t }}</button>
+            }
+          }
+          <button type="button" [disabled]="boLoc().page === tongTrang()" (click)="doiTrang((boLoc().page ?? 1) + 1)">›</button>
+        </div>
+      }
+    }
   </div>
 </main>
 
