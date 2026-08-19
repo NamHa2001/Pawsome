@@ -28,6 +28,12 @@ public class WishlistService : IWishlistService
         var trang = page < 1 ? 1 : page;
         var soDong = pageSize < 1 ? 20 : Math.Min(pageSize, 100);
 
+        // Kẹp "trang" về giá trị hợp lệ trước Skip/Take - tránh (trang - 1) * soDong tràn số
+        // nguyên khi client gửi page rất lớn (VD 2000000000, vẫn là int hợp lệ nên qua được
+        // model binding), giống lỗi đã phát hiện và sửa ở BlogService.SearchAsync.
+        var tongSoTrang = PhanTrangHelper.TinhTongSoTrang(tongSo, soDong);
+        trang = tongSoTrang > 0 ? Math.Min(trang, tongSoTrang) : 1;
+
         var items = await query
             .Skip((trang - 1) * soDong)
             .Take(soDong)

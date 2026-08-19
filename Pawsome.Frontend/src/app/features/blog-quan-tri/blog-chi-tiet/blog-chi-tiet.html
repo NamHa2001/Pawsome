@@ -1,0 +1,49 @@
+<app-header></app-header>
+
+<main class="TrangChiTietBlog NoiDungChinh">
+  <div class="VungAnToan VungAnToanDoc">
+    @if (dangTai()) {
+      <p class="ThongBaoRong">Loading...</p>
+    } @else if (loi()) {
+      <div class="ThongBaoRong">
+        <p class="ThongBaoLoi">{{ loi() }}</p>
+        <a routerLink="/blog">← Back to Blog</a>
+      </div>
+    } @else if (khongTimThay()) {
+      <div class="ThongBaoRong">
+        <p>Article not found.</p>
+        <a routerLink="/blog">← Back to Blog</a>
+      </div>
+    } @else if (baiViet(); as bv) {
+      <a routerLink="/blog" class="LienKetQuayLai">← Back to Blog</a>
+
+      @if (bv.chuDe) {
+        <span class="NhanChuDe">{{ bv.chuDe }}</span>
+      }
+      <h1>{{ bv.tieuDe }}</h1>
+      <div class="MetaBaiViet">
+        <span>By {{ bv.tenTacGia }}</span>
+        <span>{{ bv.ngayDang | date:'dd/MM/yyyy' }}</span>
+      </div>
+
+      @if (bv.anhDaiDien) {
+        <img class="AnhDaiDien" [src]="bv.anhDaiDien" [alt]="bv.tieuDe">
+      }
+
+      <div class="NoiDungBaiViet">{{ bv.noiDung }}</div>
+
+      <div class="KhungChiaSe">
+        <span>Share this article:</span>
+        <button type="button" class="NutChiaSe NutFacebook" (click)="chiaSe('facebook')">
+          <i class="fa-brands fa-facebook-f"></i> Facebook
+        </button>
+        <button type="button" class="NutChiaSe NutZalo" (click)="chiaSe('zalo')">
+          <i class="fa-solid fa-share-nodes"></i> Zalo
+        </button>
+      </div>
+    }
+  </div>
+</main>
+
+<app-footer></app-footer>
+<app-chat-ai></app-chat-ai>
