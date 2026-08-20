@@ -10,4 +10,5 @@ public interface IAuthService
     Task<string> ForgotPasswordAsync(ForgotPasswordRequestDto dto);
     Task ResetPasswordAsync(ResetPasswordRequestDto dto);
     Task<AuthResponseDto> GoogleLoginAsync(GoogleLoginRequestDto dto);
+    Task ChangePasswordAsync(int userId, ChangePasswordRequestDto dto);
 }

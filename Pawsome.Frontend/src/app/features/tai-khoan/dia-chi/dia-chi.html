@@ -1,0 +1,116 @@
+<app-header />
+
+<div class="dia-chi-page">
+  <div class="page-wrap">
+    <div class="page-head">
+      <div>
+        <h2 class="page-title">Shipping addresses</h2>
+        <p class="page-sub">Manage the addresses used for your deliveries.</p>
+      </div>
+      @if (!hienForm) {
+        <button type="button" class="btn-primary btn-add" (click)="moFormThemMoi()">Add new address</button>
+      }
+    </div>
+
+    @if (loiChung) {
+      <div class="error error-chung">{{ loiChung }}</div>
+    }
+
+    @if (hienForm) {
+      <div class="form-card">
+        <h3 class="form-card-title">{{ dangSuaId ? 'Edit address' : 'New address' }}</h3>
+
+        <form [formGroup]="form" (ngSubmit)="submit()">
+          <div class="field">
+            <label for="nguoiNhan">Recipient name*</label>
+            <input id="nguoiNhan" type="text" placeholder="John Smith" formControlName="nguoiNhan" />
+            @if (form.controls.nguoiNhan.touched && form.controls.nguoiNhan.invalid) {
+              <small class="error">Please enter the recipient's name.</small>
+            }
+          </div>
+
+          <div class="field">
+            <label for="soDienThoai">Phone number*</label>
+            <input id="soDienThoai" type="tel" placeholder="09xx xxx xxx" formControlName="soDienThoai" />
+            @if (form.controls.soDienThoai.touched && form.controls.soDienThoai.invalid) {
+              <small class="error">Please enter a phone number.</small>
+            }
+          </div>
+
+          <div class="field">
+            <label for="diaChiChiTiet">Street address*</label>
+            <input id="diaChiChiTiet" type="text" placeholder="123 Le Loi Street" formControlName="diaChiChiTiet" />
+            @if (form.controls.diaChiChiTiet.touched && form.controls.diaChiChiTiet.invalid) {
+              <small class="error">Please enter the street address.</small>
+            }
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="phuongXa">Ward</label>
+              <input id="phuongXa" type="text" placeholder="Optional" formControlName="phuongXa" />
+            </div>
+            <div class="field">
+              <label for="quanHuyen">District</label>
+              <input id="quanHuyen" type="text" placeholder="Optional" formControlName="quanHuyen" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="tinhThanh">City / Province*</label>
+            <input id="tinhThanh" type="text" placeholder="Ho Chi Minh City" formControlName="tinhThanh" />
+            @if (form.controls.tinhThanh.touched && form.controls.tinhThanh.invalid) {
+              <small class="error">Please enter the city or province.</small>
+            }
+          </div>
+
+          <label class="checkbox-field">
+            <input type="checkbox" formControlName="laMacDinh" />
+            <span>Set as default address</span>
+          </label>
+
+          <div class="form-actions">
+            <button type="button" class="btn-secondary" (click)="dongForm()">Cancel</button>
+            <button type="submit" class="btn-primary" [disabled]="dangGui">
+              {{ dangGui ? 'Saving...' : 'Save address' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    }
+
+    @if (dangTai) {
+      <p class="loading-text">Loading your addresses...</p>
+    } @else if (danhSach.length === 0 && !hienForm) {
+      <div class="empty-state">
+        <p>You don't have any saved addresses yet.</p>
+        <button type="button" class="btn-primary" (click)="moFormThemMoi()">Add your first address</button>
+      </div>
+    } @else {
+      <div class="address-list">
+        @for (address of danhSach; track address.addressId) {
+          <div class="address-card">
+            @if (address.laMacDinh) {
+              <span class="badge-default">Default</span>
+            }
+            <p class="address-name">{{ address.nguoiNhan }}</p>
+            <p class="address-phone">{{ address.soDienThoai }}</p>
+            <p class="address-detail">
+              {{ address.diaChiChiTiet }}
+              @if (address.phuongXa) {, {{ address.phuongXa }}}
+              @if (address.quanHuyen) {, {{ address.quanHuyen }}}
+              , {{ address.tinhThanh }}
+            </p>
+            <div class="address-actions">
+              <button type="button" class="link-btn" (click)="moFormSua(address)">Edit</button>
+              <button type="button" class="link-btn link-danger" (click)="xoa(address)">Delete</button>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>
+
+<app-footer />
+<app-chat-ai />
