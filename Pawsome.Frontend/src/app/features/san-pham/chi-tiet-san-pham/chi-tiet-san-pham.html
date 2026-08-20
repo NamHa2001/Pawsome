@@ -29,7 +29,7 @@
             <h1 class="TenSanPham">{{ sp.ten }}</h1>
             <div class="GiaThuong">
               <span>Starts From:</span>
-              <strong>{{ quyDoiUSD(sp.giaTu) | currency:'USD':'symbol':'1.2-2' }}</strong>
+              <strong>{{ sp.giaTu ? ((sp.giaTu | number:'1.0-0') + ' VND') : 'Contact us' }}</strong>
             </div>
             @if (sp.lieuLuong) {
               <p class="LieuLuong">{{ sp.lieuLuong }}</p>
@@ -48,7 +48,7 @@
 
             <div class="GiaPawVip">
               <img src="/img/pawvip_white.png" alt="PawVip" class="IconVipNho">
-              <span>$24.38</span>
+              <span>585,000 VND</span>
             </div>
 
             @if (tokenService.isLoggedIn()) {
@@ -88,8 +88,8 @@
               @if (v.dangKinhDoanh) {
                 <div class="HangDuLieuGrid">
                   <div class="PackSizeTxt">{{ v.tenBienThe }} <span class="TonKhoNho">({{ v.soLuongTon > 0 ? v.soLuongTon + ' in stock' : 'Out of stock' }})</span></div>
-                  <div class="PriceTxt">{{ quyDoiUSD(v.gia) | currency:'USD':'symbol':'1.2-2' }}</div>
-                  <div class="VipPriceTxt">{{ quyDoiUSD(giaVipPlaceholder(v.gia)) | currency:'USD':'symbol':'1.2-2' }}</div>
+                  <div class="PriceTxt">{{ v.gia | number:'1.0-0' }} VND</div>
+                  <div class="VipPriceTxt">{{ giaVipPlaceholder(v.gia) | number:'1.0-0' }} VND</div>
                   <div>
                     <select class="SelectQty" [ngModel]="soLuongCuaBienThe(v.variantId)" (ngModelChange)="doiSoLuong(v.variantId, $event)">
                       @for (n of [0, 1, 2, 3]; track n) {
@@ -196,7 +196,7 @@
                 <div class="StarGoiY"><i class="fa-solid fa-star"></i> <span>{{ item.diemDanhGiaTb }}</span></div>
                 <b>{{ item.ten }}</b>
                 <div class="GiaGoiY">
-                  <div class="GiaVip"><b>{{ quyDoiUSD(item.giaTu) | currency:'USD':'symbol':'1.2-2' }}</b></div>
+                  <div class="GiaVip"><b>{{ item.giaTu ? ((item.giaTu | number:'1.0-0') + ' VND') : 'Contact us' }}</b></div>
                 </div>
                 <div class="NutShopNowGoiY"><i class="fas fa-cart-shopping"></i> SHOP NOW</div>
               </a>

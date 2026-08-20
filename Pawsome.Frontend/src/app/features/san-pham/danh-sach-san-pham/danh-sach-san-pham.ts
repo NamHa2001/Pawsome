@@ -1,18 +1,18 @@
-import { CurrencyPipe } from '@angular/common';
+import { DecimalPipe } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ChatAi } from '../../../shared/components/chat-ai/chat-ai';
 import { Footer } from '../../../shared/components/footer/footer';
 import { Header } from '../../../shared/components/header/header';
-import { BoLocSanPham, DanhMuc, SanPham, ThuongHieu, dichTenDanhMuc, quyDoiUSD } from '../models/san-pham.model';
+import { BoLocSanPham, DanhMuc, SanPham, ThuongHieu, dichTenDanhMuc } from '../models/san-pham.model';
 import { BrandService } from '../services/brand.service';
 import { CategoryService } from '../services/category.service';
 import { ProductService } from '../services/product.service';
 
 @Component({
   selector: 'app-danh-sach-san-pham',
-  imports: [Header, Footer, ChatAi, RouterLink, FormsModule, CurrencyPipe],
+  imports: [Header, Footer, ChatAi, RouterLink, FormsModule, DecimalPipe],
   templateUrl: './danh-sach-san-pham.html',
   styleUrl: './danh-sach-san-pham.scss'
 })
@@ -20,7 +20,6 @@ export class DanhSachSanPham implements OnInit {
   protected readonly Math = Math;
   protected readonly Array = Array;
   protected readonly dichTenDanhMuc = dichTenDanhMuc;
-  protected readonly quyDoiUSD = quyDoiUSD;
 
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);

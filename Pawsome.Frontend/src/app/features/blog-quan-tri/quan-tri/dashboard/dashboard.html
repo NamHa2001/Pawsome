@@ -12,7 +12,7 @@
     <div class="TheThongKe TheDo">
       <div class="NoiDungThe">
         <span class="NhanThe">Monthly Revenue</span>
-        <span class="GiaTriThe" [title]="quyDoiUSD(tk.doanhThuThangNay) | currency:'USD':'symbol':'1.2-2'">{{ quyDoiUSD(tk.doanhThuThangNay) | currency:'USD':'symbol':'1.2-2' }}</span>
+        <span class="GiaTriThe" [title]="(tk.doanhThuThangNay | number:'1.0-0') + ' VND'">{{ tk.doanhThuThangNay | number:'1.0-0' }} VND</span>
       </div>
       <i class="fa-solid fa-sack-dollar IconThe"></i>
     </div>
@@ -62,7 +62,7 @@
                 <tr>
                   <td>{{ sp.ten }}</td>
                   <td>{{ sp.soLuongBan }}</td>
-                  <td>{{ quyDoiUSD(sp.doanhThu) | currency:'USD':'symbol':'1.2-2' }}</td>
+                  <td>{{ sp.doanhThu | number:'1.0-0' }} VND</td>
                 </tr>
               }
             </tbody>

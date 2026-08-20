@@ -1,4 +1,4 @@
-import { CurrencyPipe } from '@angular/common';
+import { DecimalPipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -8,21 +8,20 @@ import { TokenService } from '../../../core/models/token.service';
 import { ChatAi } from '../../../shared/components/chat-ai/chat-ai';
 import { Footer } from '../../../shared/components/footer/footer';
 import { Header } from '../../../shared/components/header/header';
-import { SanPham, quyDoiUSD } from '../models/san-pham.model';
+import { SanPham } from '../models/san-pham.model';
 import { ProductService } from '../services/product.service';
 import { DanhGiaSanPham } from '../danh-gia-san-pham/danh-gia-san-pham';
 import { CartService } from '../../gio-hang/gio-hang/services/cart.service';
 
 @Component({
   selector: 'app-chi-tiet-san-pham',
-  imports: [Header, Footer, ChatAi, RouterLink, FormsModule, CurrencyPipe, DanhGiaSanPham],
+  imports: [Header, Footer, ChatAi, RouterLink, FormsModule, DecimalPipe, DanhGiaSanPham],
   templateUrl: './chi-tiet-san-pham.html',
   styleUrl: './chi-tiet-san-pham.scss'
 })
 export class ChiTietSanPham implements OnInit {
   protected readonly Math = Math;
   protected readonly Array = Array;
-  protected readonly quyDoiUSD = quyDoiUSD;
   readonly saoArr = [1, 2, 3, 4, 5];
 
   private readonly route = inject(ActivatedRoute);
