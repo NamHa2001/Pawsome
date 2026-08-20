@@ -1,3 +1,6 @@
+:host{
+  display:contents;
+}
 /* Bố cục 2 cột  */
 .KhungNoiDungGioHang2Cot {
   display: grid;
