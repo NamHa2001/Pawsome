@@ -41,7 +41,7 @@
                   <img [src]="sp.anhChinh ?? '/img/logo1.png'" [alt]="sp.ten" class="AnhGoiYTimKiem">
                   <span class="TenGoiYTimKiem">{{ sp.ten }}</span>
                   @if (sp.giaTu) {
-                    <span class="GiaGoiYTimKiem">{{ quyDoiUSD(sp.giaTu) | currency:'USD':'symbol':'1.2-2' }}</span>
+                    <span class="GiaGoiYTimKiem">{{ sp.giaTu | number:'1.0-0' }} VND</span>
                   }
                 </button>
               </li>
