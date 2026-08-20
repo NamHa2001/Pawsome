@@ -7,8 +7,6 @@
   max-width: 1512px;
   position: fixed;
   top: 0;
-  left: 50%;
-  transform: translateX(-50%);
   left: 0;
   right: 0;
   margin: 0 auto;
@@ -90,6 +88,64 @@
   display: flex;
   align-items: center;
   padding: 0 5px;
+  position: relative;
+}
+
+.DanhSachGoiYTimKiem {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  background-color: var(--MauTrang);
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  list-style: none;
+  max-height: 360px;
+  overflow-y: auto;
+  z-index: 1001;
+}
+
+.MucGoiYTimKiem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 15px;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--MauHongNhat);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: var(--MauHongNhat);
+  }
+}
+
+.AnhGoiYTimKiem {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  border-radius: 6px;
+  background-color: var(--MauHongNhat);
+  flex-shrink: 0;
+}
+
+.TenGoiYTimKiem {
+  flex: 1;
+  font-size: 14px;
+  color: var(--MauDen);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.GiaGoiYTimKiem {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--MauDoDam);
+  flex-shrink: 0;
 }
 
 .VongTronTimKiem {
@@ -325,4 +381,46 @@
 .MucDangXuat {
   color: var(--MauDoDam);
   border-top: 1px solid var(--MauHongNhat);
+}
+
+.DropdownDangNhap {
+  position: absolute;
+  top: calc(100% + 14px);
+  right: 0;
+  width: 240px;
+  background-color: var(--MauTrang);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.16);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  z-index: 1001;
+}
+
+.NutDangNhapDropdown {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 12px 0;
+  border-radius: 30px;
+  background-color: var(--MauDoDam);
+  color: var(--MauTrang);
+  font-size: 15px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+
+  &:hover {
+    opacity: 0.88;
+  }
+}
+
+.ChuHoacDropdown {
+  font-size: 12px;
+  font-weight: 600;
+  color: #999;
 }

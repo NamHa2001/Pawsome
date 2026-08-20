@@ -21,8 +21,33 @@
         <div class="VongTronTimKiem" (click)="timKiem()">
           <i class="fa-solid fa-magnifying-glass"></i>
         </div>
-        <input type="text" class="OInputTimKiem" placeholder="Searching for products..." [(ngModel)]="tuKhoaTimKiem"
-          (keyup.enter)="timKiem()" name="tuKhoaTimKiem">
+        <input
+          type="text"
+          class="OInputTimKiem"
+          placeholder="Searching for products..."
+          [ngModel]="tuKhoaTimKiem"
+          (ngModelChange)="onTuKhoaThayDoi($event)"
+          (focus)="onTuKhoaThayDoi(tuKhoaTimKiem)"
+          (blur)="dongGoiY()"
+          (keyup.enter)="timKiem()"
+          name="tuKhoaTimKiem"
+          autocomplete="off">
+
+        @if (hienGoiY() && danhSachGoiY().length > 0) {
+          <ul class="DanhSachGoiYTimKiem">
+            @for (sp of danhSachGoiY(); track sp.productId) {
+              <li>
+                <button type="button" class="MucGoiYTimKiem" (mousedown)="chonGoiY(sp)">
+                  <img [src]="sp.anhChinh ?? '/img/logo1.png'" [alt]="sp.ten" class="AnhGoiYTimKiem">
+                  <span class="TenGoiYTimKiem">{{ sp.ten }}</span>
+                  @if (sp.giaTu) {
+                    <span class="GiaGoiYTimKiem">{{ quyDoiUSD(sp.giaTu) | currency:'USD':'symbol':'1.2-2' }}</span>
+                  }
+                </button>
+              </li>
+            }
+          </ul>
+        }
       </div>
 
       <div class="CumTienIch">
@@ -38,9 +63,17 @@
         </a>
         <div class="KhungTaiKhoan">
           @if (!daDangNhap()) {
-          <a routerLink="/tai-khoan/dang-nhap" class="NutTienIch">
+          <div class="NutTienIch" (click)="toggleDropdownDangNhap($event)">
             <div class="VongTronIconDo"><i class="fa-solid fa-user"></i></div>
-          </a>
+          </div>
+
+          @if (hienDropdownDangNhap()) {
+          <div class="DropdownDangNhap">
+            <a routerLink="/tai-khoan/dang-nhap" class="NutDangNhapDropdown" (click)="dongDropdownDangNhap()">Sign In</a>
+            <span class="ChuHoacDropdown">OR</span>
+            <a routerLink="/tai-khoan/dang-ky" class="NutDangNhapDropdown" (click)="dongDropdownDangNhap()">Register</a>
+          </div>
+          }
           } @else {
           <div class="NutTienIch" (click)="toggleDropdownTaiKhoan($event)">
             <div class="VongTronIconDo"><i class="fa-solid fa-user"></i></div>
