@@ -93,6 +93,64 @@
   display: flex;
   align-items: center;
   padding: 0 5px;
+  position: relative;
+}
+
+.DanhSachGoiYTimKiem {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  background-color: var(--MauTrang);
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  list-style: none;
+  max-height: 360px;
+  overflow-y: auto;
+  z-index: 1001;
+}
+
+.MucGoiYTimKiem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 15px;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--MauHongNhat);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: var(--MauHongNhat);
+  }
+}
+
+.AnhGoiYTimKiem {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  border-radius: 6px;
+  background-color: var(--MauHongNhat);
+  flex-shrink: 0;
+}
+
+.TenGoiYTimKiem {
+  flex: 1;
+  font-size: 14px;
+  color: var(--MauDen);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.GiaGoiYTimKiem {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--MauDoDam);
+  flex-shrink: 0;
 }
 
 .VongTronTimKiem {
