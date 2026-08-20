@@ -42,7 +42,7 @@
             <div class="NoiDungThe">
               <a [routerLink]="['/san-pham', sp.productId]" class="TenSanPham">{{ sp.tenSanPham }}</a>
               <div class="GiaSanPham">
-                {{ sp.giaTu ? (quyDoiUSD(sp.giaTu) | currency:'USD':'symbol':'1.2-2') : 'Contact us' }}
+                {{ sp.giaTu ? ((sp.giaTu | number:'1.0-0') + ' VND') : 'Contact us' }}
               </div>
               <button
                 type="button"

@@ -86,9 +86,3 @@ const TEN_DANH_MUC_TIENG_ANH: Record<string, string> = {
 export function dichTenDanhMuc(tenViet: string): string {
   return TEN_DANH_MUC_TIENG_ANH[tenViet] ?? tenViet;
 }
-
-const TY_GIA_USD = 24000;
-
-export function quyDoiUSD(giaVnd: number | null | undefined): number {
-  return (giaVnd ?? 0) / TY_GIA_USD;
-}

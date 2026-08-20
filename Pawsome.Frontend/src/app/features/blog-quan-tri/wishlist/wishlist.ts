@@ -1,9 +1,8 @@
-import { CurrencyPipe } from '@angular/common';
+import { DecimalPipe } from '@angular/common';
 import { Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { EMPTY, Subject, catchError, switchMap, tap } from 'rxjs';
-import { quyDoiUSD } from '../../san-pham/models/san-pham.model';
 import { Footer } from '../../../shared/components/footer/footer';
 import { Header } from '../../../shared/components/header/header';
 import { ChatAi } from '../../../shared/components/chat-ai/chat-ai';
@@ -15,13 +14,11 @@ const PAGE_SIZE = 12;
 @Component({
   selector: 'app-wishlist',
   standalone: true,
-  imports: [CurrencyPipe, RouterLink, Header, Footer, ChatAi],
+  imports: [DecimalPipe, RouterLink, Header, Footer, ChatAi],
   templateUrl: './wishlist.html',
   styleUrl: './wishlist.scss'
 })
 export class Wishlist implements OnInit {
-  protected readonly quyDoiUSD = quyDoiUSD;
-
   private readonly wishlistService = inject(WishlistService);
   private readonly destroyRef = inject(DestroyRef);
 

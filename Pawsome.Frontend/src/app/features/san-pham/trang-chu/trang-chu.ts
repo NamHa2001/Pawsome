@@ -1,4 +1,4 @@
-import { CurrencyPipe } from '@angular/common';
+import { DecimalPipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
@@ -7,7 +7,7 @@ import { environment } from '../../../../environments/environment';
 import { ChatAi } from '../../../shared/components/chat-ai/chat-ai';
 import { Footer } from '../../../shared/components/footer/footer';
 import { Header } from '../../../shared/components/header/header';
-import { DanhMuc, SanPham, dichTenDanhMuc, quyDoiUSD } from '../models/san-pham.model';
+import { DanhMuc, SanPham, dichTenDanhMuc } from '../models/san-pham.model';
 import { BrandService } from '../services/brand.service';
 import { CategoryService } from '../services/category.service';
 import { ProductService } from '../services/product.service';
@@ -30,7 +30,7 @@ interface NhomDanhMuc {
 
 @Component({
   selector: 'app-trang-chu',
-  imports: [Header, Footer, ChatAi, RouterLink, CurrencyPipe, BannerNoiBat, WelcomeBonus],
+  imports: [Header, Footer, ChatAi, RouterLink, DecimalPipe, BannerNoiBat, WelcomeBonus],
   templateUrl: './trang-chu.html',
   styleUrl: './trang-chu.scss'
 })
@@ -91,7 +91,6 @@ export class TrangChu implements OnInit, OnDestroy {
   }
 
   protected readonly dichTenDanhMuc = dichTenDanhMuc;
-  protected readonly quyDoiUSD = quyDoiUSD;
 
   private readonly anhBlogMauArr = ['/img/blog1.png', '/img/blog2.png', '/img/blog3.png'];
 
@@ -115,6 +114,6 @@ export class TrangChu implements OnInit, OnDestroy {
   hienThiUuDai(cp: Coupon): string {
     return cp.loaiGiam === 'percent'
       ? `${cp.giaTri}% off`
-      : `$${quyDoiUSD(cp.giaTri).toFixed(2)} off`;
+      : `${cp.giaTri.toLocaleString('en-US')} VND off`;
   }
 }

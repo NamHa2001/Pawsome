@@ -1,19 +1,16 @@
-import { CurrencyPipe } from '@angular/common';
+import { DecimalPipe } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
-import { quyDoiUSD } from '../../../san-pham/models/san-pham.model';
 import { DashboardStats } from './models/dashboard-stats.model';
 import { DashboardService } from './services/dashboard.service';
 
 @Component({
   selector: 'app-quan-tri-dashboard',
   standalone: true,
-  imports: [CurrencyPipe],
+  imports: [DecimalPipe],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss'
 })
 export class Dashboard {
-  protected readonly quyDoiUSD = quyDoiUSD;
-
   private readonly dashboardService = inject(DashboardService);
 
   readonly thongKe = signal<DashboardStats | null>(null);
