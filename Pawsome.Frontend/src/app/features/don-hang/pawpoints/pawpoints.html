@@ -1,0 +1,89 @@
+<app-header />
+
+<main class="NoiDungChinh">
+<div class="PawPointsPage">
+  <div class="VungAnToan PageTitleBar">
+    <h1 class="PageTitle">My PawPoints</h1>
+  </div>
+
+  <div class="VungAnToan BalanceSection">
+    <div class="Card BalanceCard">
+      <span class="BalanceLabel">Current Balance</span>
+      @if (loadingBalance()) {
+        <span class="BalanceValue">...</span>
+      } @else {
+        <span class="BalanceValue">{{ balance() ?? 0 }} <small>points</small></span>
+        <span class="BalanceVnd">≈ {{ balanceInVnd() | number:'1.0-0' }} VND discount</span>
+      }
+    </div>
+
+    <div class="Card InfoCard">
+      <p class="InfoTitle">How PawPoints work</p>
+      <ul class="InfoList">
+        <li>Earn 1 point for every 10,000 VND spent on an order.</li>
+        <li>Get 20 bonus points when you register a new account.</li>
+        <li>Redeem points at checkout — 1 point = 10,000 VND off your order.</li>
+        <li>Points are refunded automatically if the related order is cancelled or returned.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="VungAnToan SectionTitleBar">
+    <h2 class="SectionTitle">Points History</h2>
+  </div>
+
+  <div class="VungAnToan FilterBar">
+    @for (item of typeFilters; track item.value) {
+      <button
+        type="button"
+        class="FilterChip"
+        [class.Active]="selectedType() === item.value"
+        (click)="selectType(item.value)">
+        {{ item.label }}
+      </button>
+    }
+  </div>
+
+  @if (loadingHistory()) {
+    <div class="VungAnToan"><p class="StateText">Loading history...</p></div>
+  } @else if (errorMessage()) {
+    <div class="VungAnToan"><p class="StateText ErrorText">{{ errorMessage() }}</p></div>
+  } @else if (!hasTransactions()) {
+    <div class="VungAnToan StateBox">
+      <p>No transactions in this category yet.</p>
+    </div>
+  } @else {
+    <div class="VungAnToan TransactionList">
+      @for (tx of transactions(); track tx.transactionId) {
+        <div class="TransactionRow">
+          <div class="TxInfo">
+            <span class="TxType" [ngClass]="'Type-' + tx.loai">{{ pawPointsTypeLabel(tx.loai) }}</span>
+            <span class="TxDate">{{ tx.ngayGiaoDich | date:'MMM d, y, h:mm a' }}</span>
+            @if (tx.orderId) {
+              <a [routerLink]="['/don-hang/theo-doi', tx.orderId]" class="TxOrderLink">Order #{{ tx.orderId }}</a>
+            }
+          </div>
+          <span class="TxPoints" [class.Positive]="tx.soDiem > 0" [class.Negative]="tx.soDiem < 0">
+            {{ tx.soDiem > 0 ? '+' : '' }}{{ tx.soDiem }}
+          </span>
+        </div>
+      }
+    </div>
+
+    @if (totalPages() > 1) {
+      <div class="VungAnToan Pagination">
+        <button type="button" class="PageButton" [disabled]="page() === 1" (click)="goToPage(page() - 1)">
+          Previous
+        </button>
+        <span class="PageInfo">Page {{ page() }} of {{ totalPages() }} ({{ totalCount() }} transactions)</span>
+        <button type="button" class="PageButton" [disabled]="page() === totalPages()" (click)="goToPage(page() + 1)">
+          Next
+        </button>
+      </div>
+    }
+  }
+</div>
+</main>
+
+<app-footer />
+<app-chat-ai />

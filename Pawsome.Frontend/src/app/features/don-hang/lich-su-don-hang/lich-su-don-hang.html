@@ -95,6 +95,8 @@
                     Request Return
                   </button>
                 }
+                <a [routerLink]="['/don-hang/theo-doi', order.orderId]" class="SecondaryButton">
+                Track Shipment</a>
               </div>
 
               @if (activeAction() && activeAction()!.orderId === order.orderId) {

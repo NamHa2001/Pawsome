@@ -28,6 +28,7 @@ export interface CreateOrderRequest {
   addressId: number;
   couponId: number | null;
   donViVanChuyen: string;
+  soDiemMuonDoi?: number | null;
 }
 
 export interface CreatePaymentResult {

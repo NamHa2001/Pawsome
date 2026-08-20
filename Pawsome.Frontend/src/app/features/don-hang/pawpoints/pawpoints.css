@@ -1,0 +1,197 @@
+:host { display: contents; }
+
+.PawPointsPage {
+  width: 100%;
+  padding: 40px 0 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.PageTitleBar { flex-direction: column; align-items: flex-start; margin-bottom: 24px; }
+.PageTitle { font-size: 28px; font-weight: 700; color: var(--MauDen); }
+
+.SectionTitleBar { flex-direction: column; align-items: flex-start; margin: 30px 0 16px; }
+.SectionTitle { font-size: 20px; font-weight: 700; color: var(--MauDen); }
+
+.Card {
+  background-color: var(--MauTrang);
+  border: 1px solid var(--MauHongNhat);
+  border-radius: 12px;
+  padding: 22px;
+}
+
+.BalanceSection {
+  align-items: stretch;
+  gap: 20px;
+}
+
+.BalanceCard {
+  flex: 1;
+  min-width: 260px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background-color: var(--MauDoDam);
+  border: none;
+}
+
+.BalanceLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--MauTrang);
+  opacity: 0.85;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.BalanceValue {
+  font-size: 40px;
+  font-weight: 700;
+  color: var(--MauTrang);
+  margin-top: 8px;
+
+  small { font-size: 16px; font-weight: 600; }
+}
+
+.BalanceVnd {
+  font-size: 13px;
+  color: var(--MauTrang);
+  opacity: 0.85;
+  margin-top: 6px;
+}
+
+.InfoCard {
+  flex: 1.4;
+}
+
+.InfoTitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--MauDen);
+  margin-bottom: 10px;
+}
+
+.InfoList {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.InfoList li {
+  font-size: 13px;
+  color: var(--MauDen);
+  opacity: 0.8;
+  padding-left: 16px;
+  position: relative;
+
+  &::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: var(--MauDoDam);
+    font-weight: 700;
+  }
+}
+
+.FilterBar { flex-wrap: wrap; justify-content: flex-start; gap: 10px; margin-bottom: 22px; }
+
+.FilterChip {
+  background: none;
+  border: 1px solid var(--MauHongDam);
+  color: var(--MauDen);
+  padding: 8px 18px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+
+  &:hover { background-color: var(--MauHongNhat); }
+
+  &.Active {
+    background-color: var(--MauDoDam);
+    border-color: var(--MauDoDam);
+    color: var(--MauTrang);
+  }
+}
+
+.StateText { padding: 50px 0; text-align: center; width: 100%; }
+.ErrorText { color: var(--MauDoDam); }
+.StateBox { flex-direction: column; gap: 12px; padding: 50px 0; color: #888; }
+
+/* ── Transaction list ─────────────────────────────────── */
+.TransactionList { flex-direction: column; align-items: stretch; gap: 10px; }
+
+.TransactionRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--MauTrang);
+  border: 1px solid var(--MauHongNhat);
+  border-radius: 10px;
+  padding: 14px 20px;
+}
+
+.TxInfo {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.TxType {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.Type-earn   { background-color: var(--MauHongNhat); color: var(--MauDoDam); }
+.Type-redeem { background-color: var(--MauHongNhat); color: #4D4D4E; }
+.Type-bonus  { background-color: #2F2D2E; color: var(--MauTrang); }
+
+.TxDate { font-size: 13px; color: #888; }
+
+.TxOrderLink {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--MauDoDam);
+  text-decoration: underline;
+}
+
+.TxPoints {
+  font-size: 16px;
+  font-weight: 700;
+  min-width: 60px;
+  text-align: right;
+
+  &.Positive { color: var(--MauDoDam); }
+  &.Negative { color: #4D4D4E; }
+}
+
+.Pagination { margin-top: 26px; gap: 16px; }
+
+.PageButton {
+  background: none;
+  border: 1px solid var(--MauHongDam);
+  color: var(--MauDen);
+  padding: 8px 18px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover:not(:disabled) { background-color: var(--MauHongNhat); }
+  &:disabled { opacity: 0.4; cursor: not-allowed; }
+}
+
+.PageInfo { font-size: 13px; color: #888; }
+
+@media (max-width: 900px) {
+  .BalanceSection { flex-direction: column; }
+}
