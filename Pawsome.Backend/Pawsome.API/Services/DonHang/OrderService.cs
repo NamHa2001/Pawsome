@@ -131,7 +131,7 @@ public class OrderService : IOrderService
 
             /* Cộng PawPoints: 1 điểm / 10.000đ CHI TIÊU CHO HÀNG (không tính phí ship, và tính
              trên số tiền hàng SAU khi trừ giảm giá - không phải trên thanh_tien vì thanh_tien
-             còn cộng thêm phí vận chuyển). Bảng diem_pawpoints trên users tự đồng bộ qua
+             còn cộng thêm pBhí vận chuyển). Bảng diem_pawpoints trên users tự đồng bộ qua
              trigger trg_pawpoints_sync_balance - KHÔNG tự sửa users.diem_pawpoints ở đây.*/
             var tienHangThucChi = Math.Max(0, tienHang - giamGia);
             var soDiemTich = (int)(tienHangThucChi / 10000);

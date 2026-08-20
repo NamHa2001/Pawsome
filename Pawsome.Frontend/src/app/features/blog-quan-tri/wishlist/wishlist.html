@@ -1,10 +1,74 @@
 <app-header></app-header>
 
-<main class="TrangWishlist">
-  <div class="VungAnToan">
-    <h1>Sản phẩm yêu thích</h1>
-    <p>Danh sách sản phẩm bạn đã lưu sẽ hiển thị ở đây.</p>
+<main class="TrangWishlist NoiDungChinh">
+  <div class="VungAnToan VungAnToanDoc">
+    <div class="TieuDeTrang">
+      <h1>My Wishlist</h1>
+      <p>Products you've saved for later.</p>
+    </div>
+
+    @if (loiHanhDong()) {
+      <p class="ThongBaoLoiHanhDong">{{ loiHanhDong() }}</p>
+    }
+
+    @if (dangTai()) {
+      <p class="ThongBaoRong">Loading...</p>
+    } @else if (loi()) {
+      <div class="ThongBaoRong">
+        <p class="ThongBaoLoi">{{ loi() }}</p>
+        <button type="button" class="NutThuLai" (click)="thuLai()">Retry</button>
+      </div>
+    } @else if (danhSach().length === 0) {
+      <div class="ThongBaoRong">
+        <p>Your wishlist is empty.</p>
+        <a routerLink="/san-pham">Browse products →</a>
+      </div>
+    } @else {
+      <p class="TongSoKetQua">{{ tongSo() }} item{{ tongSo() > 1 ? 's' : '' }}</p>
+
+      <div class="LuoiSanPham">
+        @for (sp of danhSach(); track sp.productId) {
+          <div class="TheSanPhamYeuThich">
+            <a [routerLink]="['/san-pham', sp.productId]" class="AnhSanPham">
+              @if (sp.anhChinh) {
+                <img [src]="sp.anhChinh" [alt]="sp.tenSanPham">
+              } @else {
+                <div class="AnhMacDinh"><i class="fa-solid fa-paw"></i></div>
+              }
+              @if (!sp.dangKinhDoanh) {
+                <span class="NhanNgungBan">Unavailable</span>
+              }
+            </a>
+            <div class="NoiDungThe">
+              <a [routerLink]="['/san-pham', sp.productId]" class="TenSanPham">{{ sp.tenSanPham }}</a>
+              <div class="GiaSanPham">
+                {{ sp.giaTu ? (quyDoiUSD(sp.giaTu) | currency:'USD':'symbol':'1.2-2') : 'Contact us' }}
+              </div>
+              <button
+                type="button"
+                class="NutXoa"
+                [disabled]="dangXoaDong(sp.productId)"
+                (click)="xoa(sp)">
+                <i class="fa-solid fa-trash"></i>
+                {{ dangXoaDong(sp.productId) ? 'Removing...' : 'Remove' }}
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+
+      @if (tongTrang() > 1) {
+        <div class="PhanTrang">
+          <button type="button" [disabled]="trang() === 1" (click)="doiTrang(trang() - 1)">Prev</button>
+          @for (t of cacTrang(); track t) {
+            <button type="button" [class.active]="trang() === t" (click)="doiTrang(t)">{{ t }}</button>
+          }
+          <button type="button" [disabled]="trang() === tongTrang()" (click)="doiTrang(trang() + 1)">Next</button>
+        </div>
+      }
+    }
   </div>
 </main>
 
 <app-footer></app-footer>
+<app-chat-ai></app-chat-ai>

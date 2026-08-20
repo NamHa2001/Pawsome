@@ -35,6 +35,16 @@ public class BlogService : IBlogService
         var trang = filter.Page < 1 ? 1 : filter.Page;
         var soDong = filter.PageSize < 1 ? 20 : Math.Min(filter.PageSize, 100);
 
+        // Kẹp về trang cuối hợp lệ ngay tại đây (VD URL cũ/bộ lọc mới làm giảm tổng số
+        // trang) để trả đúng dữ liệu trong 1 lượt gọi - tránh Frontend phải phát hiện
+        // rồi gọi lại lần 2 (nhấp nháy loading không cần thiết).
+        var tongSoTrang = PhanTrangHelper.TinhTongSoTrang(tongSo, soDong);
+        // Khi không có kết quả nào (tongSoTrang = 0), luôn đưa trang về 1 - không được bỏ
+        // qua bước này, vì "trang" có thể là giá trị rất lớn từ client (VD Int32.MaxValue)
+        // và (trang - 1) * soDong sẽ tràn số nguyên (int overflow) nếu không kẹp, khiến EF
+        // Core dịch ra OFFSET âm và SQL Server ném lỗi 500 thay vì trả danh sách rỗng.
+        trang = tongSoTrang > 0 ? Math.Min(trang, tongSoTrang) : 1;
+
         var items = await query
             .OrderByDescending(b => b.NgayDang)
             .Skip((trang - 1) * soDong)

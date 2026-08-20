@@ -54,6 +54,19 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
   margin-top: 195px;
 }
 
+// Dùng kèm .VungAnToan cho các trang có nội dung xếp dọc (khác kiểu hàng ngang
+// mặc định của .VungAnToan dùng trong header) - tự căn giữa trong .NoiDungChinh.
+// .VungAnToan gốc đặt width:1200px cố định (đúng cho header/footer luôn đủ rộng);
+// ở đây phải đổi thành max-width để co lại trên màn hình nhỏ hơn 1200px, không thì
+// tràn ngang và các breakpoint responsive của từng trang thành vô nghĩa (YPCN-4.2).
+.VungAnToanDoc {
+  display: block;
+  height: auto;
+  margin: 0 auto;
+  width: 100%;
+  max-width: 1200px;
+}
+
 .TheSanPham {
   background-color: #FDECEC;
   border-radius: 10px;
