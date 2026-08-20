@@ -1,4 +1,4 @@
-import { CurrencyPipe } from '@angular/common';
+import { DecimalPipe } from '@angular/common';
 import { Component, HostListener, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
@@ -7,11 +7,11 @@ import { Subject, distinctUntilChanged, of, switchMap } from 'rxjs';
 import { TokenService } from '../../../core/models/token.service';
 import { AuthService } from '../../../features/tai-khoan/auth.service';
 import { ProductService } from '../../../features/san-pham/services/product.service';
-import { GoiYSanPham, quyDoiUSD } from '../../../features/san-pham/models/san-pham.model';
+import { GoiYSanPham } from '../../../features/san-pham/models/san-pham.model';
 
 @Component({
   selector: 'app-header',
-  imports: [RouterLink, FormsModule, CurrencyPipe],
+  imports: [RouterLink, FormsModule, DecimalPipe],
   templateUrl: './header.html',
   styleUrl: './header.scss'
 })
@@ -35,7 +35,6 @@ export class Header {
   private viTriCuonTruoc = 0;
   tuKhoaTimKiem = '';
 
-  protected readonly quyDoiUSD = quyDoiUSD;
   readonly danhSachGoiY = signal<GoiYSanPham[]>([]);
   readonly hienGoiY = signal(false);
   private readonly tuKhoaGoiY$ = new Subject<string>();
