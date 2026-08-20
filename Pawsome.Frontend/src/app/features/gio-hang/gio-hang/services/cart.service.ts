@@ -9,21 +9,29 @@ import { AddCartItem, ApplyCoupon, ApplyCouponResult, Cart, UpdateCartItem } fro
 export class CartService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${environment.apiUrl}/gio-hang`;
-  readonly soLuongGioHang = signal(this.docSoLuongTuLuuTru());
 
-  private docSoLuongTuLuuTru(): number {
-    const luu = localStorage.getItem('cartCount');
-    return luu ? parseInt(luu, 10) : 0;
+  // Số lượng hiển thị trên icon giỏ hàng (header). Tự động đồng bộ mỗi khi giỏ hàng thay đổi (thêm/sửa/xóa sản phẩm)
+  private readonly _soLuongGioHang = signal(0);
+  readonly soLuongGioHang = this._soLuongGioHang.asReadonly();
+
+  private capNhatSoLuongTuGioHang(cart: Cart | null | undefined): void {
+    const tongSoLuong = cart?.items?.reduce((tong, i) => tong + i.soLuong, 0) ?? 0;
+    this._soLuongGioHang.set(tongSoLuong);
   }
 
-  private capNhatSoLuongTuGioHang(gioHang: Cart | null | undefined): void {
-    const tong = gioHang?.items?.reduce((t, i) => t + i.soLuong, 0) ?? 0;
-    this.soLuongGioHang.set(tong);
-    localStorage.setItem('cartCount', String(tong));
+  taiLaiSoLuong(): void {
+    this.layGioHangGoc().subscribe({
+      next: res => this.capNhatSoLuongTuGioHang(res.data),
+      error: () => this._soLuongGioHang.set(0)
+    });
+  }
+
+  private layGioHangGoc(): Observable<ApiResponse<Cart>> {
+    return this.http.get<ApiResponse<Cart>>(this.baseUrl);
   }
 
   layGioHang(): Observable<ApiResponse<Cart>> {
-    return this.http.get<ApiResponse<Cart>>(this.baseUrl)
+    return this.layGioHangGoc()
       .pipe(tap(res => this.capNhatSoLuongTuGioHang(res.data)));
   }
 
@@ -37,14 +45,14 @@ export class CartService {
       .pipe(tap(res => this.capNhatSoLuongTuGioHang(res.data)));
   }
 
-xoaSanPham(cartItemId: number): Observable<ApiResponse<object>> {
-  return this.http.delete<ApiResponse<object>>(`${this.baseUrl}/items/${cartItemId}`)
-    .pipe(tap(() => this.layGioHang().subscribe()));
-}
+  xoaSanPham(cartItemId: number): Observable<ApiResponse<object>> {
+    return this.http.delete<ApiResponse<object>>(`${this.baseUrl}/items/${cartItemId}`)
+      .pipe(tap(() => this.taiLaiSoLuong()));
+  }
 
   xoaSachGioHang(): Observable<ApiResponse<object>> {
     return this.http.delete<ApiResponse<object>>(this.baseUrl)
-      .pipe(tap(() => this.capNhatSoLuongTuGioHang(null)));
+      .pipe(tap(() => this._soLuongGioHang.set(0)));
   }
 
   apDungMaGiamGia(dto: ApplyCoupon): Observable<ApiResponse<ApplyCouponResult>> {

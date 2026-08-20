@@ -1,328 +1,248 @@
-.TrangHoSo {
+:host {
+  --clr-red-dark: #A51F1F;
+  --clr-cta: #D32F2F;
+  --clr-input-bg: #FDECEC;
+  --clr-page-bg: #FFF9F5;
+  --clr-panel-gray: #F0EEEE;
+  --clr-white: #FFFFFF;
+  --clr-text: #2F2D2E;
+  --clr-text-muted: #4D4D4E;
+  --clr-border: #AA9D9D;
+  --header-height: 195px;
+
+  display: contents;
+  font-family: 'Sora', sans-serif;
+}
+
+.ho-so-page {
   width: 100%;
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 180px 40px 80px;
-
   display: flex;
-  gap: 25px;
-
-  background-color: #fff;
-  min-height: 750px;
+  justify-content: center; 
+  background-color: var(--clr-page-page);
+  min-height: calc(100vh - var(--header-height));
+  margin-top: var(--header-height);
+  padding: 40px 0 60px;
+  box-sizing: border-box;
 }
 
-/* =========================
-   MENU BÊN TRÁI
-========================= */
-
-.ThanhBen {
-  width: 250px;
-  flex-shrink: 0;
+.page-shell {
+  width: 1200px;
+  max-width: calc(100% - 40px);   
+  margin: 0;
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 28px;
+  align-items: start;
 }
 
-.ThePawPoints {
-  height: 105px;
-  padding: 15px;
-  margin-bottom: 30px;
+// ── Sidebar ─────────────────────────────────────────
+.sidebar { display: flex; flex-direction: column; gap: 20px; }
 
-  background-color: #df2d32;
-  border-radius: 7px;
-
-  color: #fff;
-  position: relative;
-
-  h3 {
-    margin: 0 0 5px;
-    font-size: 14px;
-  }
-
-  p {
-    position: absolute;
-    left: 82px;
-    top: 34px;
-
-    margin: 0;
-
-    font-size: 10px;
-    line-height: 1.3;
-  }
-
-  small {
-    position: absolute;
-    bottom: 8px;
-    right: 10px;
-
-    font-size: 7px;
-  }
+.loyalty-box {
+  background: var(--clr-cta);
+  border-radius: 12px;
+  padding: 18px;
+  color: var(--clr-white);
 }
 
-.VongDiem {
-  width: 45px;
-  height: 45px;
+.loyalty-title { font-weight: 700; font-size: 15px; margin: 0 0 12px; }
 
-  border: 3px solid #b8e334;
+.loyalty-body { display: flex; align-items: center; gap: 14px; }
+
+.loyalty-ring {
+  width: 54px;
+  height: 54px;
   border-radius: 50%;
-
+  border: 4px solid #F5D91A;
   display: flex;
   align-items: center;
   justify-content: center;
-
-  span {
-    font-size: 15px;
-    font-weight: bold;
-  }
+  font-weight: 700;
+  font-size: 16px;
+  flex-shrink: 0;
 }
 
-.MenuTaiKhoan {
-  background-color: #f1f1f1;
-  border-radius: 7px;
+.loyalty-text { font-size: 12px; line-height: 1.4; margin: 0; }
+
+.loyalty-note { font-size: 10px; opacity: 0.85; margin: 12px 0 0; }
+
+.sidebar-menu {
+  background: var(--clr-panel-gray);
+  border-radius: 12px;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
-.MucMenu {
-  width: 100%;
-  min-height: 43px;
-
-  padding: 0 15px;
-
+.menu-item {
   display: flex;
   align-items: center;
-  gap: 15px;
-
-  box-sizing: border-box;
-
-  color: #4a4a4a;
-  text-decoration: none;
-
-  border-bottom: 1px solid #999;
-
-  background: transparent;
-
+  gap: 10px;
+  padding: 13px 16px;
   font-size: 14px;
-  font-weight: 600;
-
-  transition: 0.2s;
-
-  i {
-    width: 18px;
-    text-align: center;
-    color: #c99b9b;
-  }
-
-  &:hover {
-    background-color: #e5e5e5;
-  }
-
-  &.active {
-    background-color: #f1f1f1;
-  }
-}
-
-.NutDangXuat {
-  border: none;
-  border-bottom: none;
-  cursor: pointer;
-
-  font-family: inherit;
+  font-weight: 500;
+  color: var(--clr-text);
+  text-decoration: none;
+  border-bottom: 1px solid #E2DFDF;
+  background: none;
+  border-left: none;
+  border-right: none;
+  border-top: none;
   text-align: left;
-}
-
-
-/* =========================
-   NỘI DUNG
-========================= */
-
-.NoiDungHoSo {
-  flex: 1;
-
-  h1 {
-    margin: 0 0 10px;
-
-    font-size: 22px;
-    color: #171717;
-  }
-}
-
-
-/* =========================
-   THẺ THÔNG TIN
-========================= */
-
-.TheThongTin {
-  min-height: 118px;
-
-  margin-bottom: 20px;
-  padding: 20px;
-
+  cursor: pointer;
+  font-family: 'Sora', sans-serif;
+  width: 100%;
   box-sizing: border-box;
 
-  background-color: #f2f2f2;
-  border-radius: 7px;
+  i { width: 16px; text-align: center; color: var(--clr-cta); }
 
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  &:last-child { border-bottom: none; }
 }
 
-.ThongTinUser {
+.is-active { background: var(--clr-white); font-weight: 700; }
 
-  h3 {
-    margin: 0 0 8px;
-
-    font-size: 14px;
-    color: #444;
-  }
-
-  p {
-    margin: 3px 0;
-
-    font-size: 11px;
-    color: #555;
-  }
+.is-disabled {
+  color: var(--clr-text-muted);
+  cursor: not-allowed;
+  opacity: 0.65;
 }
 
-.PawVip {
-  text-align: center;
+.menu-signout { color: var(--clr-cta); font-weight: 600; }
 
-  .LogoPawVip {
-    color: #76a91d;
+// ── Content ─────────────────────────────────────────
+.content { min-width: 0; }
 
-    font-size: 29px;
-    font-weight: 800;
-  }
-
-  strong {
-    font-size: 13px;
-    color: #444;
-  }
+.page-title {
+  font-weight: 700;
+  font-size: 22px;
+  color: var(--clr-text);
+  margin: 0 0 16px;
 }
 
-.UuDai {
+.loading-text { color: var(--clr-text-muted); font-size: 14px; }
 
-  h3 {
-    margin: 0 0 3px;
-
-    font-size: 14px;
-  }
-
-  p {
-    margin: 0 0 12px;
-
-    font-size: 11px;
-    color: #555;
-  }
-
-  button {
-    width: 115px;
-    height: 30px;
-
-    border: none;
-    border-radius: 5px;
-
-    background-color: #df2d32;
-    color: #fff;
-
-    font-weight: bold;
-    cursor: pointer;
-  }
-}
-
-
-/* =========================
-   PASSWORD / ADDRESS
-========================= */
-
-.TheThongTin.Nho {
-  min-height: 78px;
-}
-
-.TheThongTin.Nho h3 {
-  margin: 0 0 8px;
-
-  font-size: 11px;
-  color: #555;
-}
-
-.MatKhau {
-  margin: 0;
-
+.success-box, .error-box {
+  border-radius: 8px;
+  padding: 10px 14px;
   font-size: 13px;
-  color: #555;
+  margin-bottom: 14px;
+}
+.success-box { background: #E9F7EC; color: #1E7A34; }
+.error-box { background: var(--clr-input-bg); color: var(--clr-cta); }
 
-  i {
-    margin-right: 8px;
-    color: #6bcfd1;
-  }
+.account-card {
+  background: var(--clr-panel-gray);
+  border-radius: 12px;
+  padding: 20px 24px;
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 24px;
+  align-items: center;
+  margin-bottom: 16px;
 }
 
-.NutEdit {
-  width: 60px;
-  height: 30px;
+.account-name { font-weight: 700; font-size: 15px; margin: 0 0 6px; }
+.account-line { font-size: 13px; color: var(--clr-text-muted); margin: 3px 0; }
 
+.pawvip-block { text-align: center; }
+.pawvip-logo { font-size: 20px; font-weight: 800; margin: 0; }
+.clr-green { color: #6AAF3C; }
+.clr-orange { color: #E8862E; }
+.pawvip-caption { font-size: 11px; color: var(--clr-text-muted); margin: 2px 0 0; }
+
+.discount-block { text-align: left; }
+.discount-title { font-weight: 700; font-size: 14px; margin: 0 0 2px; }
+.discount-caption { font-size: 11px; color: var(--clr-text-muted); margin: 0 0 8px; max-width: 180px; }
+
+.btn-join {
+  background: var(--clr-cta);
+  color: var(--clr-white);
   border: none;
-  border-radius: 4px;
-
-  background-color: #df2d32;
-  color: #fff;
-
-  font-weight: bold;
-
+  border-radius: 999px;
+  padding: 8px 20px;
+  font-size: 12px;
+  font-weight: 700;
   cursor: pointer;
+  opacity: 0.85;
 }
 
-.TieuDeAddress {
-  width: 100%;
-
+.row-card {
+  background: var(--clr-panel-gray);
+  border-radius: 12px;
+  padding: 16px 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-
-  a {
-    color: #444;
-
-    font-size: 11px;
-    font-weight: 600;
-
-    text-decoration: underline;
-  }
+  margin-bottom: 16px;
 }
 
+.row-card--stack { flex-direction: column; align-items: stretch; gap: 12px; }
 
-/* =========================
-   RESPONSIVE
-========================= */
+.row-head { display: flex; justify-content: space-between; align-items: center; }
+
+.row-label { font-size: 13px; font-weight: 600; color: var(--clr-text); margin: 0 0 4px; }
+.row-value { font-size: 14px; color: var(--clr-text); margin: 0; }
+.row-value i { margin-right: 6px; color: var(--clr-cta); }
+
+.link-add {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--clr-text);
+  text-decoration: underline;
+}
+
+.btn-edit {
+  background: var(--clr-cta);
+  color: var(--clr-white);
+  border: none;
+  border-radius: 8px;
+  padding: 8px 24px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.address-mini-list { display: grid; gap: 10px; }
+.address-mini {
+  position: relative;
+  background: var(--clr-white);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 13px;
+
+  p { margin: 2px 0; }
+}
+.badge-default {
+  position: absolute; top: 8px; right: 12px;
+  background: var(--clr-input-bg); color: var(--clr-cta);
+  font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 999px;
+}
+
+.edit-form { padding: 4px; }
+.field { margin-bottom: 14px; }
+.field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 5px; }
+.field input {
+  width: 100%; height: 42px; box-sizing: border-box;
+  background: var(--clr-white); border: 1px solid var(--clr-border); border-radius: 8px;
+  padding: 0 12px; font-family: 'Sora', sans-serif; font-size: 14px; outline: none;
+}
+.field input:focus { border-color: var(--clr-cta); }
+
+.form-actions { display: flex; justify-content: flex-end; gap: 10px; }
+.btn-primary, .btn-secondary {
+  height: 40px; border-radius: 999px; font-weight: 600; font-size: 13px;
+  padding: 0 20px; border: none; cursor: pointer; font-family: 'Sora', sans-serif;
+}
+.btn-primary { background: var(--clr-cta); color: #fff; }
+.btn-primary:disabled { opacity: 0.6; }
+.btn-secondary { background: transparent; border: 1px solid var(--clr-border); color: var(--clr-text-muted); }
+
+app-footer { display: block; width: 100%; }
+app-chat-ai { position: relative; z-index: 2000; }
 
 @media (max-width: 900px) {
-
-  .TrangHoSo {
-    padding-left: 20px;
-    padding-right: 20px;
-  }
-
-  .ThanhBen {
-    width: 210px;
-  }
-
-  .PawVip {
-    display: none;
-  }
-
-}
-
-@media (max-width: 700px) {
-
-  .TrangHoSo {
-    flex-direction: column;
-    padding-top: 160px;
-  }
-
-  .ThanhBen {
-    width: 100%;
-  }
-
-  .TheThongTin {
-    flex-wrap: wrap;
-    gap: 15px;
-  }
-
+  .page-shell { grid-template-columns: 1fr; }
+  .account-card { grid-template-columns: 1fr; text-align: left; }
 }
