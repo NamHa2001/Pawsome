@@ -67,7 +67,12 @@ public class PaymentsController : ControllerBase
     {
         var query = Request.Query.ToDictionary(x => x.Key, x => x.Value.ToString());
         var ok = await _paymentService.HandleVnPayIpnAsync(query);
-        return Ok(new { RspCode = ok ? "00" : "97", Message = ok ? "Confirm Success" : "Invalid signature" });
+
+        return Ok(new VnPayIpnResponseDto
+        {
+            RspCode = ok ? "00" : "97",
+            Message = ok ? "Confirm Success" : "Invalid signature"
+        });
     }
 
     [Authorize]
