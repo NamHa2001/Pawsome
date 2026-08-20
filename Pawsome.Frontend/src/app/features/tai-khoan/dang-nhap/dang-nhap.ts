@@ -59,7 +59,7 @@ export class DangNhapComponent implements AfterViewInit {
     this.authService.login(this.form.getRawValue()).subscribe({
       next: () => {
         this.dangGui = false;
-        this.router.navigate(['/tai-khoan/ho-so']);
+        this.router.navigate(['/']);
       },
       error: (err) => {
         this.dangGui = false;
@@ -72,7 +72,7 @@ export class DangNhapComponent implements AfterViewInit {
     this.loiChung = null;
 
     this.authService.googleLogin({ idToken }).subscribe({
-      next: () => this.router.navigate(['/tai-khoan/ho-so']),
+      next: () => this.router.navigate(['/']),
       error: (err) => {
         this.loiChung =
           err?.error?.message ??

@@ -36,6 +36,11 @@ export interface GoogleLoginRequest {
   idToken: string;
 }
 
+export interface ChangePasswordRequest {
+  matKhauCu: string;
+  matKhauMoi: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly http = inject(HttpClient);
@@ -65,15 +70,13 @@ export class AuthService {
     return this.http.post<ApiResponse<null>>(`${this.baseUrl}/reset-password`, dto);
   }
 
-  logout(): Observable<ApiResponse<object>> {
-    return this.http.post<ApiResponse<object>>(
-      `${this.baseUrl}/logout`,
-      {}
-    ).pipe(
-      tap(() => {
-        this.tokenService.clear();
-      })
-    );
+  changePassword(dto: ChangePasswordRequest): Observable<ApiResponse<null>> {
+    return this.http.put<ApiResponse<null>>(`${this.baseUrl}/change-password`, dto);
+  }
+
+  logout(): void {
+    this.tokenService.clear();
+    this.http.post(`${this.baseUrl}/logout`, {}).subscribe({ error: () => { } });
   }
 
   private simpanNeuThanhCong(res: ApiResponse<AuthUser>): void {

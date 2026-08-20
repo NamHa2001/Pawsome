@@ -40,7 +40,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
   width: 100%;
   max-width: 1512px;
   margin: 0 auto;
-  min-height: 2000px;
+  min-height: 100vh;   
   background-color: var(--MauTrang);
   display: flex;
   flex-direction: column;
