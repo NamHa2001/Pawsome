@@ -61,9 +61,35 @@
             <span class="ThongBaoSoLuong">{{ soLuongGioHang() }}</span>
           </div>
         </a>
-        <a routerLink="/tai-khoan/dang-nhap" class="NutTienIch">
-          <div class="VongTronIconDo"><i class="fa-solid fa-user"></i></div>
-        </a>
+        <div class="KhungTaiKhoan">
+          @if (!daDangNhap()) {
+          <div class="NutTienIch" (click)="toggleDropdownDangNhap($event)">
+            <div class="VongTronIconDo"><i class="fa-solid fa-user"></i></div>
+          </div>
+
+          @if (hienDropdownDangNhap()) {
+          <div class="DropdownDangNhap">
+            <a routerLink="/tai-khoan/dang-nhap" class="NutDangNhapDropdown" (click)="dongDropdownDangNhap()">Sign In</a>
+            <span class="ChuHoacDropdown">OR</span>
+            <a routerLink="/tai-khoan/dang-ky" class="NutDangNhapDropdown" (click)="dongDropdownDangNhap()">Register</a>
+          </div>
+          }
+          } @else {
+          <div class="NutTienIch" (click)="toggleDropdownTaiKhoan($event)">
+            <div class="VongTronIconDo"><i class="fa-solid fa-user"></i></div>
+          </div>
+
+          @if (hienDropdownTaiKhoan()) {
+          <div class="DropdownTaiKhoan">
+            <div class="TenNguoiDungDropdown">Hi, {{ nguoiDungHienTai()?.hoTen }}</div>
+            <a routerLink="/tai-khoan/ho-so" class="MucDropdown" (click)="dongDropdownTaiKhoan()">Profile</a>
+            <a routerLink="/tai-khoan/quen-mat-khau" class="MucDropdown" (click)="dongDropdownTaiKhoan()">Change
+              password</a>
+            <button type="button" class="MucDropdown MucDangXuat" (click)="dangXuat()">Sign out</button>
+          </div>
+          }
+          }
+        </div>
       </div>
     </div>
   </div>

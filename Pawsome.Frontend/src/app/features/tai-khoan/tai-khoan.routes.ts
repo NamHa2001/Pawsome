@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { authGuard } from '../../core/guards/auth.guard';
 
 export const routes: Routes = [
   {
@@ -15,7 +16,12 @@ export const routes: Routes = [
   },
   {
     path: 'ho-so',
-    loadComponent: () =>import('./ho-so/ho-so').then(m => m.HoSoComponent)
+    loadComponent: () => import('./ho-so/ho-so').then(m => m.HoSoComponent)
+  },
+  {
+    path: 'dia-chi',
+    loadComponent: () => import('./dia-chi/dia-chi').then(m => m.DiaChiComponent),
+    canActivate: [authGuard]
   }
   // 'quen-mat-khau', 'dia-chi' sẽ thêm ở bước sau
 ];

@@ -1,21 +1,20 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Pawsome.API.Common;
 using Pawsome.API.DTOs.TaiKhoan;
 using Pawsome.API.Services.TaiKhoan;
-
 namespace Pawsome.API.Controllers.TaiKhoan;
-
 [ApiController]
 [Route("api/[controller]")]
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
-
     public AuthController(IAuthService authService)
     {
         _authService = authService;
     }
-
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterRequestDto dto)
     {
@@ -50,7 +49,6 @@ public class AuthController : ControllerBase
             new { resetToken = token },
             "Nếu email tồn tại trong hệ thống, mã OTP đã được gửi tới email của bạn."));
     }
-
     [HttpPost("reset-password")]
     public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequestDto dto)
     {
@@ -86,5 +84,20 @@ public class AuthController : ControllerBase
                 "Đăng xuất thành công."
             )
         );
+    }
+    [HttpPut("change-password")]
+    [Authorize]
+    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequestDto dto)
+    {
+        try
+        {
+            var userId = int.Parse(User.FindFirstValue(JwtRegisteredClaimNames.Sub)!);
+            await _authService.ChangePasswordAsync(userId, dto);
+            return Ok(ApiResponse<object>.Ok(null!, "Đổi mật khẩu thành công."));
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ApiResponse<object>.Fail(ex.Message));
+        }
     }
 }

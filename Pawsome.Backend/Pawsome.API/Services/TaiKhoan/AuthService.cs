@@ -232,4 +232,20 @@ public class AuthService : IAuthService
             Role = user.Role.TenVaiTro
         };
     }
+    public async Task ChangePasswordAsync(int userId, ChangePasswordRequestDto dto)
+    {
+        var user = await _dbContext.Users.FindAsync(userId);
+        if (user == null)
+            throw new InvalidOperationException("Không tìm thấy người dùng.");
+
+        if (!_passwordHasher.VerifyPassword(dto.MatKhauCu, user.PasswordHash))
+            throw new InvalidOperationException("Mật khẩu hiện tại không đúng.");
+
+        if (_passwordHasher.VerifyPassword(dto.MatKhauMoi, user.PasswordHash))
+            throw new InvalidOperationException("Mật khẩu mới phải khác mật khẩu hiện tại.");
+
+        user.PasswordHash = _passwordHasher.HashPassword(dto.MatKhauMoi);
+        user.NgayCapNhat = DateTime.UtcNow;
+        await _dbContext.SaveChangesAsync();
+    }
 }
