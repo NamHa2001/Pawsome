@@ -1,14 +1,19 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { AutoOrderService } from '../dat-hang-tu-dong/services/auto-order.services';
-import { Cart, CartItem, Coupon } from './models/gio-hang.model';
+
+import { Cart, CartItem, Coupon, TanSuatDonTuDong } from './models/gio-hang.model';
 import { CartService } from './services/cart.service';
 import { CouponService } from './services/coupon.service';
+import { AutoOrderService } from '../dat-hang-tu-dong/services/auto-order.services';
 import { ChatAi } from '../../../shared/components/chat-ai/chat-ai';
 import { Footer } from '../../../shared/components/footer/footer';
 import { Header } from '../../../shared/components/header/header';
+import { TokenService } from '../../../core/models/token.service';
+
+type TabGoiY = 'thuong-mua' | 'lien-quan';
 
 interface SanPhamGoiY {
   variantId: number;
@@ -19,6 +24,14 @@ interface SanPhamGoiY {
   giaGoc: number;
   giaKhuyenMai: number;
 }
+
+interface ThongBaoCoupon {
+  loai: 'thanh-cong' | 'loi';
+  noiDung: string;
+}
+
+const PHAN_TRAM_GIAM_PAWVIP = 0.65;
+const PHI_VAN_CHUYEN_CO_THEO_DOI = 30000;
 
 @Component({
   selector: 'app-gio-hang',
@@ -31,32 +44,46 @@ export class GioHangComponent {
   private readonly cartService = inject(CartService);
   private readonly couponService = inject(CouponService);
   private readonly autoOrderService = inject(AutoOrderService);
+  private readonly tokenService = inject(TokenService);
+
+  private readonly nguoiDungHienTai = toSignal(this.tokenService.currentUser$, {
+    initialValue: this.tokenService.getUser()
+  });
+  readonly daDangNhap = computed(() => this.nguoiDungHienTai() !== null);
 
   readonly gioHang = signal<Cart | null>(null);
   readonly dangTai = signal(true);
   readonly loi = signal<string | null>(null);
 
-  readonly maCoupon = signal('');
-  readonly dangApDungMa = signal(false);
-  readonly thongBaoCoupon = signal<{ loai: 'thanh-cong' | 'loi'; noiDung: string } | null>(null);
-  readonly danhSachMaGiamGia = signal<Coupon[]>([]);
+  // ── Gợi ý sản phẩm khi giỏ hàng trống ─────────────────────────────
+  readonly tabGoiY = signal<TabGoiY>('thuong-mua');
+  readonly dangThemGoiY = signal<number | null>(null);
+  // TODO: nạp dữ liệu thật từ API gợi ý sản phẩm (thuộc Part sản phẩm) khi có.
+  private readonly sanPhamThuongMua = signal<SanPhamGoiY[]>([]);
+  private readonly sanPhamLienQuan = signal<SanPhamGoiY[]>([]);
 
-  // Auto-order theo từng dòng (checkbox)
+  readonly sanPhamGoiYHienThi = computed(() =>
+    this.tabGoiY() === 'thuong-mua' ? this.sanPhamThuongMua() : this.sanPhamLienQuan()
+  );
+
+  // ── PawVip banner ──────────────────────────────────────────────────
+  readonly tietKiemPawVip = computed(() => (this.gioHang()?.tienHang ?? 0) * PHAN_TRAM_GIAM_PAWVIP);
+  readonly tongTienPawVip = computed(() => (this.gioHang()?.tienHang ?? 0) - this.tietKiemPawVip());
+
+  // ── Auto Order theo từng dòng sản phẩm ─────────────────────────────
   readonly autoOrderIdTheoDong = signal<Record<number, number>>({});
   readonly dangXuLyAutoOrderDong = signal<number | null>(null);
 
-  // Loại vận chuyển (chỉ ảnh hưởng hiển thị tạm tính ở FE)
+  // ── Mã giảm giá ─────────────────────────────────────────────────────
+  readonly maCoupon = signal('');
+  readonly dangApDungMa = signal(false);
+  readonly thongBaoCoupon = signal<ThongBaoCoupon | null>(null);
+  readonly danhSachMaGiamGia = signal<Coupon[]>([]);
+
+  // ── Vận chuyển ────────────────────────────────────────────────────
   readonly loaiVanChuyen = signal<'free' | 'tracked'>('free');
-  readonly phiVanChuyenCoTheoDoi = 6990;
+  readonly phiVanChuyenCoTheoDoi = PHI_VAN_CHUYEN_CO_THEO_DOI;
 
-  // Trạng thái đăng nhập — được cập nhật lại dựa trên kết quả gọi API layGioHang() (xem taiGioHang())
-  readonly daDangNhap = signal(true);
-
-  // PawVip (UI tĩnh, tính năng chưa có trong SRS)
-  readonly tietKiemPawVip = computed(() => Math.round((this.gioHang()?.tienHang ?? 0) * 0.65));
-  readonly tongTienPawVip = computed(() => (this.gioHang()?.tienHang ?? 0) - this.tietKiemPawVip());
-
-  // Tính toán tổng tiền theo loại vận chuyển đã chọn
   readonly phiVanChuyenHienThi = computed(() =>
     this.loaiVanChuyen() === 'free' ? 0 : this.phiVanChuyenCoTheoDoi
   );
@@ -64,35 +91,17 @@ export class GioHangComponent {
   readonly tongTienHienThi = computed(() => {
     const gh = this.gioHang();
     if (!gh) return 0;
-    return gh.tienHang - gh.giamGia + this.phiVanChuyenHienThi();
+    return Math.max(0, gh.tienHang - gh.giamGia + this.phiVanChuyenHienThi());
   });
 
   readonly diemThuongDuKien = computed(() => Math.floor(this.tongTienHienThi() / 10000));
 
-  readonly tabGoiY = signal<'thuong-mua' | 'lien-quan'>('thuong-mua');
-  readonly dangThemGoiY = signal<number | null>(null);
-
-  private readonly sanPhamThuongMua: SanPhamGoiY[] = [
-    { variantId: 101, ten: 'Frontline Plus', hinhAnh: '/img/products/frontline-plus.jpg', diemDanhGia: 4.8, soLuotDanhGia: 214, giaGoc: 100960, giaKhuyenMai: 60580 },
-    { variantId: 102, ten: 'Revolution Plus', hinhAnh: '/img/products/revolution-plus.jpg', diemDanhGia: 4.5, soLuotDanhGia: 132, giaGoc: 40640, giaKhuyenMai: 24340 },
-    { variantId: 103, ten: 'Capstar', hinhAnh: '/img/products/capstar.jpg', diemDanhGia: 4.9, soLuotDanhGia: 98, giaGoc: 38650, giaKhuyenMai: 23190 },
-    { variantId: 104, ten: 'Bravecto Spot-On', hinhAnh: '/img/products/bravecto.jpg', diemDanhGia: 4.9, soLuotDanhGia: 176, giaGoc: 38650, giaKhuyenMai: 23190 }
-  ];
-  private readonly sanPhamLienQuan: SanPhamGoiY[] = [];
-
-  readonly sanPhamGoiYHienThi = computed(() =>
-    this.tabGoiY() === 'thuong-mua' ? this.sanPhamThuongMua : this.sanPhamLienQuan
-  );
-
   constructor() {
     this.taiGioHang();
-
-    this.couponService.layDangHieuLuc().subscribe({
-      next: ds => this.danhSachMaGiamGia.set(ds),
-      error: () => this.danhSachMaGiamGia.set([]) 
-    });
+    this.taiMaGiamGiaGoiY();
   }
 
+  // ── Tải dữ liệu ───────────────────────────────────────────────────
   taiGioHang(): void {
     this.dangTai.set(true);
     this.loi.set(null);
@@ -100,73 +109,137 @@ export class GioHangComponent {
     this.cartService.layGioHang().subscribe({
       next: res => {
         this.gioHang.set(res.data ?? null);
-        this.daDangNhap.set(true);
         this.dangTai.set(false);
       },
-      error: err => {
-        if (err?.status === 401) {
-          // Chưa đăng nhập thì hiển thị như giỏ hàng trống (guest), KHÔNG phải lỗi thật
-          this.gioHang.set(null);
-          this.daDangNhap.set(false);
-          this.loi.set(null);
-        } else {
-          // Lỗi thật sự (server lỗi, mất mạng...) thì mới hiển thị thông báo lỗi
-          this.loi.set('Could not load your cart. Please try again.');
-        }
+      error: () => {
+        this.loi.set('Could not load your cart. Please try again.');
         this.dangTai.set(false);
       }
     });
   }
 
+  private taiMaGiamGiaGoiY(): void {
+    this.couponService.layDangHieuLuc().subscribe({
+      next: ds => this.danhSachMaGiamGia.set(ds),
+      error: () => this.danhSachMaGiamGia.set([])
+    });
+  }
+
+  // ── Gợi ý sản phẩm ────────────────────────────────────────────────
+  themVaoGioTuGoiY(sp: SanPhamGoiY): void {
+    this.dangThemGoiY.set(sp.variantId);
+
+    this.cartService.themSanPham({ variantId: sp.variantId, soLuong: 1 }).subscribe({
+      next: res => {
+        this.gioHang.set(res.data ?? this.gioHang());
+        this.dangThemGoiY.set(null);
+      },
+      error: () => this.dangThemGoiY.set(null)
+    });
+  }
+
+  // ── PawVip ────────────────────────────────────────────────────────
+  kichHoatPawVip(): void {
+    // TODO: liên kết tới luồng đăng ký PawVip membership khi trang đó có sẵn.
+  }
+
+  // ── Số lượng / xoá sản phẩm ──────────────────────────────────────
   tangSoLuong(cartItemId: number, soLuongHienTai: number): void {
-    this.capNhatSoLuong(cartItemId, soLuongHienTai + 1);
+    this.cartService.capNhatSoLuong(cartItemId, { soLuong: soLuongHienTai + 1 }).subscribe({
+      next: res => this.gioHang.set(res.data ?? this.gioHang())
+    });
   }
 
   giamSoLuong(cartItemId: number, soLuongHienTai: number): void {
     if (soLuongHienTai <= 1) return;
-    this.capNhatSoLuong(cartItemId, soLuongHienTai - 1);
-  }
 
-  private capNhatSoLuong(cartItemId: number, soLuongMoi: number): void {
-    this.cartService.capNhatSoLuong(cartItemId, { soLuong: soLuongMoi }).subscribe({
-      next: res => this.gioHang.set(res.data ?? null),
-      error: err => this.loi.set(err?.error?.message ?? 'Failed to update quantity.')
+    this.cartService.capNhatSoLuong(cartItemId, { soLuong: soLuongHienTai - 1 }).subscribe({
+      next: res => this.gioHang.set(res.data ?? this.gioHang())
     });
   }
 
   xoaSanPham(cartItemId: number): void {
     this.cartService.xoaSanPham(cartItemId).subscribe({
-      next: () => this.taiGioHang(),
-      error: err => this.loi.set(err?.error?.message ?? 'Failed to remove item.')
+      next: () => {
+        this.gioHang.update(gh => gh
+          ? { ...gh, items: gh.items.filter(i => i.cartItemId !== cartItemId) }
+          : gh);
+        this.taiGioHang();
+      }
     });
   }
 
   xoaSachGioHang(): void {
-    if (!confirm('Clear the entire cart?')) return;
+    if (!confirm('Remove all items from your cart?')) return;
 
     this.cartService.xoaSachGioHang().subscribe({
-      next: () => this.taiGioHang(),
-      error: err => this.loi.set(err?.error?.message ?? 'Failed to clear cart.')
+      next: () => this.gioHang.update(gh => gh ? { ...gh, items: [] } : gh)
     });
   }
 
+  // ── Auto Order theo dòng ────────────────────────────────────────
+  toggleAutoOrderDong(item: CartItem): void {
+    this.dangXuLyAutoOrderDong.set(item.cartItemId);
+    const autoOrderIdHienTai = this.autoOrderIdTheoDong()[item.cartItemId];
+
+    if (autoOrderIdHienTai) {
+      this.autoOrderService.huy(autoOrderIdHienTai).subscribe({
+        next: () => {
+          this.autoOrderIdTheoDong.update(map => {
+            const { [item.cartItemId]: _, ...rest } = map;
+            return rest;
+          });
+          this.dangXuLyAutoOrderDong.set(null);
+        },
+        error: () => this.dangXuLyAutoOrderDong.set(null)
+      });
+      return;
+    }
+
+    const tanSuatMacDinh: TanSuatDonTuDong = 'monthly';
+
+    this.autoOrderService.tao({
+      variantId: item.variantId,
+      soLuong: item.soLuong,
+      tanSuat: tanSuatMacDinh
+    }).subscribe({
+      next: res => {
+        if (res.data) {
+          this.autoOrderIdTheoDong.update(map => ({ ...map, [item.cartItemId]: res.data!.autoOrderId }));
+        }
+        this.dangXuLyAutoOrderDong.set(null);
+      },
+      error: () => this.dangXuLyAutoOrderDong.set(null)
+    });
+  }
+
+  // ── Mã giảm giá ─────────────────────────────────────────────────
   apDungMaGiamGia(): void {
     const ma = this.maCoupon().trim();
     if (!ma) return;
 
     this.dangApDungMa.set(true);
-    this.thongBaoCoupon.set(null);
 
     this.cartService.apDungMaGiamGia({ maCode: ma }).subscribe({
       next: res => {
         this.dangApDungMa.set(false);
-        this.thongBaoCoupon.set({
-          loai: res.success ? 'thanh-cong' : 'loi',
-          noiDung: res.message ?? (res.success ? 'Coupon applied successfully' : 'Invalid coupon code')
-        });
-        if (res.success) {
-          this.taiGioHang();
+        const ketQua = res.data;
+
+        if (!ketQua || !ketQua.hopLe) {
+          this.thongBaoCoupon.set({ loai: 'loi', noiDung: ketQua?.thongBao ?? 'Invalid coupon code.' });
+          return;
         }
+
+        this.gioHang.update(gh => gh ? {
+          ...gh,
+          maCouponDangApDung: ma,
+          tienHang: ketQua.tienHang,
+          giamGia: ketQua.giamGia,
+          phiVanChuyenTamTinh: ketQua.phiVanChuyenTamTinh,
+          tongTien: ketQua.tongTien
+        } : gh);
+
+        this.thongBaoCoupon.set({ loai: 'thanh-cong', noiDung: ketQua.thongBao ?? 'Coupon applied successfully.' });
       },
       error: err => {
         this.dangApDungMa.set(false);
@@ -178,71 +251,15 @@ export class GioHangComponent {
   xoaMaGiamGia(): void {
     this.cartService.xoaMaGiamGia().subscribe({
       next: res => {
-        this.gioHang.set(res.data ?? null);
+        this.gioHang.set(res.data ?? this.gioHang());
         this.maCoupon.set('');
         this.thongBaoCoupon.set(null);
-      },
-      error: err => this.loi.set(err?.error?.message ?? 'Failed to remove coupon.')
-    });
-  }
-
-  chonMa(ma: string): void {
-    this.maCoupon.set(ma);
-  }
-
-  // Auto-order theo dòng: checkbox bật/tắt trực tiếp
-  toggleAutoOrderDong(item: CartItem): void {
-    const idHienTai = this.autoOrderIdTheoDong()[item.cartItemId];
-    this.dangXuLyAutoOrderDong.set(item.cartItemId);
-
-    if (idHienTai) {
-      this.autoOrderService.huy(idHienTai).subscribe({
-        next: () => {
-          this.autoOrderIdTheoDong.update(map => {
-            const { [item.cartItemId]: _bo, ...con } = map;
-            return con;
-          });
-          this.dangXuLyAutoOrderDong.set(null);
-        },
-        error: err => {
-          this.loi.set(err?.error?.message ?? 'Failed to cancel recurring order.');
-          this.dangXuLyAutoOrderDong.set(null);
-        }
-      });
-    } else {
-      this.autoOrderService.tao({ variantId: item.variantId, soLuong: item.soLuong, tanSuat: 'monthly' }).subscribe({
-        next: res => {
-          if (res.data) {
-            this.autoOrderIdTheoDong.update(map => ({ ...map, [item.cartItemId]: res.data!.autoOrderId }));
-          }
-          this.dangXuLyAutoOrderDong.set(null);
-        },
-        error: err => {
-          this.loi.set(err?.error?.message ?? 'Failed to set up recurring order.');
-          this.dangXuLyAutoOrderDong.set(null);
-        }
-      });
-    }
-  }
-
-  // Gợi ý sản phẩm
-  themVaoGioTuGoiY(sp: SanPhamGoiY): void {
-    this.dangThemGoiY.set(sp.variantId);
-
-    this.cartService.themSanPham({ variantId: sp.variantId, soLuong: 1 }).subscribe({
-      next: () => {
-        this.dangThemGoiY.set(null);
-        this.taiGioHang();
-      },
-      error: err => {
-        this.dangThemGoiY.set(null);
-        this.loi.set(err?.error?.message ?? 'Failed to add product to cart.');
       }
     });
   }
 
-  kichHoatPawVip(): void {
-    // TODO: cần nhóm + GVHD thống nhất mô hình subscription trước khi làm backend thật
-    alert('PawVip Membership is coming soon!');
+  chonMa(maCode: string): void {
+    this.maCoupon.set(maCode);
+    this.apDungMaGiamGia();
   }
 }
