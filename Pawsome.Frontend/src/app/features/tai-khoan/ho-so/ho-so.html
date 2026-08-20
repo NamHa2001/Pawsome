@@ -1,116 +1,168 @@
 <app-header />
 
-<div class="TrangHoSo">
+<div class="ho-so-page">
+  <div class="page-shell">
 
-  <!-- MENU BÊN TRÁI -->
-  <aside class="ThanhBen">
-
-    <div class="ThePawPoints">
-      <h3>Loyalty Credit</h3>
-
-      <div class="VongDiem">
-        <span>0</span>
+    <aside class="sidebar">
+      <div class="loyalty-box">
+        <p class="loyalty-title">Loyalty Credit</p>
+        <div class="loyalty-body">
+          <div class="loyalty-ring">
+            <span>{{ hoSo()?.diemPawpoints ?? 0 }}</span>
+          </div>
+          <p class="loyalty-text">
+            You're only <strong>{{ diemConThieu }}</strong> PawPoints away from
+            <strong>1,200,000 VND off</strong> on your order
+          </p>
+        </div>
+        <p class="loyalty-note">*Terms & Conditions Apply</p>
       </div>
 
-      <p>
-        You're only 0<br>
-        Pawpoints away from<br>
-        1,200,000 VND off your order
-      </p>
+      <nav class="sidebar-menu">
+        <span class="menu-item is-disabled" title="Coming soon">
+          <i class="fa-solid fa-table-cells"></i> Dashboard
+        </span>
+        <a routerLink="/tai-khoan/ho-so" class="menu-item is-active">
+          <i class="fa-solid fa-user"></i> Manage Account
+        </a>
+        <a routerLink="/don-hang/lich-su" class="menu-item">
+          <i class="fa-solid fa-clock-rotate-left"></i> Order History
+        </a>
+        <span class="menu-item is-disabled" title="Coming soon">
+          <i class="fa-solid fa-clock-rotate-left"></i> Payment Pending
+        </span>
+        <a routerLink="/gio-hang/dat-hang-tu-dong" class="menu-item">
+          <i class="fa-solid fa-rotate"></i> Auto Orders
+        </a>
+        <span class="menu-item is-disabled" title="Coming soon">
+          <i class="fa-solid fa-medal"></i> PawPoints
+        </span>
+        <span class="menu-item is-disabled" title="Coming soon">
+          <i class="fa-solid fa-paw"></i> My Pets
+        </span>
+        <span class="menu-item is-disabled" title="Coming soon">
+          <i class="fa-solid fa-id-card"></i> PetCare+ Membership
+        </span>
+        <button type="button" class="menu-item menu-signout" (click)="dangXuat()">
+          <i class="fa-solid fa-power-off"></i> Sign Out
+        </button>
+      </nav>
+    </aside>
 
-      <small>*Terms & Conditions Apply</small>
-    </div>
+    <main class="content">
+      <h2 class="page-title">Manage Account</h2>
 
-    <div class="MenuTaiKhoan">
+      @if (dangTai) {
+      <p class="loading-text">Loading your profile...</p>
+      } @else if (hoSo(); as hs) {
 
-      <a routerLink="/tai-khoan/ho-so" class="MucMenu active">
-        <i class="fa-solid fa-table-cells-large"></i>
-        <span>Dashboard</span>
-      </a>
+      @if (thongBaoThanhCong) { <div class="success-box">{{ thongBaoThanhCong }}</div> }
+      @if (loiChung) { <div class="error-box">{{ loiChung }}</div> }
 
-      <a routerLink="/tai-khoan/ho-so" class="MucMenu">
-        <i class="fa-solid fa-user"></i>
-        <span>Manage Account</span>
-      </a>
+      <div class="account-card">
+        @if (!dangSuaHoSo) {
+        <div class="account-info">
+          <p class="account-name">{{ hs.hoTen }}</p>
+          <p class="account-line">Customer Since : {{ hs.ngayTao | date: 'MMM d, y' }}</p>
+          <p class="account-line">Email : {{ hs.email }}</p>
+          <p class="account-line">Customer ID : {{ hs.userId }}</p>
+          <p class="account-line">Phone : {{ hs.soDienThoai || 'Not set' }}</p>
+        </div>
 
-      <a href="#" class="MucMenu">
-        <i class="fa-solid fa-clock-rotate-left"></i>
-        <span>Order History</span>
-      </a>
+        <div class="pawvip-block">
+          <p class="pawvip-logo"><span class="clr-green">Paw</span><span class="clr-orange">Vip</span></p>
+          <p class="pawvip-caption">Membership</p>
+        </div>
 
-      <a href="#" class="MucMenu">
-        <i class="fa-solid fa-clock-rotate-left"></i>
-        <span>Payment Pending</span>
-      </a>
-
-      <a href="#" class="MucMenu">
-        <i class="fa-regular fa-credit-card"></i>
-        <span>Auto Orders</span>
-      </a>
-
-      <a href="#" class="MucMenu">
-        <i class="fa-solid fa-medal"></i>
-        <span>PawPoints</span>
-      </a>
-
-      <a href="#" class="MucMenu">
-        <i class="fa-solid fa-paw"></i>
-        <span>My Pets</span>
-      </a>
-
-      <a href="#" class="MucMenu">
-        <i class="fa-solid fa-ticket"></i>
-        <span>PetCare+ Membership</span>
-      </a>
-
-      <button type="button" class="MucMenu NutDangXuat">
-        <i class="fa-solid fa-power-off"></i>
-        <span>Sign Out</span>
-      </button>
-    </div>
-  </aside>
-  <main class="NoiDungHoSo">
-    <h1>Manage Account</h1>
-    <section class="TheThongTin">
-      <div class="ThongTinUser">
-        <h3>Anh Thu</h3>
-        <p>Customer Since : Jan 15, 2026</p>
-        <p>Email : ndthu@gmail.com</p>
-        <p>Customer ID: 111854689</p>
-        <p>Phone : 0347601876</p>
+        <div class="discount-block">
+          <p class="discount-title">Get 40% Discount!</p>
+          <p class="discount-caption">Enjoy Exclusive Perks & Priority Service</p>
+          <button type="button" class="btn-join" title="Coming soon">JOIN NOW</button>
+        </div>
+        } @else {
+        <form [formGroup]="form" (ngSubmit)="luuHoSo()" class="edit-form">
+          <div class="field">
+            <label for="hoTen">Full name*</label>
+            <input id="hoTen" type="text" formControlName="hoTen" />
+          </div>
+          <div class="field">
+            <label for="soDienThoai">Phone number</label>
+            <input id="soDienThoai" type="tel" formControlName="soDienThoai" />
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn-secondary" (click)="huySuaHoSo()">Cancel</button>
+            <button type="submit" class="btn-primary" [disabled]="dangGui">
+              {{ dangGui ? 'Saving...' : 'Save changes' }}
+            </button>
+          </div>
+        </form>
+        }
       </div>
-      <div class="PawVip">
-        <div class="LogoPawVip">PawVip</div>
-        <strong>Membership</strong>
-      </div>
-      <div class="UuDai">
-        <h3>Get 40% Discount!</h3>
-        <p>Enjoy Exclusive Perks & Priority Service</p>
-        <button type="button">JOIN NOW</button>
-      </div>
-    </section>
 
-    <section class="TheThongTin Nho">
-      <div>
-        <h3>Password</h3>
-        <p class="MatKhau"><i class="fa-solid fa-lock"></i>************</p>
+      @if (!dangSuaMatKhau) {
+      <div class="row-card">
+        <div class="row-left">
+          <p class="row-label">Password</p>
+          <p class="row-value"><i class="fa-solid fa-lock"></i> **********</p>
+        </div>
+        <button type="button" class="btn-edit" (click)="moSuaMatKhau()">Edit</button>
       </div>
-      <button type="button"class="NutEdit"routerLink="/tai-khoan/quen-mat-khau">Edit</button>
-    </section>
+      @if (thongBaoMatKhau) { <div class="success-box">{{ thongBaoMatKhau }}</div> }
+      } @else {
+      <div class="row-card row-card--stack">
+        <p class="row-label">Password</p>
+        @if (loiMatKhau) { <div class="error-box">{{ loiMatKhau }}</div> }
+        <form [formGroup]="matKhauForm" (ngSubmit)="luuMatKhau()" class="edit-form">
+          <div class="field">
+            <label for="matKhauCu">Current password*</label>
+            <input id="matKhauCu" type="password" formControlName="matKhauCu" autocomplete="current-password" />
+          </div>
+          <div class="field">
+            <label for="matKhauMoi">New password*</label>
+            <input id="matKhauMoi" type="password" formControlName="matKhauMoi" autocomplete="new-password" />
+          </div>
+          <div class="field">
+            <label for="xacNhanMatKhauMoi">Confirm new password*</label>
+            <input id="xacNhanMatKhauMoi" type="password" formControlName="xacNhanMatKhauMoi" autocomplete="new-password" />
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn-secondary" (click)="huySuaMatKhau()">Cancel</button>
+            <button type="submit" class="btn-primary" [disabled]="dangGuiMatKhau">
+              {{ dangGuiMatKhau ? 'Saving...' : 'Save changes' }}
+            </button>
+          </div>
+        </form>
+      </div>
+      }
 
-    <section class="TheThongTin Nho">
-      <div class="TieuDeAddress">
-        <h3>Shipping Address</h3>
-        <a routerLink="/tai-khoan/dia-chi">Add New Address</a>
+      <div class="row-card row-card--stack">
+        <div class="row-head">
+          <p class="row-label">Shipping Address</p>
+          <a routerLink="/tai-khoan/dia-chi" class="link-add">Add New Address</a>
+        </div>
+
+        @if (diaChiList().length > 0) {
+        <div class="address-mini-list">
+          @for (dc of diaChiList(); track dc.addressId) {
+          <div class="address-mini">
+            @if (dc.laMacDinh) { <span class="badge-default">Default</span> }
+            <p>{{ dc.nguoiNhan }} · {{ dc.soDienThoai }}</p>
+            <p>{{ dc.diaChiChiTiet }}, {{ dc.tinhThanh }}</p>
+          </div>
+          }
+        </div>
+        }
       </div>
-    </section>
-    <section class="TheThongTin Nho">
-      <div>
-        <h3>Billing Address</h3>
+
+      <div class="row-card">
+        <p class="row-label">Billing Address</p>
+        <a routerLink="/tai-khoan/dia-chi" class="btn-edit">Edit</a>
       </div>
-      <button type="button" class="NutEdit">Edit</button>
-    </section>
-  </main>
+
+      }
+    </main>
+  </div>
 </div>
+
 <app-footer />
 <app-chat-ai />

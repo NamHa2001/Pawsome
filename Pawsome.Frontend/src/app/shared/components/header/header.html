@@ -21,13 +21,8 @@
         <div class="VongTronTimKiem" (click)="timKiem()">
           <i class="fa-solid fa-magnifying-glass"></i>
         </div>
-        <input
-          type="text"
-          class="OInputTimKiem"
-          placeholder="Searching for products..."
-          [(ngModel)]="tuKhoaTimKiem"
-          (keyup.enter)="timKiem()"
-          name="tuKhoaTimKiem">
+        <input type="text" class="OInputTimKiem" placeholder="Searching for products..." [(ngModel)]="tuKhoaTimKiem"
+          (keyup.enter)="timKiem()" name="tuKhoaTimKiem">
       </div>
 
       <div class="CumTienIch">
@@ -41,9 +36,27 @@
             <span class="ThongBaoSoLuong">{{ soLuongGioHang() }}</span>
           </div>
         </a>
-        <a routerLink="/tai-khoan/dang-nhap" class="NutTienIch">
-          <div class="VongTronIconDo"><i class="fa-solid fa-user"></i></div>
-        </a>
+        <div class="KhungTaiKhoan">
+          @if (!daDangNhap()) {
+          <a routerLink="/tai-khoan/dang-nhap" class="NutTienIch">
+            <div class="VongTronIconDo"><i class="fa-solid fa-user"></i></div>
+          </a>
+          } @else {
+          <div class="NutTienIch" (click)="toggleDropdownTaiKhoan($event)">
+            <div class="VongTronIconDo"><i class="fa-solid fa-user"></i></div>
+          </div>
+
+          @if (hienDropdownTaiKhoan()) {
+          <div class="DropdownTaiKhoan">
+            <div class="TenNguoiDungDropdown">Hi, {{ nguoiDungHienTai()?.hoTen }}</div>
+            <a routerLink="/tai-khoan/ho-so" class="MucDropdown" (click)="dongDropdownTaiKhoan()">Profile</a>
+            <a routerLink="/tai-khoan/quen-mat-khau" class="MucDropdown" (click)="dongDropdownTaiKhoan()">Change
+              password</a>
+            <button type="button" class="MucDropdown MucDangXuat" (click)="dangXuat()">Sign out</button>
+          </div>
+          }
+          }
+        </div>
       </div>
     </div>
   </div>
