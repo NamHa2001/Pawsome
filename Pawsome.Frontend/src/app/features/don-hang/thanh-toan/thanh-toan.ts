@@ -19,6 +19,8 @@ import {
 import { AddressService } from './services/address.service';
 import { OrderService } from './services/order.service';
 import { PaymentService } from './services/payment.service';
+import { PawPointsService } from '../pawpoints/services/pawpoints.service';
+import { VND_PER_PAWPOINT } from '../pawpoints/models/pawpoints.model';
 
 @Component({
   selector: 'app-thanh-toan',
@@ -33,6 +35,7 @@ export class ThanhToanComponent {
   private readonly addressService = inject(AddressService);
   private readonly orderService = inject(OrderService);
   private readonly paymentService = inject(PaymentService);
+  private readonly pawPointsService = inject(PawPointsService);
   private readonly router = inject(Router);
 
   readonly cart = signal<Cart | null>(null);
@@ -60,11 +63,38 @@ export class ThanhToanComponent {
   readonly selectedPaymentMethod = signal<PaymentMethod>('momo');
   readonly placingOrder = signal(false);
 
+  // PawPoints (dùng điểm để giảm giá ngay lúc đặt hàng)
+  readonly pawPointsBalance = signal(0);
+  readonly usePawPoints = signal(false);
+  readonly pawPointsToUse = signal(0);
+  readonly vndPerPoint = VND_PER_PAWPOINT;
+
+  /* Không cho dùng nhiều điểm hơn số dư, và không cho dùng nhiều hơn mức backend
+   thực sự áp dụng được: OrderService.cs giới hạn (giamGiaCoupon + giamGiaDiem) <= tienHang,
+   nên phần điểm tối đa còn hữu ích = (tienHang - giamGiaCoupon) / 10.000 */
+  readonly maxUsablePoints = computed(() => {
+    const cart = this.cart();
+    if (!cart) return 0;
+    const conLaiSauCoupon = Math.max(0, cart.tienHang - cart.giamGia);
+    const gioiHanTheoDonHang = Math.floor(conLaiSauCoupon / this.vndPerPoint);
+    return Math.min(this.pawPointsBalance(), gioiHanTheoDonHang);
+  });
+
+  readonly pawPointsDiscount = computed(() =>
+    this.usePawPoints() ? this.pawPointsToUse() * this.vndPerPoint : 0);
+
+  readonly finalTotal = computed(() => {
+    const cart = this.cart();
+    if (!cart) return 0;
+    return Math.max(0, cart.tongTien - this.pawPointsDiscount());
+  });
+
   readonly isCartEmpty = computed(() => !this.cart() || this.cart()!.items.length === 0);
 
   constructor() {
     this.loadCart();
     this.loadAddresses();
+    this.loadPawPointsBalance();
   }
 
   private loadCart(): void {
@@ -144,6 +174,27 @@ export class ThanhToanComponent {
     this.selectedPaymentMethod.set(method);
   }
 
+  private loadPawPointsBalance(): void {
+    this.pawPointsService.getBalance().subscribe({
+      next: res => this.pawPointsBalance.set(res.soDuHienTai),
+      error: () => {} // Không chặn checkout nếu chỉ lỗi lấy số dư điểm - im lặng bỏ qua, coi như 0 điểm
+    });
+  }
+
+  togglePawPoints(): void {
+    const next = !this.usePawPoints();
+    this.usePawPoints.set(next);
+    // Bật lên thì mặc định đề xuất dùng tối đa; tắt đi thì reset về 0
+    this.pawPointsToUse.set(next ? this.maxUsablePoints() : 0);
+  }
+
+  onPawPointsInputChange(event: Event): void {
+    const raw = Number((event.target as HTMLInputElement).value);
+    const value = Number.isFinite(raw) ? Math.trunc(raw) : 0;
+    const clamped = Math.max(0, Math.min(value, this.maxUsablePoints()));
+    this.pawPointsToUse.set(clamped);
+  }
+
   placeOrder(): void {
     if (!this.selectedAddressId()) {
       this.errorMessage.set('Please select or add a shipping address.');
@@ -161,7 +212,8 @@ export class ThanhToanComponent {
       const dto: CreateOrderRequest = {
         addressId: this.selectedAddressId()!,
         couponId,
-        donViVanChuyen: this.selectedCarrier()
+        donViVanChuyen: this.selectedCarrier(),
+        soDiemMuonDoi: this.usePawPoints() && this.pawPointsToUse() > 0 ? this.pawPointsToUse() : null
       };
 
       this.orderService.create(dto).subscribe({

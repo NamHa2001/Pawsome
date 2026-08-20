@@ -105,6 +105,13 @@
             </div>
           }
 
+          @if (pawPointsDiscount() > 0) {
+            <div class="SummaryLine Discount">
+              <span>PawPoints Discount ({{ pawPointsToUse() }} pts)</span>
+              <span>−{{ pawPointsDiscount() | number:'1.0-0' }} VND</span>
+            </div>
+          }
+
           <div class="SummaryLine">
             <span>Estimated Shipping</span>
             <span>{{ cart()!.phiVanChuyenTamTinh | number:'1.0-0' }} VND</span>
@@ -112,10 +119,47 @@
 
           <div class="SummaryLine Total">
             <span>Total</span>
-            <span>{{ cart()!.tongTien | number:'1.0-0' }} VND</span>
+            <span>{{ finalTotal() | number:'1.0-0' }} VND</span>
           </div>
 
           <p class="SummaryNote">* Final shipping fee is confirmed after placing the order.</p>
+        </div>
+
+        <div class="Card">
+          <h2 class="CardTitle">Use PawPoints</h2>
+
+          @if (pawPointsBalance() > 0) {
+            <p class="PawPointsBalanceText">
+              You have <strong>{{ pawPointsBalance() }} points</strong> available.
+            </p>
+
+            <label class="CheckboxLine">
+              <input type="checkbox" [checked]="usePawPoints()" (change)="togglePawPoints()" />
+              Use PawPoints on this order
+            </label>
+
+            @if (usePawPoints()) {
+              <div class="PawPointsInputRow">
+                <input
+                  type="number"
+                  class="PawPointsInput"
+                  min="0"
+                  [max]="maxUsablePoints()"
+                  [value]="pawPointsToUse()"
+                  (input)="onPawPointsInputChange($event)" />
+                <span class="PawPointsInputHint">
+                  points (max {{ maxUsablePoints() }}) = −{{ pawPointsDiscount() | number:'1.0-0' }} VND
+                </span>
+              </div>
+              <p class="PawPointsNote">
+                Using points now will reduce how many new points you earn from this order.
+              </p>
+            }
+          } @else {
+            <p class="PawPointsBalanceText">
+              You don't have any PawPoints yet. Earn points on this order to use next time!
+            </p>
+          }
         </div>
 
         <div class="Card">

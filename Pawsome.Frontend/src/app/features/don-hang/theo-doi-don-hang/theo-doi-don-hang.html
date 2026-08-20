@@ -1,0 +1,94 @@
+<app-header />
+
+<main class="NoiDungChinh">
+<div class="TrackingPage">
+  <div class="VungAnToan PageTitleBar">
+    <h1 class="PageTitle">Track Your Order</h1>
+  </div>
+
+  <div class="VungAnToan SearchBar">
+    <input
+      type="text"
+      class="OrderIdInput"
+      placeholder="Enter your order number, e.g. 12"
+      [(ngModel)]="orderIdInput"
+      (keyup.enter)="trackOrder()" />
+    <button type="button" class="PrimaryButton" (click)="trackOrder()">Track</button>
+  </div>
+
+  @if (loading()) {
+    <div class="VungAnToan"><p class="StateText">Looking up your order...</p></div>
+  } @else if (errorMessage()) {
+    <div class="VungAnToan"><p class="StateText ErrorText">{{ errorMessage() }}</p></div>
+  } @else if (order()) {
+    <div class="VungAnToan TrackingContent">
+
+      <div class="Card OrderMetaCard">
+        <div class="OrderMetaRow">
+          <span class="MetaLabel">Order Number</span>
+          <span class="MetaValue">#{{ order()!.orderId }}</span>
+        </div>
+        <div class="OrderMetaRow">
+          <span class="MetaLabel">Order Date</span>
+          <span class="MetaValue">{{ order()!.ngayDat | date:'MMM d, y, h:mm a' }}</span>
+        </div>
+        <div class="OrderMetaRow">
+          <span class="MetaLabel">Shipping Carrier</span>
+          <span class="MetaValue">{{ order()!.donViVanChuyen || 'Not assigned yet' }}</span>
+        </div>
+        <div class="OrderMetaRow">
+          <span class="MetaLabel">Tracking Code</span>
+          <span class="MetaValue">{{ order()!.maVanDon || 'Not available yet' }}</span>
+        </div>
+      </div>
+
+      @if (isOffTrack()) {
+        <div class="Card OffTrackBanner">
+          <p>This order is <strong>{{ orderStatusLabel(order()!.trangThai) }}</strong> and is no longer following the standard shipping timeline.</p>
+        </div>
+      } @else {
+        <div class="Card TimelineCard">
+          <div class="Timeline">
+            @for (step of trackingSteps; track step.value; let i = $index) {
+              <div class="TimelineStep" [class.Done]="isStepDone(i)">
+                <div class="StepDot"></div>
+                <span class="StepLabel">{{ step.label }}</span>
+                @if (i < trackingSteps.length - 1) {
+                  <div class="StepLine" [class.Done]="i < currentStepIndex()"></div>
+                }
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <div class="Card">
+        <h2 class="CardTitle">Order Items</h2>
+        @for (item of order()!.orderItems; track item.orderItemId) {
+          <div class="OrderItemRow">
+            <div class="ItemInfo">
+              <span class="ItemName">{{ item.tenSanPham }}</span>
+              <span class="ItemVariant">{{ item.tenBienThe }}</span>
+            </div>
+            <span class="ItemQty">x{{ item.soLuong }}</span>
+            <span class="ItemTotal">{{ item.thanhTien | number:'1.0-0' }} VND</span>
+          </div>
+        }
+        <div class="SummaryLine Total">
+          <span>Total</span>
+          <span>{{ order()!.thanhTien | number:'1.0-0' }} VND</span>
+        </div>
+      </div>
+
+      <a routerLink="/don-hang/lich-su" class="SecondaryButton BackLink">← Back to Order History</a>
+    </div>
+  } @else {
+    <div class="VungAnToan StateBox">
+      <p>Enter your order number above to see its shipping status.</p>
+    </div>
+  }
+</div>
+</main>
+
+<app-footer />
+<app-chat-ai />
