@@ -25,6 +25,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(u => u.HoTen).HasColumnName("ho_ten").HasMaxLength(100).IsRequired();
         builder.Property(u => u.SoDienThoai).HasColumnName("so_dien_thoai").HasMaxLength(20);
         builder.Property(u => u.DiemPawpoints).HasColumnName("diem_pawpoints").HasDefaultValue(0);
+        builder.Property(u => u.LaPawvip).HasColumnName("la_pawvip").HasDefaultValue(false).IsRequired();
         builder.Property(u => u.TrangThai).HasColumnName("trang_thai").HasMaxLength(20).HasDefaultValue("active");
         builder.Property(u => u.NgayTao).HasColumnName("ngay_tao").HasDefaultValueSql("GETDATE()");
         builder.Property(u => u.NgayCapNhat).HasColumnName("ngay_cap_nhat").HasDefaultValueSql("GETDATE()");
@@ -50,6 +51,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             HoTen = "Quản trị viên",
             SoDienThoai = null,
             DiemPawpoints = 0,
+            LaPawvip = false,
             TrangThai = "active",
             NgayTao = new DateTime(2026, 1, 1),
             NgayCapNhat = new DateTime(2026, 1, 1)
