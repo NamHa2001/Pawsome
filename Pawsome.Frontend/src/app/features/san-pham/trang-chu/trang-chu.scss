@@ -296,10 +296,14 @@
 }
 
 .GiaVip {
-  font-size: 75px;
+  // File mẫu gốc để font-size 75px vì giá gốc chỉ là "$99" (3 ký tự) - giá thật quy đổi VND dài
+  // hơn nhiều ("2,376,000 VND"), giữ nguyên 75px sẽ tràn ra ngoài khung banner. Giảm size + không
+  // cho xuống dòng để chữ luôn nằm gọn 1 hàng như đúng ý đồ thiết kế mẫu.
+  font-size: 38px;
   font-weight: 900;
   color: #FFD700;
   line-height: 1;
+  white-space: nowrap;
   text-shadow: 2px 4px 4px rgba(0, 0, 0, 0.3);
 }
 
