@@ -18,6 +18,12 @@ export class WishlistService {
       .pipe(map(res => res.data ?? { items: [], totalCount: 0, pageNumber: 1, pageSize, totalPages: 0 }));
   }
 
+  them(productId: number): Observable<WishlistItem> {
+    return this.http
+      .post<ApiResponse<WishlistItem>>(this.baseUrl, { productId })
+      .pipe(map(res => res.data!));
+  }
+
   xoa(productId: number): Observable<void> {
     return this.http
       .delete<ApiResponse<object>>(`${this.baseUrl}/${productId}`)

@@ -26,6 +26,11 @@ export interface HinhAnhSanPham {
   laAnhChinh: boolean;
 }
 
+export interface TinhTrangSucKhoe {
+  conditionId: number;
+  tenTinhTrang: string;
+}
+
 export interface SanPham {
   productId: number;
   ten: string;
@@ -39,6 +44,7 @@ export interface SanPham {
   dangKinhDoanh: boolean;
   variants: BienTheSanPham[];
   images: HinhAnhSanPham[];
+  conditions: TinhTrangSucKhoe[];
 }
 
 export interface GoiYSanPham {
@@ -55,6 +61,7 @@ export interface BoLocSanPham {
   giaMin?: number;
   giaMax?: number;
   danhGiaMin?: number;
+  conditionId?: number;
   page?: number;
   pageSize?: number;
 }

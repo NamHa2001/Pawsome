@@ -24,6 +24,18 @@
       </div>
 
       <div class="KhoiLoc">
+        <h3 class="TieuDeLoc">Condition</h3>
+        <ul class="DanhSachLoc">
+          <li [class.active]="!boLoc().conditionId" (click)="apDungBoLoc({ conditionId: undefined })">All</li>
+          @for (tt of tinhTrangList(); track tt.conditionId) {
+            <li [class.active]="boLoc().conditionId === tt.conditionId" (click)="apDungBoLoc({ conditionId: tt.conditionId })">
+              {{ tt.tenTinhTrang }}
+            </li>
+          }
+        </ul>
+      </div>
+
+      <div class="KhoiLoc">
         <h3 class="TieuDeLoc">Brand</h3>
         <ul class="DanhSachLoc">
           <li [class.active]="!boLoc().brandId" (click)="apDungBoLoc({ brandId: undefined })">All</li>

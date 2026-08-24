@@ -25,4 +25,7 @@ public class ProductRequestDto
     public List<ProductVariantRequestDto> Variants { get; set; } = new();
 
     public List<ProductImageRequestDto>? Images { get; set; }
+
+    // Tình trạng sức khỏe áp dụng cho sản phẩm (YC-2.3, menu "Shop by Condition") - tùy chọn.
+    public List<int>? ConditionIds { get; set; }
 }

@@ -5,9 +5,10 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ChatAi } from '../../../shared/components/chat-ai/chat-ai';
 import { Footer } from '../../../shared/components/footer/footer';
 import { Header } from '../../../shared/components/header/header';
-import { BoLocSanPham, DanhMuc, SanPham, ThuongHieu, dichTenDanhMuc } from '../models/san-pham.model';
+import { BoLocSanPham, DanhMuc, SanPham, ThuongHieu, TinhTrangSucKhoe, dichTenDanhMuc } from '../models/san-pham.model';
 import { BrandService } from '../services/brand.service';
 import { CategoryService } from '../services/category.service';
+import { ConditionService } from '../services/condition.service';
 import { ProductService } from '../services/product.service';
 
 @Component({
@@ -26,6 +27,7 @@ export class DanhSachSanPham implements OnInit {
   private readonly productService = inject(ProductService);
   private readonly categoryService = inject(CategoryService);
   private readonly brandService = inject(BrandService);
+  private readonly conditionService = inject(ConditionService);
 
   readonly sanPhamList = signal<SanPham[]>([]);
   readonly tongSo = signal(0);
@@ -34,12 +36,14 @@ export class DanhSachSanPham implements OnInit {
 
   readonly danhMucList = signal<DanhMuc[]>([]);
   readonly thuongHieuList = signal<ThuongHieu[]>([]);
+  readonly tinhTrangList = signal<TinhTrangSucKhoe[]>([]);
 
   readonly boLoc = signal<BoLocSanPham>({ page: 1, pageSize: 12 });
 
   ngOnInit(): void {
     this.categoryService.getAll().subscribe(ds => this.danhMucList.set(ds));
     this.brandService.getAll().subscribe(ds => this.thuongHieuList.set(ds));
+    this.conditionService.getAll().subscribe(ds => this.tinhTrangList.set(ds));
 
     this.route.queryParamMap.subscribe(params => {
       this.boLoc.set({
@@ -49,6 +53,7 @@ export class DanhSachSanPham implements OnInit {
         giaMin: params.get('giaMin') ? Number(params.get('giaMin')) : undefined,
         giaMax: params.get('giaMax') ? Number(params.get('giaMax')) : undefined,
         danhGiaMin: params.get('danhGiaMin') ? Number(params.get('danhGiaMin')) : undefined,
+        conditionId: params.get('conditionId') ? Number(params.get('conditionId')) : undefined,
         page: params.get('page') ? Number(params.get('page')) : 1,
         pageSize: 12
       });
@@ -89,6 +94,7 @@ export class DanhSachSanPham implements OnInit {
     if (loc.giaMin) params['giaMin'] = loc.giaMin;
     if (loc.giaMax) params['giaMax'] = loc.giaMax;
     if (loc.danhGiaMin) params['danhGiaMin'] = loc.danhGiaMin;
+    if (loc.conditionId) params['conditionId'] = loc.conditionId;
     if (loc.page && loc.page > 1) params['page'] = loc.page;
     return params;
   }

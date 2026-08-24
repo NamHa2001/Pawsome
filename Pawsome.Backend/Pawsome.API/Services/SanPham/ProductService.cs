@@ -21,11 +21,15 @@ public class ProductService : IProductService
             .Include(p => p.Variants)
             .Include(p => p.Images)
             .Include(p => p.Reviews.Where(r => r.TrangThai == "da_duyet"))
+            .Include(p => p.ProductConditions).ThenInclude(pc => pc.Condition)
             .Where(p => p.DangKinhDoanh)
             .AsQueryable();
 
         if (filter.CategoryId.HasValue)
             query = query.Where(p => p.CategoryId == filter.CategoryId.Value);
+
+        if (filter.ConditionId.HasValue)
+            query = query.Where(p => p.ProductConditions.Any(pc => pc.ConditionId == filter.ConditionId.Value));
 
         if (filter.BrandId.HasValue)
             query = query.Where(p => p.BrandId == filter.BrandId.Value);
@@ -91,11 +95,15 @@ public class ProductService : IProductService
 
     public async Task<ProductDto?> GetByIdAsync(int id)
     {
+        // Route công khai (ProductsController, không yêu cầu đăng nhập) - phải lọc dangKinhDoanh
+        // giống hệt SearchAsync, không thì sản phẩm đã bị admin ẩn (soft-delete) vẫn xem/mua được
+        // qua link cũ.
         var product = await _dbContext.Products
             .Include(p => p.Variants)
             .Include(p => p.Images)
             .Include(p => p.Reviews.Where(r => r.TrangThai == "da_duyet"))
-            .FirstOrDefaultAsync(p => p.ProductId == id);
+            .Include(p => p.ProductConditions).ThenInclude(pc => pc.Condition)
+            .FirstOrDefaultAsync(p => p.ProductId == id && p.DangKinhDoanh);
 
         return product == null ? null : MapToDto(product);
     }
@@ -114,6 +122,7 @@ public class ProductService : IProductService
         }
 
         await KiemTraTrungSkuAsync(dto.Variants, null);
+        var danhSachCondition = await LayDanhSachConditionHopLeAsync(dto.ConditionIds);
 
         var product = new Product
         {
@@ -125,6 +134,11 @@ public class ProductService : IProductService
             NgayTao = DateTime.UtcNow,
             NgayCapNhat = DateTime.UtcNow
         };
+
+        foreach (var condition in danhSachCondition)
+        {
+            product.ProductConditions.Add(new ProductCondition { Condition = condition });
+        }
 
         foreach (var v in dto.Variants)
         {
@@ -163,6 +177,7 @@ public class ProductService : IProductService
             .Include(p => p.Variants)
             .Include(p => p.Images)
             .Include(p => p.Reviews.Where(r => r.TrangThai == "da_duyet"))
+            .Include(p => p.ProductConditions).ThenInclude(pc => pc.Condition)
             .FirstOrDefaultAsync(p => p.ProductId == id);
 
         if (product == null)
@@ -179,11 +194,24 @@ public class ProductService : IProductService
                 throw new InvalidOperationException("Thương hiệu không tồn tại.");
         }
 
+        var danhSachCondition = await LayDanhSachConditionHopLeAsync(dto.ConditionIds);
+
         product.Ten = dto.Ten;
         product.MoTa = dto.MoTa;
         product.CategoryId = dto.CategoryId;
         product.BrandId = dto.BrandId;
         product.LieuLuong = dto.LieuLuong;
+
+        // Thay toàn bộ danh sách tình trạng bằng danh sách mới gửi lên (dto.ConditionIds == null
+        // nghĩa là không đổi field này trên client - giữ nguyên; gửi mảng rỗng mới là "gỡ hết").
+        if (dto.ConditionIds != null)
+        {
+            product.ProductConditions.Clear();
+            foreach (var condition in danhSachCondition)
+            {
+                product.ProductConditions.Add(new ProductCondition { Condition = condition });
+            }
+        }
 
         await _dbContext.SaveChangesAsync();
 
@@ -414,8 +442,32 @@ public class ProductService : IProductService
             ImageId = i.ImageId,
             Url = i.Url,
             LaAnhChinh = i.LaAnhChinh
+        }).ToList(),
+        Conditions = p.ProductConditions.Select(pc => new ConditionDto
+        {
+            ConditionId = pc.ConditionId,
+            TenTinhTrang = pc.Condition.TenTinhTrang
         }).ToList()
     };
+
+    // idsMuon == null: không đổi (Update không gửi field này); rỗng: gỡ hết. Ném lỗi nếu có id
+    // không tồn tại trong bảng conditions, cùng kiểu xác thực FK đang dùng cho category_id/brand_id.
+    private async Task<List<Condition>> LayDanhSachConditionHopLeAsync(List<int>? idsMuon)
+    {
+        if (idsMuon == null || idsMuon.Count == 0)
+            return new List<Condition>();
+
+        var idsDistinct = idsMuon.Distinct().ToList();
+        var conditions = await _dbContext.Conditions
+            .Where(c => idsDistinct.Contains(c.ConditionId))
+            .ToListAsync();
+
+        if (conditions.Count != idsDistinct.Count)
+            throw new InvalidOperationException("Có tình trạng sức khỏe không tồn tại.");
+
+        return conditions;
+    }
+
     public async Task<ProductVariantInfoDto?> LayThongTinBienTheAsync(int variantId)
     {
         var variant = await _dbContext.ProductVariants
