@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Pawsome.API.DTOs.GioHang;
-using Pawsome.API.Services.SanPham; 
+using Pawsome.API.DTOs.SanPham;
+using Pawsome.API.Services.SanPham;
 using Pawsome.Domain.Entities.GioHang;
 using Pawsome.Infrastructure;
 
