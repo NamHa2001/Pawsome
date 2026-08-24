@@ -1,3 +1,4 @@
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Pawsome.API.Common;
 using Pawsome.API.DTOs.SanPham;
@@ -17,7 +18,14 @@ public class ProductService : IProductService
 
     public async Task<PagedResult<ProductDto>> SearchAsync(ProductFilterRequestDto filter)
     {
+        // AsNoTracking: chỉ đọc để hiển thị, không sửa/lưu lại - khỏi tốn chi phí change tracking.
+        // AsSplitQuery: 4 collection Include (Variants/Images/Reviews/ProductConditions) ghép 1 câu
+        // JOIN duy nhất sẽ nhân tích số dòng (cartesian product) theo từng sản phẩm; tách thành nhiều
+        // câu SELECT riêng (1 cho mỗi Include) để không nhân dòng, đặc biệt quan trọng vì đây là
+        // endpoint tìm kiếm/phân trang công khai, gọi liên tục.
         var query = _dbContext.Products
+            .AsNoTracking()
+            .AsSplitQuery()
             .Include(p => p.Variants)
             .Include(p => p.Images)
             .Include(p => p.Reviews.Where(r => r.TrangThai == "da_duyet"))
@@ -97,8 +105,12 @@ public class ProductService : IProductService
     {
         // Route công khai (ProductsController, không yêu cầu đăng nhập) - phải lọc dangKinhDoanh
         // giống hệt SearchAsync, không thì sản phẩm đã bị admin ẩn (soft-delete) vẫn xem/mua được
-        // qua link cũ.
+        // qua link cũ. AsNoTracking/AsSplitQuery cùng lý do như SearchAsync (chỉ đọc để hiển thị,
+        // tránh cartesian product khi ghép 4 collection Include) - endpoint này còn được gọi nhiều
+        // hơn cả Search vì mỗi lần xem 1 trang chi tiết sản phẩm đều gọi tới.
         var product = await _dbContext.Products
+            .AsNoTracking()
+            .AsSplitQuery()
             .Include(p => p.Variants)
             .Include(p => p.Images)
             .Include(p => p.Reviews.Where(r => r.TrangThai == "da_duyet"))
@@ -251,7 +263,7 @@ public class ProductService : IProductService
         product.Variants.Add(variant);
 
         CapNhatGiaTu(product);
-        await _dbContext.SaveChangesAsync();
+        await LuuVaBatLoiTrungSkuAsync(dto.Sku);
 
         return MapVariantToDto(variant);
     }
@@ -277,7 +289,7 @@ public class ProductService : IProductService
         variant.Sku = dto.Sku;
 
         CapNhatGiaTu(product);
-        await _dbContext.SaveChangesAsync();
+        await LuuVaBatLoiTrungSkuAsync(dto.Sku);
 
         return MapVariantToDto(variant);
     }
@@ -401,6 +413,35 @@ public class ProductService : IProductService
             if (trung)
                 throw new InvalidOperationException($"SKU '{sku}' đã tồn tại.");
         }
+    }
+
+    // KiemTraTrungSkuAsync chỉ là pre-check (đọc trước khi ghi) nên vẫn có race: 2 request thêm/sửa
+    // cùng SKU gửi gần như đồng thời có thể cùng vượt qua pre-check trước khi request nào SaveChanges,
+    // request lưu sau sẽ vi phạm filtered unique index UQ_product_variants_sku thật của DB và ném
+    // DbUpdateException. Bắt lỗi đó ở đây để trả về đúng thông báo nghiệp vụ (InvalidOperationException,
+    // controller đã bắt và trả 400) thay vì để lọt thành lỗi 500 chung chung.
+    //
+    // Chỉ coi là "SKU trùng" khi đúng là lỗi SQL Server vi phạm UNIQUE (số 2601/2627) VÀ đúng tên
+    // index UQ_product_variants_sku - không bắt tuốt mọi DbUpdateException, tránh gán nhầm nguyên
+    // nhân thật (VD: sản phẩm bị xóa cùng lúc gây vi phạm khóa ngoại, xung đột concurrency khác...)
+    // thành lỗi SKU rồi che mất lỗi thật.
+    private async Task LuuVaBatLoiTrungSkuAsync(string? sku)
+    {
+        try
+        {
+            await _dbContext.SaveChangesAsync();
+        }
+        catch (DbUpdateException ex) when (!string.IsNullOrWhiteSpace(sku) && LaLoiViPhamUniqueSku(ex))
+        {
+            throw new InvalidOperationException($"SKU '{sku}' đã tồn tại.");
+        }
+    }
+
+    private static bool LaLoiViPhamUniqueSku(DbUpdateException ex)
+    {
+        return ex.InnerException is SqlException sqlEx
+            && (sqlEx.Number == 2601 || sqlEx.Number == 2627)
+            && sqlEx.Message.Contains("UQ_product_variants_sku", StringComparison.OrdinalIgnoreCase);
     }
 
     // gia_tu chỉ là giá tham khảo để hiển thị (giá thấp nhất từ biến thể đang kinh doanh) - xem SRS mục 7.3
