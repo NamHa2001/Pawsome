@@ -106,7 +106,13 @@
                 <hr class="KeNgang">
 
                 <div class="CumGia">
-                  <div class="GiaChinhGrid">{{ sp.giaTu ? ((sp.giaTu | number:'1.0-0') + ' VND') : 'Contact us' }}</div>
+                  <div class="GiaChinhGrid">
+                    @if (sp.giaTu) {
+                      {{ sp.giaTu | number:'1.0-0' }} <span class="DonViTien">VND</span>
+                    } @else {
+                      Contact us
+                    }
+                  </div>
                 </div>
 
                 <button class="NutShopNowGrid">

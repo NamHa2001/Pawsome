@@ -101,8 +101,13 @@
         <hr class="KeNgang">
         <div class="CumGia">
           <div class="GiaMoiHang">
-            <span class="GiaMoiGrid">{{ sp.giaTu ? ((sp.giaTu | number:'1.0-0') + ' VND') : 'Contact
-              us' }}</span>
+            <span class="GiaMoiGrid">
+              @if (sp.giaTu) {
+                {{ sp.giaTu | number:'1.0-0' }} <span class="DonViTien">VND</span>
+              } @else {
+                Contact us
+              }
+            </span>
             <img src="/img/pawvip.png" alt="PawVip" class="VipIconGrid">
           </div>
         </div>
@@ -124,7 +129,7 @@
             <p>Unlock exclusive savings on all essentials.</p>
           </div>
           <div class="CumHanhDong">
-            <div class="GiaVip">2,376,000 VND</div>
+            <div class="GiaVip">2,376,000 <span class="DonViTien">VND</span></div>
             <button class="NutJoinNow">JOIN NOW</button>
           </div>
         </div>
@@ -202,8 +207,13 @@
         <hr class="KeNgang">
         <div class="CumGia">
           <div class="GiaMoiHang">
-            <span class="GiaMoiGrid">{{ sp.giaTu ? ((sp.giaTu | number:'1.0-0') + ' VND') : 'Contact
-              us' }}</span>
+            <span class="GiaMoiGrid">
+              @if (sp.giaTu) {
+                {{ sp.giaTu | number:'1.0-0' }} <span class="DonViTien">VND</span>
+              } @else {
+                Contact us
+              }
+            </span>
             <img src="/img/pawvip.png" alt="PawVip" class="VipIconGrid">
           </div>
         </div>
@@ -223,21 +233,21 @@
         <div class="KhungAnhDeal"><img src="/img/Dorwest.png" alt="Dorwest"></div>
         <div class="ThongTinDeal">
           <span class="TenSPDeal">Dorwest</span>
-          <span class="GiaSPDeal">923,000 VND</span>
+          <span class="GiaSPDeal">923,000 <span class="DonViTien">VND</span></span>
         </div>
       </div>
       <div class="CuaSoDeal">
         <div class="KhungAnhDeal"><img src="/img/aristopet.png" alt="Aristopet"></div>
         <div class="ThongTinDeal">
           <span class="TenSPDeal">Aristopet</span>
-          <span class="GiaSPDeal">447,000 VND</span>
+          <span class="GiaSPDeal">447,000 <span class="DonViTien">VND</span></span>
         </div>
       </div>
       <div class="CuaSoDeal">
         <div class="KhungAnhDeal"><img src="/img/milpro.png" alt="Milpro"></div>
         <div class="ThongTinDeal">
           <span class="TenSPDeal">Milpro</span>
-          <span class="GiaSPDeal">658,000 VND</span>
+          <span class="GiaSPDeal">658,000 <span class="DonViTien">VND</span></span>
         </div>
       </div>
     </div>

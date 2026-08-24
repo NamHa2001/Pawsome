@@ -138,6 +138,11 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
   &:hover { background-color: #FF7A00; box-shadow: 0 4px 12px rgba(165, 31, 31, 0.3); }
 }
 
+// Dùng chung mọi nơi hiển thị giá VND trên site - chữ đơn vị "VND" nhỏ hơn số tiền cho dễ nhìn.
+.DonViTien {
+  font-size: 0.6em;
+}
+
 .NutPhanTrang {
   padding: 8px 14px;
   border: 1px solid #E0E0E0;
