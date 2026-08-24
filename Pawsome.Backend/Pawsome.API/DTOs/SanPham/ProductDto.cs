@@ -14,4 +14,5 @@ public class ProductDto
     public bool DangKinhDoanh { get; set; }
     public List<ProductVariantDto> Variants { get; set; } = new();
     public List<ProductImageDto> Images { get; set; } = new();
+    public List<ConditionDto> Conditions { get; set; } = new();
 }

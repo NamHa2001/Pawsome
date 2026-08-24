@@ -108,14 +108,14 @@
         </li>
 
         <li class="MucMenuChinh">
-          <a href="#" class="LienKetChinh">Shop by Condition</a>
+          <a routerLink="/san-pham" class="LienKetChinh">Shop by Condition</a>
           <ul class="KhungMenuCon">
-            <li><a href="#">Flea, Tick</a></li>
-            <li><a href="#">Wormers</a></li>
-            <li><a href="#">Heartwormers</a></li>
-            <li><a href="#">Joint Care</a></li>
-            <li><a href="#">Skin & Coat</a></li>
-            <li><a href="#">Behavioural</a></li>
+            <li><a routerLink="/san-pham" [queryParams]="{ conditionId: 1 }">Flea, Tick</a></li>
+            <li><a routerLink="/san-pham" [queryParams]="{ conditionId: 2 }">Wormers</a></li>
+            <li><a routerLink="/san-pham" [queryParams]="{ conditionId: 3 }">Heartwormers</a></li>
+            <li><a routerLink="/san-pham" [queryParams]="{ conditionId: 4 }">Joint Care</a></li>
+            <li><a routerLink="/san-pham" [queryParams]="{ conditionId: 5 }">Skin & Coat</a></li>
+            <li><a routerLink="/san-pham" [queryParams]="{ conditionId: 6 }">Behavioural</a></li>
           </ul>
         </li>
 

@@ -17,4 +17,7 @@ public class ProductUpdateRequestDto
 
     [StringLength(100, ErrorMessage = "Liều lượng không được vượt quá 100 ký tự")]
     public string? LieuLuong { get; set; }
+
+    // Tình trạng sức khỏe áp dụng cho sản phẩm (YC-2.3, menu "Shop by Condition") - tùy chọn.
+    public List<int>? ConditionIds { get; set; }
 }

@@ -8,6 +8,7 @@ public class ProductFilterRequestDto
     public decimal? GiaMin { get; set; }
     public decimal? GiaMax { get; set; }
     public decimal? DanhGiaMin { get; set; }
+    public int? ConditionId { get; set; }
     public int Page { get; set; } = 1;
     public int PageSize { get; set; } = 20;
 }

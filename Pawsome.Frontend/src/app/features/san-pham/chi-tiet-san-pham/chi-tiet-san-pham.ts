@@ -1,9 +1,7 @@
 import { DecimalPipe } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { environment } from '../../../../environments/environment';
 import { TokenService } from '../../../core/models/token.service';
 import { ChatAi } from '../../../shared/components/chat-ai/chat-ai';
 import { Footer } from '../../../shared/components/footer/footer';
@@ -12,6 +10,7 @@ import { SanPham } from '../models/san-pham.model';
 import { ProductService } from '../services/product.service';
 import { DanhGiaSanPham } from '../danh-gia-san-pham/danh-gia-san-pham';
 import { CartService } from '../../gio-hang/gio-hang/services/cart.service';
+import { WishlistService } from '../../blog-quan-tri/wishlist/services/wishlist.service';
 
 @Component({
   selector: 'app-chi-tiet-san-pham',
@@ -28,7 +27,7 @@ export class ChiTietSanPham implements OnInit {
   private readonly router = inject(Router);
   private readonly productService = inject(ProductService);
   private readonly cartService = inject(CartService);
-  private readonly http = inject(HttpClient);
+  private readonly wishlistService = inject(WishlistService);
   readonly tokenService = inject(TokenService);
 
   readonly sanPham = signal<SanPham | null>(null);
@@ -80,6 +79,7 @@ export class ChiTietSanPham implements OnInit {
         this.sanPham.set(sp);
         this.anhDangChon.set(sp.images.find(i => i.laAnhChinh)?.url ?? sp.images[0]?.url ?? null);
         this.taiSanPhamCungDanhMuc(sp);
+        this.kiemTraDaYeuThich(sp.productId);
       },
       error: () => {
         this.dangTai.set(false);
@@ -91,6 +91,16 @@ export class ChiTietSanPham implements OnInit {
   private taiSanPhamCungDanhMuc(sp: SanPham): void {
     this.productService.search({ categoryId: sp.categoryId, page: 1, pageSize: 5 }).subscribe(ket => {
       this.sanPhamCungDanhMuc.set(ket.items.filter(p => p.productId !== sp.productId).slice(0, 4));
+    });
+  }
+
+  // Chưa có API kiểm tra 1 sản phẩm cụ thể (WishlistService của Phần 5 chỉ có lấy cả danh sách/xóa) -
+  // tạm lấy cả danh sách yêu thích rồi so productId, danh sách cá nhân này thường không lớn.
+  private kiemTraDaYeuThich(productId: number): void {
+    if (!this.tokenService.isLoggedIn()) return;
+
+    this.wishlistService.layDanhSach(1, 100).subscribe(ket => {
+      this.dangYeuThich.set(ket.items.some(i => i.productId === productId));
     });
   }
 
@@ -120,20 +130,23 @@ export class ChiTietSanPham implements OnInit {
 
   toggleYeuThich(): void {
     const sp = this.sanPham();
-    if (!sp || !this.tokenService.isLoggedIn()) return;
+    if (!sp) return;
+
+    if (!this.tokenService.isLoggedIn()) {
+      this.router.navigate(['/tai-khoan/dang-nhap']);
+      return;
+    }
 
     this.dangXuLyYeuThich.set(true);
-    const url = `${environment.apiUrl}/Wishlist`;
-
     const xong = () => this.dangXuLyYeuThich.set(false);
 
     if (this.dangYeuThich()) {
-      this.http.delete(`${url}/${sp.productId}`).subscribe({
+      this.wishlistService.xoa(sp.productId).subscribe({
         next: () => { this.dangYeuThich.set(false); xong(); },
         error: xong
       });
     } else {
-      this.http.post(url, { productId: sp.productId }).subscribe({
+      this.wishlistService.them(sp.productId).subscribe({
         next: () => { this.dangYeuThich.set(true); xong(); },
         error: xong
       });
