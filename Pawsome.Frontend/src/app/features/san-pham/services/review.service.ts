@@ -19,6 +19,12 @@ export class ReviewService {
       .pipe(map(res => res.data ?? { items: [], totalCount: 0, pageNumber: 1, pageSize: 20, totalPages: 0 }));
   }
 
+  getNoiBat(soLuong = 6): Observable<DanhGia[]> {
+    return this.http
+      .get<ApiResponse<DanhGia[]>>(`${this.baseUrl}/noi-bat`, { params: { soLuong } })
+      .pipe(map(res => res.data ?? []));
+  }
+
   create(dto: GuiDanhGia): Observable<DanhGia> {
     return this.http
       .post<ApiResponse<DanhGia>>(this.baseUrl, dto)

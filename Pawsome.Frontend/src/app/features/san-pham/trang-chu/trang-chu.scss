@@ -505,3 +505,165 @@
   &:hover { background-color: #FF7A00; }
 }
 
+// Khối "đánh giá tiêu biểu của khách hàng" (Pawsome_PhanChia.pdf, mục trang chủ) - không có trong
+// file mẫu WEB_PAWSOME/TrangChu.html, dựng theo ảnh mẫu riêng user cung cấp (thẻ nằm ngang có ảnh
+// sản phẩm, nút điều hướng trái/phải) nhưng đổi màu cho khớp bảng màu đang dùng của app (đỏ chủ
+// đạo --MauDoDam thay vì màu trong ảnh mẫu). Không bịa nội dung đánh giá - chỉ hiển thị khi có ít
+// nhất 1 đánh giá thật đã duyệt (xem @if ở template). Nút < > phân trang 2 đánh giá/lần trong số
+// đánh giá đã tải sẵn (xem doiTrangNoiBat/danhGiaHienThi ở trang-chu.ts) - tự ẩn khi chỉ có 1 trang.
+// .HangTieuDeNoiBat bọc VungAnToanDoc (1200px) giống hệt .LuoiDanhGiaNoiBat bên dưới, để nút mũi
+// tên thẳng hàng đúng mép phải của khối thẻ đánh giá - không để nó trải hết chiều rộng main (rộng
+// hơn 1200px) làm nút bị đẩy ra xa hẳn bên phải, lệch hàng so với thẻ bên dưới. Canh giữa tiêu đề
+// dựa vào Grid 1fr/auto/1fr (xem .HangTieuDeNoiBat bên dưới) chứ không phải nhờ bỏ VungAnToanDoc.
+.KhungDanhGiaNoiBat {
+  // Top nhỏ vì phía trên đã có sẵn .BlogSection padding-bottom (20px) + .NutViewAllContainer
+  // margin-bottom (40px) - để 40px nữa thì cộng dồn thành ~100px, cách quá xa nút VIEW ALL.
+  padding: 10px 0 60px 0;
+}
+
+.HangTieuDeNoiBat {
+  // Lưới 3 cột trái/giữa/phải thay vì position:absolute cho nút mũi tên - absolute không tin cậy
+  // vì không thật sự "trừ hao" phần chỗ nó chiếm, làm tiêu đề bị lệch trái so với tâm thật của
+  // hàng. Grid 1fr/auto/1fr đảm bảo cột giữa (tiêu đề) luôn nằm đúng giữa hàng bất kể cột phải
+  // (nút mũi tên) có nội dung hay rỗng.
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  text-align: center;
+}
+
+.TieuDeDanhGia {
+  font-size: 36px;
+  font-weight: 600;
+  margin-top: 5px;
+  color: #000;
+
+  .ChuNoiBat { color: var(--MauDoDam); }
+}
+
+.NutDieuHuongNoiBat {
+  justify-self: end;
+  display: flex;
+  gap: 10px;
+}
+
+.NutMuiTenNoiBat {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 8px;
+  background-color: var(--MauDoDam);
+  color: #fff;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: 0.2s ease;
+
+  &:hover:not(:disabled) { background-color: #FF7A00; }
+  &:disabled { opacity: 0.4; cursor: default; }
+}
+
+.LuoiDanhGiaNoiBat {
+  margin-top: 24px;
+  display: grid;
+  // auto-fit + justify-content: center thay vì chia cứng số cột - khi ít đánh giá hơn số cột
+  // (như hiện tại chỉ có 1) thẻ tự co lại và nằm giữa hàng, không bị dồn hết về bên trái.
+  // Max 580px để 2 thẻ + khoảng cách gần lấp đầy khung 1200px (580*2+20=1180), giống độ rộng phần
+  // Blog phía trên thay vì để trống nhiều khoảng trắng 2 bên như trước (max 500px quá hẹp).
+  grid-template-columns: repeat(auto-fit, minmax(420px, 580px));
+  justify-content: center;
+  gap: 20px;
+}
+
+.TheDanhGiaNoiBat {
+  background-color: var(--MauHongNhat);
+  border-radius: 10px;
+  padding: 36px;
+  text-align: left;
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  min-height: 230px;
+}
+
+.AnhSPNoiBat {
+  width: 150px;
+  height: 150px;
+  min-width: 150px;
+  background-color: #fff;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+
+  img { max-width: 85%; max-height: 85%; object-fit: contain; }
+}
+
+.NoiDungTheNoiBat {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.TenSPNoiBat {
+  font-weight: 700;
+  font-size: 15px;
+  color: #000;
+}
+
+.BinhLuanNoiBat {
+  font-style: italic;
+  font-size: 14px;
+  color: #777;
+  line-height: 1.4;
+}
+
+.DongDuoiNoiBat {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: auto;
+}
+
+.AvatarNoiBat {
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+  border-radius: 50%;
+  background-color: var(--MauDoDam);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
+.TenNguoiDanhGiaNoiBat {
+  font-weight: 700;
+  font-size: 13px;
+  color: #000;
+}
+
+.SaoVaDiemNoiBat {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.SaoVangNoiBat {
+  color: #FFA500;
+  font-size: 13px;
+
+  .SaoMo { color: #E0E0E0; }
+}
+
+.DiemSoNoiBat {
+  font-size: 13px;
+  color: #777;
+}
+

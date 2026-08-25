@@ -8,6 +8,10 @@ namespace Pawsome.API.Services.SanPham;
 public interface IReviewService
 {
     Task<PagedResult<ReviewDto>> GetByProductAsync(int productId, int page, int pageSize);
+
+    // Đánh giá tiêu biểu cho trang chủ (YCGD-5.1, mục "Đánh giá tiêu biểu của khách hàng") - lấy
+    // các đánh giá đã duyệt, có bình luận, điểm cao nhất trước, không phân biệt sản phẩm.
+    Task<List<ReviewDto>> GetNoiBatAsync(int soLuong);
     Task<List<ReviewDto>> GetChoDuyetAsync();
     Task<ReviewDto> CreateAsync(int userId, ReviewRequestDto dto);
     Task<ReviewDto> DuyetAsync(int reviewId);
