@@ -30,8 +30,9 @@ interface ThongBaoCoupon {
   noiDung: string;
 }
 
-const PHAN_TRAM_GIAM_PAWVIP = 0.65;
+const PHAN_TRAM_GIAM_PAWVIP = 0.2;
 const PHI_VAN_CHUYEN_CO_THEO_DOI = 30000;
+const PHAN_TRAM_GIAM_AUTO_ORDER = 0.1; 
 
 @Component({
   selector: 'app-gio-hang',
@@ -55,7 +56,7 @@ export class GioHangComponent {
   readonly dangTai = signal(true);
   readonly loi = signal<string | null>(null);
 
-  // ── Gợi ý sản phẩm khi giỏ hàng trống ─────────────────────────────
+  //Gợi ý sản phẩm khi giỏ hàng trống
   readonly tabGoiY = signal<TabGoiY>('thuong-mua');
   readonly dangThemGoiY = signal<number | null>(null);
   // TODO: nạp dữ liệu thật từ API gợi ý sản phẩm (thuộc Part sản phẩm) khi có.
@@ -66,21 +67,33 @@ export class GioHangComponent {
     this.tabGoiY() === 'thuong-mua' ? this.sanPhamThuongMua() : this.sanPhamLienQuan()
   );
 
-  // ── PawVip banner ──────────────────────────────────────────────────
+  // PawVip banner
   readonly tietKiemPawVip = computed(() => (this.gioHang()?.tienHang ?? 0) * PHAN_TRAM_GIAM_PAWVIP);
   readonly tongTienPawVip = computed(() => (this.gioHang()?.tienHang ?? 0) - this.tietKiemPawVip());
 
-  // ── Auto Order theo từng dòng sản phẩm ─────────────────────────────
+  // Auto Order theo từng dòng sản phẩm 
   readonly autoOrderIdTheoDong = signal<Record<number, number>>({});
   readonly dangXuLyAutoOrderDong = signal<number | null>(null);
 
-  // ── Mã giảm giá ─────────────────────────────────────────────────────
+  // Tổng tiền được giảm 10% từ các dòng sản phẩm đang bật Auto Order.
+  // Tính trên thanhTien (đơn giá x số lượng) của từng dòng đang bật.
+  readonly giamGiaAutoOrder = computed(() => {
+    const gh = this.gioHang();
+    if (!gh) return 0;
+
+    const cacDongDangBat = this.autoOrderIdTheoDong();
+    return gh.items
+      .filter(item => !!cacDongDangBat[item.cartItemId])
+      .reduce((tong, item) => tong + item.thanhTien * PHAN_TRAM_GIAM_AUTO_ORDER, 0);
+  });
+
+  //  Mã giảm giá 
   readonly maCoupon = signal('');
   readonly dangApDungMa = signal(false);
   readonly thongBaoCoupon = signal<ThongBaoCoupon | null>(null);
   readonly danhSachMaGiamGia = signal<Coupon[]>([]);
 
-  // ── Vận chuyển ────────────────────────────────────────────────────
+  // Vận chuyển 
   readonly loaiVanChuyen = signal<'free' | 'tracked'>('free');
   readonly phiVanChuyenCoTheoDoi = PHI_VAN_CHUYEN_CO_THEO_DOI;
 
@@ -91,7 +104,7 @@ export class GioHangComponent {
   readonly tongTienHienThi = computed(() => {
     const gh = this.gioHang();
     if (!gh) return 0;
-    return Math.max(0, gh.tienHang - gh.giamGia + this.phiVanChuyenHienThi());
+    return Math.max(0, gh.tienHang - gh.giamGia - this.giamGiaAutoOrder() + this.phiVanChuyenHienThi());
   });
 
   readonly diemThuongDuKien = computed(() => Math.floor(this.tongTienHienThi() / 10000));
@@ -101,7 +114,7 @@ export class GioHangComponent {
     this.taiMaGiamGiaGoiY();
   }
 
-  // ── Tải dữ liệu ───────────────────────────────────────────────────
+  //  Tải dữ liệu 
   taiGioHang(): void {
     this.dangTai.set(true);
     this.loi.set(null);
@@ -125,7 +138,7 @@ export class GioHangComponent {
     });
   }
 
-  // ── Gợi ý sản phẩm ────────────────────────────────────────────────
+  //  Gợi ý sản phẩm 
   themVaoGioTuGoiY(sp: SanPhamGoiY): void {
     this.dangThemGoiY.set(sp.variantId);
 
@@ -138,12 +151,12 @@ export class GioHangComponent {
     });
   }
 
-  // ── PawVip ────────────────────────────────────────────────────────
+  //  PawVip 
   kichHoatPawVip(): void {
-    // TODO: liên kết tới luồng đăng ký PawVip membership khi trang đó có sẵn.
+   
   }
 
-  // ── Số lượng / xoá sản phẩm ──────────────────────────────────────
+  //  Số lượng / xoá sản phẩm 
   tangSoLuong(cartItemId: number, soLuongHienTai: number): void {
     this.cartService.capNhatSoLuong(cartItemId, { soLuong: soLuongHienTai + 1 }).subscribe({
       next: res => this.gioHang.set(res.data ?? this.gioHang())
@@ -177,7 +190,7 @@ export class GioHangComponent {
     });
   }
 
-  // ── Auto Order theo dòng ────────────────────────────────────────
+  //  Auto Order theo dòng
   toggleAutoOrderDong(item: CartItem): void {
     this.dangXuLyAutoOrderDong.set(item.cartItemId);
     const autoOrderIdHienTai = this.autoOrderIdTheoDong()[item.cartItemId];
@@ -213,7 +226,7 @@ export class GioHangComponent {
     });
   }
 
-  // ── Mã giảm giá ─────────────────────────────────────────────────
+  //  Mã giảm giá 
   apDungMaGiamGia(): void {
     const ma = this.maCoupon().trim();
     if (!ma) return;

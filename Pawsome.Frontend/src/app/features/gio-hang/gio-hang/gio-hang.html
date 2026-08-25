@@ -39,7 +39,7 @@
               <div class="TheSanPhamGoiY">
                 <img [src]="sp.hinhAnh" [alt]="sp.ten" class="AnhGoiY" />
                 <span class="TenGoiY">{{ sp.ten }}</span>
-                <span class="DanhGiaGoiY">★ {{ sp.diemDanhGia }} ({{ sp.soLuotDanhGia }})</span>
+                <span class="DanhGiaGoiY"> {{ sp.diemDanhGia }} ({{ sp.soLuotDanhGia }})</span>
                 <div class="GiaGoiY">
                   <span class="GiaGocGoiY">{{ sp.giaGoc | number:'1.0-0' }} đ</span>
                   <span class="GiaKhuyenMaiGoiY">{{ sp.giaKhuyenMai | number:'1.0-0' }} đ</span>
@@ -63,13 +63,13 @@
         <!-- PawVip banner (UI tĩnh) -->
         <div class="TheGoiPawVip">
           <div class="ThongTinPawVip">
-            <span class="NhanPawVip">🐾 PawVip <strong>Membership</strong></span>
-            <p class="MoTaPawVip">Get <strong>65% Discount!</strong> Enjoy Exclusive Perks & Priority Service. Only 2,376,000 đ/Year</p>
+            <span class="NhanPawVip"> PawVip <strong>Membership</strong></span>
+            <p class="MoTaPawVip">Get <strong>20% Discount!</strong> Enjoy Exclusive Perks & Priority Service. Only 2,376,000 đ/Year</p>
             <button type="button" class="NutKichHoatPawVip" (click)="kichHoatPawVip()">Activate Now</button>
           </div>
           <div class="BangSoSanhPawVip">
             <div class="DongSoSanh"><span>Item ({{ gioHang()!.items.length }})</span><span>{{ gioHang()!.tienHang | number:'1.0-0' }} đ</span></div>
-            <div class="DongSoSanh"><span>You Save (65%)</span><span>−{{ tietKiemPawVip() | number:'1.0-0' }} đ</span></div>
+            <div class="DongSoSanh"><span>You Save (20%)</span><span>−{{ tietKiemPawVip() | number:'1.0-0' }} đ</span></div>
             <div class="DongSoSanh DongTongSoSanh"><span>Total with PawVip</span><span>{{ tongTienPawVip() | number:'1.0-0' }} đ</span></div>
             <a href="javascript:void(0)" class="LienKetXemThem">See More</a>
           </div>
@@ -139,7 +139,7 @@
         }
 
         <div class="KhungHanhDongDuoi">
-          <a routerLink="/" class="NutPhu">← Continue Shopping</a>
+          <a routerLink="/" class="NutPhu">Continue Shopping</a>
           <button type="button" class="NutPhu NutNguyHiem" (click)="xoaSachGioHang()">Clear Entire Cart</button>
         </div>
       </div>
@@ -150,6 +150,9 @@
           <h3>Order Summary</h3>
           <div class="DongTienTom"><span>Sub Total</span><span>{{ gioHang()!.tienHang | number:'1.0-0' }} đ</span></div>
           <div class="DongTienTom"><span>Discount</span><span>−{{ gioHang()!.giamGia | number:'1.0-0' }} đ</span></div>
+          @if (giamGiaAutoOrder() > 0) {
+            <div class="DongTienTom"><span>Auto Order Discount (10%)</span><span>−{{ giamGiaAutoOrder() | number:'1.0-0' }} đ</span></div>
+          }
           <div class="DongTienTom"><span>Shipping</span><span>{{ phiVanChuyenHienThi() | number:'1.0-0' }} đ</span></div>
           <div class="OTongCongTom">
             <span>Total</span>
