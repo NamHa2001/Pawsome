@@ -1,0 +1,102 @@
+<div class="TieuDeTrang">
+  <h1>Blog Management</h1>
+  <p class="MoTaTrang">Create, edit and delete blog articles.</p>
+</div>
+
+@if (thongBao()) {
+  <p class="ThongBaoThanhCong">{{ thongBao() }}</p>
+}
+
+<div class="TheQuanTri">
+  <div class="TieuDeThe TieuDeTheBoLoc">
+    <span>Articles</span>
+    <div class="NhomBoLoc">
+      <input type="text" placeholder="Search by title..." [ngModel]="tuKhoa()" (ngModelChange)="tuKhoa.set($event)" (keyup.enter)="timKiem()" />
+      <button type="button" class="NutChinh" (click)="timKiem()">Search</button>
+      <button type="button" class="NutChinh" (click)="moFormThem()">+ Add Article</button>
+    </div>
+  </div>
+
+  @if (formMode()) {
+    <div class="FormPanel">
+      <h3>{{ formMode() === 'them' ? 'New Article' : 'Edit Article' }}</h3>
+
+      @if (loiForm()) {
+        <p class="ThongBaoLoi">{{ loiForm() }}</p>
+      }
+
+      <div class="LuoiForm">
+        <label class="OFull">
+          Title
+          <input type="text" [ngModel]="form().tieuDe" (ngModelChange)="form.update(f => ({ ...f, tieuDe: $event }))" />
+        </label>
+        <label>
+          Topic
+          <input type="text" list="ds-chu-de" placeholder="e.g. Dogs, Cats, Health" [ngModel]="form().chuDe" (ngModelChange)="form.update(f => ({ ...f, chuDe: $event }))" />
+          <datalist id="ds-chu-de">
+            @for (cd of chuDeList(); track cd) {
+              <option [value]="cd"></option>
+            }
+          </datalist>
+        </label>
+        <label>
+          Cover image URL
+          <input type="text" [ngModel]="form().anhDaiDien" (ngModelChange)="form.update(f => ({ ...f, anhDaiDien: $event }))" />
+        </label>
+        <label class="OFull">
+          Content
+          <textarea rows="6" [ngModel]="form().noiDung" (ngModelChange)="form.update(f => ({ ...f, noiDung: $event }))"></textarea>
+        </label>
+      </div>
+
+      <div class="NutForm">
+        <button type="button" class="NutChinh" [disabled]="dangLuu()" (click)="luu()">{{ dangLuu() ? 'Saving...' : 'Save' }}</button>
+        <button type="button" class="NutPhu" (click)="dongForm()">Cancel</button>
+      </div>
+    </div>
+  }
+
+  <div class="ThanThe">
+    @if (dangTai()) {
+      <p class="ThongBaoRong">Loading...</p>
+    } @else if (loi()) {
+      <p class="ThongBaoRong ThongBaoLoi">{{ loi() }}</p>
+    } @else if (danhSach().length === 0) {
+      <p class="ThongBaoRong">No articles found.</p>
+    } @else {
+      <div class="BangCuon">
+        <table class="Bang">
+          <thead>
+            <tr><th>Title</th><th>Topic</th><th>Author</th><th>Date</th><th>Actions</th></tr>
+          </thead>
+          <tbody>
+            @for (bv of danhSach(); track bv.postId) {
+              <tr>
+                <td>{{ bv.tieuDe }}</td>
+                <td>{{ bv.chuDe || '—' }}</td>
+                <td>{{ bv.tenTacGia }}</td>
+                <td>{{ bv.ngayDang | date:'dd/MM/yyyy' }}</td>
+                <td class="OHanhDong">
+                  <button type="button" class="NutNho NutPhu" (click)="moFormSua(bv)">Edit</button>
+                  <button type="button" class="NutNho NutNguyHiem" [disabled]="dangXoa() === bv.postId" (click)="xoa(bv)">
+                    {{ dangXoa() === bv.postId ? 'Deleting...' : 'Delete' }}
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      @if (tongTrang() > 1) {
+        <div class="PhanTrang">
+          <button type="button" [disabled]="trang() === 1" (click)="doiTrang(trang() - 1)">Prev</button>
+          @for (t of cacTrang(); track t) {
+            <button type="button" [class.active]="trang() === t" (click)="doiTrang(t)">{{ t }}</button>
+          }
+          <button type="button" [disabled]="trang() === tongTrang()" (click)="doiTrang(trang() + 1)">Next</button>
+        </div>
+      }
+    }
+  </div>
+</div>
