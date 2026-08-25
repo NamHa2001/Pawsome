@@ -48,7 +48,7 @@
       </div>
 
       <div class="KhoiLoc">
-        <h3 class="TieuDeLoc">Price Range (VND)</h3>
+        <h3 class="TieuDeLoc">Price Range (vnd)</h3>
         <div class="HangGiaLoc">
           <input type="number" placeholder="Min" #giaMin [value]="boLoc().giaMin ?? ''">
           <span>-</span>
@@ -97,8 +97,13 @@
 
               <div class="NoiDungSP">
                 <div class="RatingSao">
-                  <i class="fa-solid fa-star"></i>
-                  <span>{{ sp.diemDanhGiaTb }} ({{ sp.soLuongDanhGia }})</span>
+                  @for (s of saoArr; track s) {
+                    <span class="SaoO">
+                      <i class="fas fa-star SaoNen"></i>
+                      <i class="fas fa-star SaoDay" [style.width.%]="phanTramSao(s, sp.diemDanhGiaTb)"></i>
+                    </span>
+                  }
+                  <span>{{ sp.diemDanhGiaTb }}</span>
                 </div>
 
                 <div class="TenSanPhamGrid">{{ sp.ten }}</div>
@@ -106,17 +111,19 @@
                 <hr class="KeNgang">
 
                 <div class="CumGia">
-                  <div class="GiaChinhGrid">
-                    @if (sp.giaTu) {
-                      {{ sp.giaTu | number:'1.0-0' }} <span class="DonViTien">VND</span>
-                    } @else {
-                      Contact us
-                    }
-                  </div>
+                  @if (sp.giaTu) {
+                    <div class="GiaChinhGrid">{{ sp.giaTu | number:'1.0-0' }} <span class="DonViTien">vnd</span></div>
+                    <div class="GiaMoiHang">
+                      <span class="GiaMoiGrid">{{ giaVipPlaceholder(sp.giaTu) | number:'1.0-0' }} <span class="DonViTien">vnd</span></span>
+                      <img src="/img/pawvip.png" alt="PawVip" class="VipIconGrid">
+                    </div>
+                  } @else {
+                    <div class="GiaChinhGrid">Contact us</div>
+                  }
                 </div>
 
-                <button class="NutShopNowGrid">
-                  <i class="fas fa-eye"></i> VIEW DETAILS
+                <button class="NutShopNowGrid" [disabled]="dangThemGioNhanh()" (click)="themVaoGioNhanh(sp, $event)">
+                  <i class="fas fa-shopping-cart"></i> ADD TO CART
                 </button>
               </div>
             </a>

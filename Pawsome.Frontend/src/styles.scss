@@ -104,11 +104,30 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
 }
 
 .RatingSao {
-  color: #FFB800;
+  display: flex;
+  align-items: center;
   font-size: 14px;
   margin-bottom: 5px;
 
   span { color: #888; margin-left: 5px; }
+}
+
+// Sao lấp đầy theo % điểm thật (vd 4.8 -> sao thứ 5 vàng 80%), không làm tròn về nguyên sao -
+// 2 lớp chồng nhau: SaoNen (xám, nền) + SaoDay (vàng, giới hạn width theo %, đè lên trên).
+.SaoO {
+  position: relative;
+  display: inline-block;
+}
+
+.SaoNen { color: #E0E0E0; }
+
+.SaoDay {
+  position: absolute;
+  left: 0;
+  top: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  color: #FFB800;
 }
 
 .TenSanPhamGrid {
@@ -135,12 +154,15 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
   gap: 8px;
   transition: 0.3s ease;
 
-  &:hover { background-color: #FF7A00; box-shadow: 0 4px 12px rgba(165, 31, 31, 0.3); }
+  &:hover:not(:disabled) { background-color: #FF7A00; box-shadow: 0 4px 12px rgba(165, 31, 31, 0.3); }
+  &:disabled { opacity: 0.6; cursor: default; }
 }
 
-// Dùng chung mọi nơi hiển thị giá VND trên site - chữ đơn vị "VND" nhỏ hơn số tiền cho dễ nhìn.
+// Dùng chung mọi nơi hiển thị giá VND trên site - chữ đơn vị "vnd" nhỏ hơn số tiền, có khoảng
+// cách với số tiền cho dễ nhìn.
 .DonViTien {
   font-size: 0.6em;
+  margin-left: 4px;
 }
 
 .NutPhanTrang {

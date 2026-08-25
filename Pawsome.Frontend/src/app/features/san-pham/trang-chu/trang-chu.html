@@ -68,20 +68,9 @@
   <div class="KhungChuaLon">
     <div class="HeaderSanPham">
       <div class="TieuDeChinh">{{ dichTenDanhMuc(nhomTheoDanhMuc()[0].danhMuc.tenDanhMuc) }} Healthcare</div>
-      <div class="BoLoc">
-        <div class="BoLocHienTai">
-          <span>Flea & Tick</span>
-          <i class="fas fa-chevron-down"></i>
-          <div class="DuongGachChan"></div>
-        </div>
-        <ul class="MenuDropdown">
-          <li class="active">Flea & Tick</li>
-          <li>Wormers</li>
-          <li>Joint Care</li>
-          <li>Skin & Coat</li>
-          <li>Behavioural</li>
-        </ul>
-      </div>
+      <a class="XemTatCaDanhMuc" [routerLink]="['/san-pham']" [queryParams]="{ categoryId: nhomTheoDanhMuc()[0].danhMuc.categoryId }">
+        View All <i class="fas fa-arrow-right"></i>
+      </a>
     </div>
   </div>
 
@@ -93,25 +82,30 @@
       </div>
       <div class="NoiDungSP">
         <div class="RatingSao">
-          <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
-            class="fas fa-star"></i>
+          @for (s of saoArr; track s) {
+            <span class="SaoO">
+              <i class="fas fa-star SaoNen"></i>
+              <i class="fas fa-star SaoDay" [style.width.%]="phanTramSao(s, sp.diemDanhGiaTb)"></i>
+            </span>
+          }
           <span>{{ sp.diemDanhGiaTb }}</span>
         </div>
         <div class="TenSanPhamGrid">{{ sp.ten }}</div>
         <hr class="KeNgang">
         <div class="CumGia">
-          <div class="GiaMoiHang">
-            <span class="GiaMoiGrid">
-              @if (sp.giaTu) {
-                {{ sp.giaTu | number:'1.0-0' }} <span class="DonViTien">VND</span>
-              } @else {
-                Contact us
-              }
-            </span>
-            <img src="/img/pawvip.png" alt="PawVip" class="VipIconGrid">
-          </div>
+          @if (sp.giaTu) {
+            <div class="GiaCuGrid">{{ sp.giaTu | number:'1.0-0' }} <span class="DonViTien">vnd</span></div>
+            <div class="GiaMoiHang">
+              <span class="GiaMoiGrid">{{ giaVipPlaceholder(sp.giaTu) | number:'1.0-0' }} <span class="DonViTien">vnd</span></span>
+              <img src="/img/pawvip.png" alt="PawVip" class="VipIconGrid">
+            </div>
+          } @else {
+            <div class="GiaCuGrid">Contact us</div>
+          }
         </div>
-        <button class="NutShopNowGrid"><i class="fas fa-shopping-cart"></i> SHOP NOW</button>
+        <button class="NutShopNowGrid" [disabled]="dangThemGioNhanh()" (click)="themVaoGioNhanh(sp, $event)">
+          <i class="fas fa-shopping-cart"></i> ADD TO CART
+        </button>
       </div>
     </a>
     }
@@ -129,7 +123,7 @@
             <p>Unlock exclusive savings on all essentials.</p>
           </div>
           <div class="CumHanhDong">
-            <div class="GiaVip">2,376,000 <span class="DonViTien">VND</span></div>
+            <div class="GiaVip">2,376,000 <span class="DonViTien">vnd</span></div>
             <button class="NutJoinNow">JOIN NOW</button>
           </div>
         </div>
@@ -163,7 +157,7 @@
   @if (nhomTheoDanhMuc().length > 1) {
   <app-banner-noi-bat
     [productIdTrai]="18"
-    [productIdPhai]="18"
+    [productIdPhai]="21"
     anhTrungTam="/img/nenmeo.png"
     altTrungTam="Featured Cat"
     anhNhoTrai="/img/meo0.png"
@@ -174,20 +168,9 @@
   <div class="KhungChuaLon">
     <div class="HeaderSanPham">
       <div class="TieuDeChinh">{{ dichTenDanhMuc(nhomTheoDanhMuc()[1].danhMuc.tenDanhMuc) }} Healthcare</div>
-      <div class="BoLoc">
-        <div class="BoLocHienTai">
-          <span>Flea & Tick</span>
-          <i class="fas fa-chevron-down"></i>
-          <div class="DuongGachChan"></div>
-        </div>
-        <ul class="MenuDropdown">
-          <li class="active">Flea & Tick</li>
-          <li>Wormers</li>
-          <li>Joint Care</li>
-          <li>Skin & Coat</li>
-          <li>Behavioural</li>
-        </ul>
-      </div>
+      <a class="XemTatCaDanhMuc" [routerLink]="['/san-pham']" [queryParams]="{ categoryId: nhomTheoDanhMuc()[1].danhMuc.categoryId }">
+        View All <i class="fas fa-arrow-right"></i>
+      </a>
     </div>
   </div>
 
@@ -199,25 +182,30 @@
       </div>
       <div class="NoiDungSP">
         <div class="RatingSao">
-          <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
-            class="fas fa-star"></i>
+          @for (s of saoArr; track s) {
+            <span class="SaoO">
+              <i class="fas fa-star SaoNen"></i>
+              <i class="fas fa-star SaoDay" [style.width.%]="phanTramSao(s, sp.diemDanhGiaTb)"></i>
+            </span>
+          }
           <span>{{ sp.diemDanhGiaTb }}</span>
         </div>
         <div class="TenSanPhamGrid">{{ sp.ten }}</div>
         <hr class="KeNgang">
         <div class="CumGia">
-          <div class="GiaMoiHang">
-            <span class="GiaMoiGrid">
-              @if (sp.giaTu) {
-                {{ sp.giaTu | number:'1.0-0' }} <span class="DonViTien">VND</span>
-              } @else {
-                Contact us
-              }
-            </span>
-            <img src="/img/pawvip.png" alt="PawVip" class="VipIconGrid">
-          </div>
+          @if (sp.giaTu) {
+            <div class="GiaCuGrid">{{ sp.giaTu | number:'1.0-0' }} <span class="DonViTien">vnd</span></div>
+            <div class="GiaMoiHang">
+              <span class="GiaMoiGrid">{{ giaVipPlaceholder(sp.giaTu) | number:'1.0-0' }} <span class="DonViTien">vnd</span></span>
+              <img src="/img/pawvip.png" alt="PawVip" class="VipIconGrid">
+            </div>
+          } @else {
+            <div class="GiaCuGrid">Contact us</div>
+          }
         </div>
-        <button class="NutShopNowGrid"><i class="fas fa-shopping-cart"></i> SHOP NOW</button>
+        <button class="NutShopNowGrid" [disabled]="dangThemGioNhanh()" (click)="themVaoGioNhanh(sp, $event)">
+          <i class="fas fa-shopping-cart"></i> ADD TO CART
+        </button>
       </div>
     </a>
     }
@@ -229,27 +217,19 @@
   </div>
   <div class="BannerDealFull">
     <div class="VungAnToan DealContent">
-      <div class="CuaSoDeal">
-        <div class="KhungAnhDeal"><img src="/img/Dorwest.png" alt="Dorwest"></div>
-        <div class="ThongTinDeal">
-          <span class="TenSPDeal">Dorwest</span>
-          <span class="GiaSPDeal">923,000 <span class="DonViTien">VND</span></span>
-        </div>
-      </div>
-      <div class="CuaSoDeal">
-        <div class="KhungAnhDeal"><img src="/img/aristopet.png" alt="Aristopet"></div>
-        <div class="ThongTinDeal">
-          <span class="TenSPDeal">Aristopet</span>
-          <span class="GiaSPDeal">447,000 <span class="DonViTien">VND</span></span>
-        </div>
-      </div>
-      <div class="CuaSoDeal">
-        <div class="KhungAnhDeal"><img src="/img/milpro.png" alt="Milpro"></div>
-        <div class="ThongTinDeal">
-          <span class="TenSPDeal">Milpro</span>
-          <span class="GiaSPDeal">658,000 <span class="DonViTien">VND</span></span>
-        </div>
-      </div>
+      @for (sp of sanPhamDealThang(); track sp.productId) {
+        <a class="CuaSoDeal" [routerLink]="['/san-pham', sp.productId]">
+          <div class="KhungAnhDeal">
+            <img [src]="sp.images[0]?.url ?? '/img/logo1.png'" [alt]="sp.ten">
+          </div>
+          <div class="ThongTinDeal">
+            <span class="TenSPDeal">{{ tenNganDeal(sp.ten) }}</span>
+            @if (sp.giaTu) {
+              <span class="GiaSPDeal">{{ sp.giaTu | number:'1.0-0' }} <span class="DonViTien">vnd</span></span>
+            }
+          </div>
+        </a>
+      }
     </div>
   </div>
 

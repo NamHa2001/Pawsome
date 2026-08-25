@@ -37,4 +37,10 @@ export class ProductService {
       .get<ApiResponse<SanPham>>(`${this.baseUrl}/${id}`)
       .pipe(map(res => res.data));
   }
+
+  getBanChay(id: number, soLuong = 4): Observable<SanPham[]> {
+    return this.http
+      .get<ApiResponse<SanPham[]>>(`${this.baseUrl}/${id}/ban-chay`, { params: { soLuong } })
+      .pipe(map(res => res.data ?? []));
+  }
 }

@@ -144,24 +144,43 @@
   margin-bottom: 30px;
 }
 
+.KhungAnhTrang {
+  height: 212px;
+}
+
 .KeNgang {
   width: 100%;
   height: 1.5px;
   background-color: #c1b9b9;
+  padding: 0 20px;
   margin-bottom: 10px;
 }
 
 .CumGia {
   width: 100%;
-  text-align: center;
   margin-bottom: 15px;
 }
 
 .GiaChinhGrid {
-  font-size: 18px;
-  font-weight: 700;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--MauDen);
+}
+
+.GiaMoiHang {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.GiaMoiGrid {
+  font-size: 16px;
+  font-weight: 600;
   color: var(--MauDoDam);
 }
+
+.VipIconGrid { height: 25px; }
 
 .VungPhanTrang {
   display: flex;

@@ -31,7 +31,7 @@
               <span>Starts From:</span>
               <strong>
                 @if (sp.giaTu) {
-                  {{ sp.giaTu | number:'1.0-0' }} <span class="DonViTien">VND</span>
+                  {{ sp.giaTu | number:'1.0-0' }} <span class="DonViTien">vnd</span>
                 } @else {
                   Contact us
                 }
@@ -46,7 +46,10 @@
             <div class="CumDanhGia">
               <div class="SaoVang">
                 @for (s of saoArr; track s) {
-                  <i class="fa-solid fa-star" [class.SaoMo]="s > Math.round(sp.diemDanhGiaTb)"></i>
+                  <span class="SaoO">
+                    <i class="fa-solid fa-star SaoNen"></i>
+                    <i class="fa-solid fa-star SaoDay" [style.width.%]="phanTramSao(s, sp.diemDanhGiaTb)"></i>
+                  </span>
                 }
               </div>
               <span class="SoDanhGia">{{ sp.diemDanhGiaTb }} ({{ sp.soLuongDanhGia }} reviews)</span>
@@ -54,7 +57,13 @@
 
             <div class="GiaPawVip">
               <img src="/img/pawvip_white.png" alt="PawVip" class="IconVipNho">
-              <span>585,000 <span class="DonViTien">VND</span></span>
+              <span>
+                @if (sp.giaTu) {
+                  {{ giaVipPlaceholder(sp.giaTu) | number:'1.0-0' }} <span class="DonViTien">vnd</span>
+                } @else {
+                  Contact us
+                }
+              </span>
             </div>
 
             @if (tokenService.isLoggedIn()) {
@@ -73,43 +82,47 @@
     </div>
 
     <div class="KhungSanPham">
-      <div class="KhungVungMuaHang">
-        <div class="TieuDeBangVip">Choose a Variant</div>
+      <div class="TieuDeChonBienThe">Choose a Variant</div>
 
-        <div class="NoiDungBangMuaHang">
-          <div class="CotAnhSanPhamLon">
-            <img [src]="anhDangChon() ?? sp.images[0]?.url ?? '/img/logo1.png'" [alt]="sp.ten" class="AnhLonSP">
-          </div>
+      @for (v of sp.variants; track v.variantId) {
+        @if (v.dangKinhDoanh) {
+          <div class="KhungBienThe">
+            <div class="TieuDeBienThe">{{ sp.ten }} - {{ v.tenBienThe }}</div>
 
-          <div class="CotThongTinGia">
-            <div class="HangTieuDeGrid">
-              <div>Variant</div>
-              <div>Price</div>
-              <div><img src="/img/pawvip_white.png" alt="Vip" class="IconVipBang"></div>
-              <div>Qty.</div>
-              <div></div>
-            </div>
+            <div class="NoiDungBienThe">
+              <div class="CotAnhBienThe">
+                <img [src]="anhDangChon() ?? sp.images[0]?.url ?? '/img/logo1.png'" [alt]="sp.ten">
+              </div>
 
-            @for (v of sp.variants; track v.variantId) {
-              @if (v.dangKinhDoanh) {
+              <div class="CotThongTinBienThe">
+                <div class="HangTieuDeGrid">
+                  <div>Price</div>
+                  <div><img src="/img/pawvip_white.png" alt="Vip" class="IconVipBang"></div>
+                  <div>Qty.</div>
+                  <div></div>
+                </div>
+
                 <div class="HangDuLieuGrid">
-                  <div class="PackSizeTxt">{{ v.tenBienThe }} <span class="TonKhoNho">({{ v.soLuongTon > 0 ? v.soLuongTon + ' in stock' : 'Out of stock' }})</span></div>
-                  <div class="PriceTxt">{{ v.gia | number:'1.0-0' }} <span class="DonViTien">VND</span></div>
-                  <div class="VipPriceTxt">{{ giaVipPlaceholder(v.gia) | number:'1.0-0' }} <span class="DonViTien">VND</span></div>
+                  <div class="PriceTxt">{{ v.gia | number:'1.0-0' }} <span class="DonViTien">vnd</span></div>
+                  <div class="VipPriceTxt">{{ giaVipPlaceholder(v.gia) | number:'1.0-0' }} <span class="DonViTien">vnd</span></div>
                   <div>
-                    <select class="SelectQty" [ngModel]="soLuongCuaBienThe(v.variantId)" (ngModelChange)="doiSoLuong(v.variantId, $event)">
-                      @for (n of [0, 1, 2, 3]; track n) {
-                        <option [value]="n">{{ n }}</option>
-                      }
-                    </select>
+                    <div class="BoDemSoLuong">
+                      <button type="button" [disabled]="soLuongCuaBienThe(v.variantId) <= 1"
+                        (click)="doiSoLuong(v.variantId, soLuongCuaBienThe(v.variantId) - 1)">−</button>
+                      <input #oQty type="number" min="1" [max]="v.soLuongTon" [value]="soLuongCuaBienThe(v.variantId)"
+                        (change)="doiSoLuong(v.variantId, Math.min(Math.max(oQty.valueAsNumber || 1, 1), v.soLuongTon)); oQty.value = soLuongCuaBienThe(v.variantId).toString()">
+                      <button type="button" [disabled]="soLuongCuaBienThe(v.variantId) >= v.soLuongTon"
+                        (click)="doiSoLuong(v.variantId, soLuongCuaBienThe(v.variantId) + 1)">+</button>
+                    </div>
+                    <span class="TonKhoNho">{{ v.soLuongTon > 0 ? v.soLuongTon + ' in stock' : 'Out of stock' }}</span>
                   </div>
                   <div><button class="NutAddNho" [disabled]="v.soLuongTon === 0 || dangThemGio()" (click)="themVaoGioTam(v.variantId)">ADD</button></div>
                 </div>
-              }
-            }
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+        }
+      }
     </div>
 
     <div class="KhungSanPham">
@@ -185,7 +198,7 @@
       [diemDanhGiaTb]="sp.diemDanhGiaTb"
       [soLuongDanhGia]="sp.soLuongDanhGia" />
 
-    @if (sanPhamCungDanhMuc().length > 0) {
+    @if (sanPhamBanChay().length > 0 || sanPhamCungDanhMuc().length > 0) {
       <div class="KhungSanPham">
         <div class="VungGoiY">
           <div class="ThanhTabGoiY">
@@ -193,29 +206,41 @@
             <button class="NutTabGoiY" [class.active]="tabGoiY() === 'related'" (click)="tabGoiY.set('related')">Related Items</button>
           </div>
 
-          <div class="DanhSachGoiY">
-            @for (item of sanPhamCungDanhMuc(); track item.productId) {
-              <a class="CardGoiY" [routerLink]="['/san-pham', item.productId]">
-                <div class="KhungTrangGoiY">
-                  <img [src]="item.images[0]?.url ?? '/img/logo1.png'" [alt]="item.ten">
-                </div>
-                <div class="StarGoiY"><i class="fa-solid fa-star"></i> <span>{{ item.diemDanhGiaTb }}</span></div>
-                <b>{{ item.ten }}</b>
-                <div class="GiaGoiY">
-                  <div class="GiaVip">
-                    <b>
-                      @if (item.giaTu) {
-                        {{ item.giaTu | number:'1.0-0' }} <span class="DonViTien">VND</span>
-                      } @else {
-                        Contact us
-                      }
-                    </b>
+          @if (danhSachGoiYHienThi().length > 0) {
+            <div class="DanhSachGoiY">
+              @for (item of danhSachGoiYHienThi(); track item.productId) {
+                <a class="CardGoiY" [routerLink]="['/san-pham', item.productId]">
+                  <div class="KhungTrangGoiY">
+                    <img [src]="item.images[0]?.url ?? '/img/logo1.png'" [alt]="item.ten">
                   </div>
-                </div>
-                <div class="NutShopNowGoiY"><i class="fas fa-cart-shopping"></i> SHOP NOW</div>
-              </a>
-            }
-          </div>
+                  <div class="StarGoiY"><i class="fa-solid fa-star"></i> <span>{{ item.diemDanhGiaTb }}</span></div>
+                  <b class="TenSPGoiY">{{ item.ten }}</b>
+                  <div class="GiaGoiY">
+                    <div class="GiaVip">
+                      <b>
+                        @if (item.giaTu) {
+                          {{ item.giaTu | number:'1.0-0' }} <span class="DonViTien">vnd</span>
+                        } @else {
+                          Contact us
+                        }
+                      </b>
+                    </div>
+                  </div>
+                  <button type="button" class="NutShopNowGoiY" [disabled]="dangThemGio()" (click)="themVaoGioNhanh(item, $event)">
+                    <i class="fas fa-cart-shopping"></i> ADD TO CART
+                  </button>
+                </a>
+              }
+            </div>
+          } @else {
+            <p class="TrangThaiTai">
+              @if (tabGoiY() === 'bought') {
+                No purchase data yet to determine best-selling products in this category.
+              } @else {
+                No related products found.
+              }
+            </p>
+          }
         </div>
       </div>
     }

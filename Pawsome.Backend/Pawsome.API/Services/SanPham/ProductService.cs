@@ -2,6 +2,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Pawsome.API.Common;
 using Pawsome.API.DTOs.SanPham;
+using Pawsome.API.Services.DonHang;
 using Pawsome.Domain.Entities.SanPham;
 using Pawsome.Infrastructure;
 
@@ -531,5 +532,53 @@ public class ProductService : IProductService
                 ?? variant.Product.Images.FirstOrDefault()?.Url,
             SoLuongTon = variant.SoLuongTon
         };
+    }
+
+    // Chỉ SELECT trên orders/order_items (bảng của Phần 4) để tính "bán chạy" thật, không ghi/sửa
+    // gì cả - đã xin phép user trước khi thêm hàm này (Phần 2 không tự ý ghi dữ liệu Phần khác,
+    // nhưng đọc chéo để hiển thị là cần thiết cho tính năng này). "Frequently Bought" = sản phẩm
+    // bán chạy nhất (tổng số lượng đã bán qua các đơn còn tính), giới hạn trong CÙNG DANH MỤC với
+    // sản phẩm đang xem để vẫn liên quan - khác "Related Items" (cùng danh mục nhưng xếp theo mới
+    // nhất, không quan tâm đã bán được bao nhiêu).
+    public async Task<List<ProductDto>> GetBanChayAsync(int productId, int soLuong)
+    {
+        var gioiHan = soLuong < 1 ? 4 : Math.Min(soLuong, 20);
+
+        var sanPhamHienTai = await _dbContext.Products.AsNoTracking()
+            .FirstOrDefaultAsync(p => p.ProductId == productId);
+        if (sanPhamHienTai == null)
+            return new List<ProductDto>();
+
+        // Đơn "còn tính" là đơn chưa hủy/chưa trả hàng - đơn đã hủy/trả không phản ánh nhu cầu mua
+        // thật, tính vào sẽ làm sai lệch mức độ phổ biến.
+        var idSanPhamBanChay = await _dbContext.OrderItems
+            .Where(oi => oi.Variant.Product.CategoryId == sanPhamHienTai.CategoryId
+                && oi.Variant.ProductId != productId
+                && oi.Order.TrangThai != OrderStatus.DaHuy
+                && oi.Order.TrangThai != OrderStatus.DaTraHang)
+            .GroupBy(oi => oi.Variant.ProductId)
+            .OrderByDescending(g => g.Sum(oi => oi.SoLuong))
+            .Select(g => g.Key)
+            .Take(gioiHan)
+            .ToListAsync();
+
+        if (idSanPhamBanChay.Count == 0)
+            return new List<ProductDto>();
+
+        var products = await _dbContext.Products
+            .AsNoTracking()
+            .Include(p => p.Variants)
+            .Include(p => p.Images)
+            .Include(p => p.Reviews.Where(r => r.TrangThai == "da_duyet"))
+            .Include(p => p.ProductConditions).ThenInclude(pc => pc.Condition)
+            .Where(p => idSanPhamBanChay.Contains(p.ProductId) && p.DangKinhDoanh)
+            .ToListAsync();
+
+        // Giữ đúng thứ tự đã xếp theo tổng số lượng bán giảm dần ở trên (Where phía trên làm mất thứ tự).
+        return idSanPhamBanChay
+            .Select(id => products.FirstOrDefault(p => p.ProductId == id))
+            .Where(p => p != null)
+            .Select(p => MapToDto(p!))
+            .ToList();
     }
 }

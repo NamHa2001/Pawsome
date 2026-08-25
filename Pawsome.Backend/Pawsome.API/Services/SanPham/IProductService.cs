@@ -32,4 +32,9 @@ public interface IProductService
     // Dùng chung cho Phần 3, 4, 5 — trả về thông tin rút gọn  để hiển thị.
     // Trả về null nếu không tồn tại HOẶC sản phẩm/biến thể đã ngừng kinh doanh.
     Task<ProductVariantInfoDto?> LayThongTinBienTheAsync(int variantId);
+
+    // Tab "Frequently Bought" ở trang chi tiết sản phẩm - sản phẩm bán chạy nhất (tổng số lượng đã
+    // bán, đọc orders/order_items của Phần 4, chỉ đọc không ghi) trong cùng danh mục với sản phẩm
+    // này. Khác "Related Items" (SearchAsync theo categoryId, xếp theo mới nhất).
+    Task<List<ProductDto>> GetBanChayAsync(int productId, int soLuong);
 }

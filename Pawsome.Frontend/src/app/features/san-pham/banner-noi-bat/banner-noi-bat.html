@@ -4,29 +4,33 @@
       <div class="CumSanPham Trai">
         <div class="HinhVuongLon">
           <div class="NoiDungTrong">
-            <div class="PhanChu">
-              <div class="TieuDeSP">Heartgard Plus</div>
-              <div class="KhungGia">
-                <span class="GiaCu">1,002,000 <span class="DonViTien">VND</span></span>
-                <div class="GiaMoi">
-                  <span class="ConSoGia">601,000 <span class="DonViTien">VND</span></span>
-                  <img src="/img/pawvip2.png" alt="PawVip" class="LogoVipGia">
+            @if (sanPhamTrai(); as sp) {
+              <div class="PhanChu">
+                <div class="TieuDeSP">{{ sp.ten }}</div>
+                <div class="KhungGia">
+                  <div class="DongGiaCu">
+                    <span class="GiaCu">{{ sp.giaTu | number:'1.0-0' }}</span> <span class="DonViGiaCu">vnd</span>
+                  </div>
+                  <div class="GiaMoi">
+                    <span class="ConSoGia">{{ giaVipPlaceholder(sp.giaTu) | number:'1.0-0' }} <span class="DonViTien">vnd</span></span>
+                    <img src="/img/pawvip2.png" alt="PawVip" class="LogoVipGia">
+                  </div>
+                </div>
+                <div class="DiemNoiBat">
+                  <div class="NhanPhu">Key Takeaways</div>
+                  <ul class="DanhSachDiem">
+                    <li>#1 Dog-preferred chew</li>
+                    <li>Proven heartworm disease protection</li>
+                    <li>Treats and controls roundworms</li>
+                  </ul>
                 </div>
               </div>
-              <div class="DiemNoiBat">
-                <div class="NhanPhu">Key Takeaways</div>
-                <ul class="DanhSachDiem">
-                  <li>#1 Dog-preferred chew</li>
-                  <li>Proven heartworm disease protection</li>
-                  <li>Treats and controls roundworms</li>
-                </ul>
+              <div class="KhungAnhNhoHero">
+                @for (anh of anhHeroTrai(); track anh; let i = $index) {
+                  <div class="OAnhNhoHero" [class.active]="i === 0"><img [src]="anh" alt="a"></div>
+                }
               </div>
-            </div>
-            <div class="KhungAnhNhoHero">
-              @for (anh of anhHeroTrai(); track anh; let i = $index) {
-                <div class="OAnhNhoHero" [class.active]="i === 0"><img [src]="anh" alt="a"></div>
-              }
-            </div>
+            }
           </div>
         </div>
         <div class="CumVatPham">
@@ -44,29 +48,33 @@
         </div>
         <div class="HinhVuongLon">
           <div class="NoiDungTrong">
-            <div class="PhanChu">
-              <div class="TieuDeSP">Heartgard Plus</div>
-              <div class="KhungGia">
-                <span class="GiaCu">1,002,000 <span class="DonViTien">VND</span></span>
-                <div class="GiaMoi">
-                  <span class="ConSoGia">601,000 <span class="DonViTien">VND</span></span>
-                  <img src="/img/pawvip2.png" alt="PawVip" class="LogoVipGia">
+            @if (sanPhamPhai(); as sp) {
+              <div class="PhanChu">
+                <div class="TieuDeSP">{{ sp.ten }}</div>
+                <div class="KhungGia">
+                  <div class="DongGiaCu">
+                    <span class="GiaCu">{{ sp.giaTu | number:'1.0-0' }}</span> <span class="DonViGiaCu">vnd</span>
+                  </div>
+                  <div class="GiaMoi">
+                    <span class="ConSoGia">{{ giaVipPlaceholder(sp.giaTu) | number:'1.0-0' }} <span class="DonViTien">vnd</span></span>
+                    <img src="/img/pawvip2.png" alt="PawVip" class="LogoVipGia">
+                  </div>
+                </div>
+                <div class="DiemNoiBat">
+                  <div class="NhanPhu">Key Takeaways</div>
+                  <ul class="DanhSachDiem">
+                    <li>#1 Dog-preferred chew</li>
+                    <li>Proven heartworm disease protection</li>
+                    <li>Treats and controls roundworms</li>
+                  </ul>
                 </div>
               </div>
-              <div class="DiemNoiBat">
-                <div class="NhanPhu">Key Takeaways</div>
-                <ul class="DanhSachDiem">
-                  <li>#1 Dog-preferred chew</li>
-                  <li>Proven heartworm disease protection</li>
-                  <li>Treats and controls roundworms</li>
-                </ul>
+              <div class="KhungAnhNhoHero">
+                @for (anh of anhHeroPhai(); track anh; let i = $index) {
+                  <div class="OAnhNhoHero" [class.active]="i === 0"><img [src]="anh" alt="a"></div>
+                }
               </div>
-            </div>
-            <div class="KhungAnhNhoHero">
-              @for (anh of anhHeroPhai(); track anh; let i = $index) {
-                <div class="OAnhNhoHero" [class.active]="i === 0"><img [src]="anh" alt="a"></div>
-              }
-            </div>
+            }
           </div>
         </div>
       </div>
