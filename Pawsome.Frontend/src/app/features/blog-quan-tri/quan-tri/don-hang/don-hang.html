@@ -1,11 +1,115 @@
 <div class="TieuDeTrang">
   <h1>Order Management</h1>
-  <p class="MoTaTrang">View and update order status, shipping code, and return approvals.</p>
+  <p class="MoTaTrang">View orders and update their status.</p>
 </div>
 
+@if (loiHanhDong()) {
+  <p class="ThongBaoLoi">{{ loiHanhDong() }}</p>
+}
+
 <div class="TheQuanTri">
-  <div class="TieuDeThe">Order List</div>
-  <div class="ThanThe ThanTheRong">
-    <p>The order list and status updates will appear here (waiting for Part 4 to add a store-wide order list to IOrderService).</p>
+  <div class="TieuDeThe TieuDeTheBoLoc">
+    <span>Orders</span>
+    <select class="ChonBoLoc" [ngModel]="trangThaiLoc()" (ngModelChange)="doiBoLoc($event)">
+      @for (item of boLocTrangThai; track item.value) {
+        <option [value]="item.value">{{ item.label }}</option>
+      }
+    </select>
+  </div>
+
+  <div class="ThanThe">
+    @if (dangTai()) {
+      <p class="ThongBaoRong">Loading...</p>
+    } @else if (loiTai()) {
+      <p class="ThongBaoRong ThongBaoLoi">{{ loiTai() }}</p>
+    } @else if (danhSach().length === 0) {
+      <p class="ThongBaoRong">No orders found.</p>
+    } @else {
+      <div class="BangCuon">
+        <table class="BangDonHang">
+          <thead>
+            <tr>
+              <th>Order</th>
+              <th>Customer</th>
+              <th>Date</th>
+              <th>Total</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (order of danhSach(); track order.orderId) {
+              <tr>
+                <td>#{{ order.orderId }}</td>
+                <td>
+                  <div class="OKhachHang">
+                    <span class="TenKhachHang">{{ order.hoTenKhachHang || ('User #' + order.userId) }}</span>
+                    @if (order.emailKhachHang) {
+                      <span class="EmailKhachHang">{{ order.emailKhachHang }}</span>
+                    }
+                  </div>
+                </td>
+                <td>{{ order.ngayDat | date:'dd/MM/yyyy HH:mm' }}</td>
+                <td>{{ order.thanhTien | number:'1.0-0' }} VND</td>
+                <td>
+                  <span class="StatusBadge" [ngClass]="orderStatusCssClass(order.trangThai)">
+                    {{ orderStatusLabel(order.trangThai) }}
+                  </span>
+                </td>
+                <td class="OHanhDong">
+                  <select
+                    class="ChonTrangThai"
+                    [ngModel]="order.trangThai"
+                    [disabled]="dangCapNhatDong(order.orderId)"
+                    (ngModelChange)="capNhatTrangThai(order, $event)">
+                    @for (item of tuyChonTrangThai; track item.value) {
+                      <option [value]="item.value">{{ item.label }}</option>
+                    }
+                  </select>
+                  <button type="button" class="NutXemChiTiet" (click)="toggleMoRong(order.orderId)">
+                    {{ moRong() === order.orderId ? 'Hide' : 'View' }}
+                  </button>
+                </td>
+              </tr>
+              @if (moRong() === order.orderId) {
+                <tr class="HangChiTiet">
+                  <td colspan="6">
+                    <div class="ChiTietDonHang">
+                      @for (item of order.orderItems; track item.orderItemId) {
+                        <div class="DongSanPham">
+                          <span>{{ item.tenSanPham }} — {{ item.tenBienThe }}</span>
+                          <span>x{{ item.soLuong }}</span>
+                          <span>{{ item.donGia | number:'1.0-0' }} VND</span>
+                        </div>
+                      }
+                      <div class="DongTomTat">
+                        <span>Subtotal: {{ order.tienHang | number:'1.0-0' }} VND</span>
+                        <span>Shipping: {{ order.phiVanChuyen | number:'1.0-0' }} VND</span>
+                        @if (order.giamGia > 0) {
+                          <span>Discount: −{{ order.giamGia | number:'1.0-0' }} VND</span>
+                        }
+                        @if (order.maVanDon) {
+                          <span>Tracking: {{ order.maVanDon }} ({{ order.donViVanChuyen }})</span>
+                        }
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              }
+            }
+          </tbody>
+        </table>
+      </div>
+
+      @if (tongTrang() > 1) {
+        <div class="PhanTrang">
+          <button type="button" [disabled]="trang() === 1" (click)="doiTrang(trang() - 1)">Prev</button>
+          @for (t of cacTrang(); track t) {
+            <button type="button" [class.active]="trang() === t" (click)="doiTrang(t)">{{ t }}</button>
+          }
+          <button type="button" [disabled]="trang() === tongTrang()" (click)="doiTrang(trang() + 1)">Next</button>
+        </div>
+      }
+    }
   </div>
 </div>

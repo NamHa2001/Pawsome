@@ -14,5 +14,11 @@ public class OrderDto
     public string TrangThai { get; set; } = null!;
     public string? DonViVanChuyen { get; set; }
     public string? MaVanDon { get; set; }
+
+    // Chỉ có giá trị khi lấy qua đường admin (GetAllAsync/GetByIdAdminAsync) - khách xem
+    // đơn của chính mình không cần hiển thị lại tên/email của bản thân.
+    public string? HoTenKhachHang { get; set; }
+    public string? EmailKhachHang { get; set; }
+
     public List<OrderItemDto> OrderItems { get; set; } = new();
 }
