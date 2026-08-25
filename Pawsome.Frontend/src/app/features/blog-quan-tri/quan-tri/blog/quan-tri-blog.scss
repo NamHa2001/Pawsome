@@ -1,0 +1,173 @@
+.TieuDeTrang {
+  margin-bottom: 22px;
+
+  h1 { font-size: 24px; font-weight: 800; color: var(--MauDen); margin: 0 0 4px; }
+}
+
+.MoTaTrang { font-size: 14px; color: #888; margin: 0; }
+
+.ThongBaoLoi {
+  color: #b91c1c;
+  background: #FDECEC;
+  border: 1px solid #F5C2C2;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+.ThongBaoThanhCong {
+  color: #15803d;
+  background: #EAF7EF;
+  border: 1px solid #BCE3C9;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+.ThongBaoRong { color: #999; font-size: 14px; text-align: center; padding: 50px 22px; margin: 0; }
+
+.TheQuanTri {
+  background: var(--MauTrang);
+  border-radius: 0.35rem;
+  box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+  overflow: hidden;
+}
+
+.TieuDeThe {
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid #F0E5E5;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--MauDoDam);
+}
+
+.TieuDeTheBoLoc {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.NhomBoLoc {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  input { border: 1px solid #E0D0D0; border-radius: 6px; padding: 6px 10px; font-size: 13px; }
+}
+
+.ThanThe { padding: 0; }
+
+.BangCuon { overflow-x: auto; }
+
+.Bang {
+  width: 100%;
+  border-collapse: collapse;
+
+  th, td {
+    text-align: left;
+    padding: 12px 20px;
+    border-bottom: 1px solid #F5EBEB;
+    vertical-align: middle;
+  }
+
+  th {
+    background: var(--MauHongNhat);
+    color: var(--MauDoDam);
+    font-weight: 700;
+    font-size: 13px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  tbody tr:hover td { background: #FFFAFA; }
+}
+
+.OHanhDong {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.NutChinh, .NutPhu, .NutNguyHiem {
+  border: none;
+  border-radius: 6px;
+  padding: 8px 14px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+}
+
+.NutChinh { background: var(--MauDoDam); color: #fff; &:hover:not(:disabled) { background: #8A191C; } }
+.NutPhu { background: var(--MauHongNhat); color: var(--MauDoDam); border: 1px solid #E0C0C0; &:hover:not(:disabled) { background: #F5DCDC; } }
+.NutNguyHiem { background: #6D2121; color: #fff; &:hover:not(:disabled) { background: #4D1616; } }
+.NutNho { padding: 5px 10px; font-size: 12px; }
+
+.FormPanel {
+  padding: 18px 22px;
+  border-bottom: 1px solid #F0E5E5;
+  background: #FFFAFA;
+
+  h3 { margin: 0 0 12px; font-size: 15px; color: var(--MauDen); }
+}
+
+.LuoiForm {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+  margin-bottom: 14px;
+
+  label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #666;
+  }
+
+  input, textarea {
+    border: 1px solid #E0D0D0;
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--MauDen);
+    font-family: inherit;
+    resize: vertical;
+  }
+
+  .OFull { grid-column: 1 / -1; }
+}
+
+.NutForm {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.PhanTrang {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  padding: 18px 22px;
+
+  button {
+    border: 1px solid #E0D0D0;
+    background: var(--MauTrang);
+    border-radius: 6px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-size: 13px;
+
+    &:disabled { opacity: 0.5; cursor: not-allowed; }
+    &.active { background: var(--MauDoDam); color: var(--MauTrang); border-color: var(--MauDoDam); }
+    &:hover:not(:disabled):not(.active) { background: var(--MauHongNhat); }
+  }
+}
