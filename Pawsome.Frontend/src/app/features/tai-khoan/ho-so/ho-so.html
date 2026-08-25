@@ -34,9 +34,9 @@
         <a routerLink="/gio-hang/dat-hang-tu-dong" class="menu-item">
           <i class="fa-solid fa-rotate"></i> Auto Orders
         </a>
-        <span class="menu-item is-disabled" title="Coming soon">
+        <a routerLink="/don-hang/pawpoints" class="menu-item" routerLinkActive="is-active">
           <i class="fa-solid fa-medal"></i> PawPoints
-        </span>
+        </a>
         <span class="menu-item is-disabled" title="Coming soon">
           <i class="fa-solid fa-paw"></i> My Pets
         </span>
@@ -123,7 +123,8 @@
           </div>
           <div class="field">
             <label for="xacNhanMatKhauMoi">Confirm new password*</label>
-            <input id="xacNhanMatKhauMoi" type="password" formControlName="xacNhanMatKhauMoi" autocomplete="new-password" />
+            <input id="xacNhanMatKhauMoi" type="password" formControlName="xacNhanMatKhauMoi"
+              autocomplete="new-password" />
           </div>
           <div class="form-actions">
             <button type="button" class="btn-secondary" (click)="huySuaMatKhau()">Cancel</button>
