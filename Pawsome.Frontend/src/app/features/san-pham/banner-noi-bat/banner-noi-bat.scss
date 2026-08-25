@@ -140,11 +140,24 @@
   gap: 5px;
 }
 
+// CSS text-decoration của thẻ cha luôn "xuyên qua" thẻ con dù thẻ con tự đặt none - không có
+// cách nào hủy line-through kiểu kế thừa này. Nên .DonViGiaCu (chữ "VND") phải là thẻ ANH EM
+// (sibling) đứng ngoài .GiaCu, không được lồng bên trong, mới né được gạch ngang.
+.DongGiaCu {
+  display: block;
+}
+
 .GiaCu {
   font-size: 20px;
-  display: block;
+  font-weight: 600;
   text-decoration: line-through;
-  color: #ddd;
+  color: #666;
+}
+
+.DonViGiaCu {
+  font-size: 12px;
+  color: #666;
+  margin-left: 4px;
 }
 
 .GiaMoi {

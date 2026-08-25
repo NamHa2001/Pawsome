@@ -42,4 +42,11 @@ public class ProductsController : ControllerBase
 
         return Ok(ApiResponse<ProductDto>.Ok(result));
     }
+
+    [HttpGet("{id}/ban-chay")]
+    public async Task<IActionResult> GetBanChay(int id, [FromQuery] int soLuong = 4)
+    {
+        var result = await _productService.GetBanChayAsync(id, soLuong);
+        return Ok(ApiResponse<List<ProductDto>>.Ok(result));
+    }
 }

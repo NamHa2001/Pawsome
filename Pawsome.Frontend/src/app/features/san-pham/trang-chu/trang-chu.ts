@@ -1,19 +1,21 @@
 import { DecimalPipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { environment } from '../../../../environments/environment';
+import { TokenService } from '../../../core/models/token.service';
 import { ChatAi } from '../../../shared/components/chat-ai/chat-ai';
 import { Footer } from '../../../shared/components/footer/footer';
 import { Header } from '../../../shared/components/header/header';
-import { DanhGia, DanhMuc, SanPham, dichTenDanhMuc } from '../models/san-pham.model';
+import { DanhGia, DanhMuc, SanPham, dichTenDanhMuc, giaVipPlaceholder, phanTramSao } from '../models/san-pham.model';
 import { BrandService } from '../services/brand.service';
 import { CategoryService } from '../services/category.service';
 import { ProductService } from '../services/product.service';
 import { ReviewService } from '../services/review.service';
 import { BannerNoiBat } from '../banner-noi-bat/banner-noi-bat';
 import { WelcomeBonus } from '../welcome-bonus/welcome-bonus';
+import { CartService } from '../../gio-hang/gio-hang/services/cart.service';
 import { CouponService } from '../../gio-hang/gio-hang/services/coupon.service';
 import { Coupon } from '../../gio-hang/gio-hang/models/gio-hang.model';
 
@@ -41,6 +43,9 @@ export class TrangChu implements OnInit, OnDestroy {
   private readonly brandService = inject(BrandService);
   private readonly couponService = inject(CouponService);
   private readonly reviewService = inject(ReviewService);
+  private readonly cartService = inject(CartService);
+  private readonly tokenService = inject(TokenService);
+  private readonly router = inject(Router);
   private readonly http = inject(HttpClient);
 
   readonly danhMucList = signal<DanhMuc[]>([]);
@@ -50,6 +55,17 @@ export class TrangChu implements OnInit, OnDestroy {
   readonly couponNoiBat = signal<Coupon | null>(null);
   readonly danhGiaNoiBat = signal<DanhGia[]>([]);
   readonly saoArr = [1, 2, 3, 4, 5];
+
+  // "Deal Of The Month" trước đây hardcode cứng tên/giá 3 sản phẩm (Dorwest/Aristopet/Milpro),
+  // không có link nào cả - giờ lấy đúng 3 sản phẩm thật này để tên/giá khớp thật và bấm vào được.
+  readonly sanPhamDealThang = signal<SanPham[]>([]);
+  private readonly DEAL_THANG_PRODUCT_IDS = [10, 11, 12];
+
+  // Tên đầy đủ dài (vd "Aristopet Horse Wormer") không vừa khung tròn nhỏ - từ đầu tiên trong tên
+  // sản phẩm ở catalog này luôn chính là tên thương hiệu (Dorwest/Aristopet/Milpro...), lấy gọn lại.
+  tenNganDeal(ten: string): string {
+    return ten.split(' ')[0];
+  }
 
   // Hiển thị 2 đánh giá/lần, bấm mũi tên trái/phải để xem cặp tiếp theo (Reviews đã tải sẵn cả
   // danhGiaNoiBat() từ backend - soLuong=6 - nên chuyển trang chỉ cần cắt mảng, không gọi lại API).
@@ -104,6 +120,9 @@ export class TrangChu implements OnInit, OnDestroy {
 
     this.reviewService.getNoiBat(6).subscribe(ds => this.danhGiaNoiBat.set(ds));
 
+    forkJoin(this.DEAL_THANG_PRODUCT_IDS.map(id => this.productService.getById(id)))
+      .subscribe(ds => this.sanPhamDealThang.set(ds.filter((sp): sp is SanPham => sp !== null)));
+
     this.timerSlide = setInterval(() => this.doiSlide(1), 10000);
   }
 
@@ -116,6 +135,8 @@ export class TrangChu implements OnInit, OnDestroy {
   }
 
   protected readonly dichTenDanhMuc = dichTenDanhMuc;
+  protected readonly giaVipPlaceholder = giaVipPlaceholder;
+  protected readonly phanTramSao = phanTramSao;
 
   private readonly anhBlogMauArr = ['/img/blog1.png', '/img/blog2.png', '/img/blog3.png'];
 
@@ -134,6 +155,39 @@ export class TrangChu implements OnInit, OnDestroy {
     const theoPhanTram = list.filter(c => c.loaiGiam === 'percent');
     const nguon = theoPhanTram.length > 0 ? theoPhanTram : list;
     return nguon.reduce((noiBat, c) => (c.giaTri > noiBat.giaTri ? c : noiBat), nguon[0]);
+  }
+
+  readonly dangThemGioNhanh = signal(false);
+
+  // Nút "SHOP NOW" trên thẻ sản phẩm (trang chủ, gợi ý...) - thêm thẳng vào giỏ hàng thay vì chỉ
+  // điều hướng như trước (cả thẻ đã là 1 thẻ <a> bọc ngoài để bấm ảnh/tên vào trang chi tiết, nên
+  // nút bên trong phải preventDefault + stopPropagation để không bị điều hướng theo click cha).
+  // Tự chọn biến thể đầu tiên còn hàng - trang chủ không có chỗ để khách chọn biến thể cụ thể.
+  themVaoGioNhanh(sp: SanPham, event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (!this.tokenService.isLoggedIn()) {
+      this.router.navigate(['/tai-khoan/dang-nhap']);
+      return;
+    }
+
+    const bienThe = sp.variants.find(v => v.dangKinhDoanh && v.soLuongTon > 0);
+    if (!bienThe) {
+      alert('This product is currently out of stock.');
+      return;
+    }
+
+    this.dangThemGioNhanh.set(true);
+    this.cartService.themSanPham({ variantId: bienThe.variantId, soLuong: 1 }).subscribe({
+      next: () => {
+        this.dangThemGioNhanh.set(false);
+      },
+      error: err => {
+        this.dangThemGioNhanh.set(false);
+        alert(err?.error?.message ?? 'Failed to add to cart.');
+      }
+    });
   }
 
   hienThiUuDai(cp: Coupon): string {

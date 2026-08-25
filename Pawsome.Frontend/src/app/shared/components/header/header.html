@@ -122,11 +122,9 @@
         <li class="MucMenuChinh">
           <a routerLink="/san-pham" class="LienKetChinh">Brands</a>
           <ul class="KhungMenuCon">
-            <li><a routerLink="/san-pham" [queryParams]="{ brandId: 1 }">Bravecto</a></li>
-            <li><a routerLink="/san-pham" [queryParams]="{ brandId: 2 }">Capstar</a></li>
-            <li><a routerLink="/san-pham" [queryParams]="{ brandId: 3 }">Frontline Plus</a></li>
-            <li><a routerLink="/san-pham" [queryParams]="{ brandId: 4 }">Profender</a></li>
-            <li><a routerLink="/san-pham" [queryParams]="{ brandId: 5 }">Simparica Trio</a></li>
+            @for (th of danhSachThuongHieu(); track th.brandId) {
+              <li><a routerLink="/san-pham" [queryParams]="{ brandId: th.brandId }">{{ th.tenThuongHieu }}</a></li>
+            }
           </ul>
         </li>
 
@@ -142,19 +140,10 @@
             <li><a href="#">PawCare</a></li>
           </ul>
         </li>
-
-        <li class="MucMenuChinh">
-          <a href="#" class="LienKetChinh">Latest Deals</a>
-          <ul class="KhungMenuCon">
-            <li><a href="#">Flash Sale</a></li>
-            <li><a href="#">New Arrivals</a></li>
-            <li><a href="#">Latest Offers</a></li>
-          </ul>
-        </li>
       </ul>
 
       <div class="KhuyenMaiMenu">
-        <img src="/img/Upto.png" alt="Up to 40 Percent Off" class="AnhKhuyenMaiTinh">
+        <img src="/img/Upto.png" alt="Up to 20 Percent Off" class="AnhKhuyenMaiTinh">
         <a href="#" class="LienKetVip">
           <img src="/img/pawvip.png" alt="PawVip" class="LogoVip">
         </a>

@@ -2,14 +2,16 @@ import { DecimalPipe } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { TokenService } from '../../../core/models/token.service';
 import { ChatAi } from '../../../shared/components/chat-ai/chat-ai';
 import { Footer } from '../../../shared/components/footer/footer';
 import { Header } from '../../../shared/components/header/header';
-import { BoLocSanPham, DanhMuc, SanPham, ThuongHieu, TinhTrangSucKhoe, dichTenDanhMuc } from '../models/san-pham.model';
+import { BoLocSanPham, DanhMuc, SanPham, ThuongHieu, TinhTrangSucKhoe, dichTenDanhMuc, giaVipPlaceholder, phanTramSao } from '../models/san-pham.model';
 import { BrandService } from '../services/brand.service';
 import { CategoryService } from '../services/category.service';
 import { ConditionService } from '../services/condition.service';
 import { ProductService } from '../services/product.service';
+import { CartService } from '../../gio-hang/gio-hang/services/cart.service';
 
 @Component({
   selector: 'app-danh-sach-san-pham',
@@ -21,6 +23,9 @@ export class DanhSachSanPham implements OnInit {
   protected readonly Math = Math;
   protected readonly Array = Array;
   protected readonly dichTenDanhMuc = dichTenDanhMuc;
+  protected readonly giaVipPlaceholder = giaVipPlaceholder;
+  protected readonly phanTramSao = phanTramSao;
+  readonly saoArr = [1, 2, 3, 4, 5];
 
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
@@ -28,6 +33,8 @@ export class DanhSachSanPham implements OnInit {
   private readonly categoryService = inject(CategoryService);
   private readonly brandService = inject(BrandService);
   private readonly conditionService = inject(ConditionService);
+  private readonly cartService = inject(CartService);
+  private readonly tokenService = inject(TokenService);
 
   readonly sanPhamList = signal<SanPham[]>([]);
   readonly tongSo = signal(0);
@@ -84,6 +91,39 @@ export class DanhSachSanPham implements OnInit {
 
   xoaLoc(): void {
     this.router.navigate([], { relativeTo: this.route, queryParams: {} });
+  }
+
+  readonly dangThemGioNhanh = signal(false);
+
+  // Nút "ADD TO CART" trên thẻ sản phẩm - thêm thẳng vào giỏ hàng thay vì chỉ điều hướng như trước
+  // (cả thẻ đã là 1 thẻ <a> bọc ngoài để bấm ảnh/tên vào trang chi tiết, nên nút bên trong phải
+  // preventDefault + stopPropagation để không bị điều hướng theo click cha). Tự chọn biến thể đầu
+  // tiên còn hàng - trang danh sách không có chỗ để khách chọn biến thể cụ thể.
+  themVaoGioNhanh(sp: SanPham, event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (!this.tokenService.isLoggedIn()) {
+      this.router.navigate(['/tai-khoan/dang-nhap']);
+      return;
+    }
+
+    const bienThe = sp.variants.find(v => v.dangKinhDoanh && v.soLuongTon > 0);
+    if (!bienThe) {
+      alert('This product is currently out of stock.');
+      return;
+    }
+
+    this.dangThemGioNhanh.set(true);
+    this.cartService.themSanPham({ variantId: bienThe.variantId, soLuong: 1 }).subscribe({
+      next: () => {
+        this.dangThemGioNhanh.set(false);
+      },
+      error: err => {
+        this.dangThemGioNhanh.set(false);
+        alert(err?.error?.message ?? 'Failed to add to cart.');
+      }
+    });
   }
 
   private thanhQueryParams(loc: BoLocSanPham): Record<string, string | number> {

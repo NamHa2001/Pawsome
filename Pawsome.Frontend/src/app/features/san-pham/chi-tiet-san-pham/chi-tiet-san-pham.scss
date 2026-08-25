@@ -83,8 +83,9 @@
 }
 
 .CumDanhGia { display: flex; align-items: center; gap: 8px; }
-.SaoVang { color: #FFD700; font-size: 18px; }
-.SaoVang .SaoMo { color: #E0E0E0; }
+.SaoVang { display: flex; font-size: 18px; }
+.SaoVang .SaoDay { color: #FFD700; }
+
 .SoDanhGia { color: #888; font-size: 14px; }
 
 .GiaPawVip {
@@ -134,16 +135,28 @@
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
 }
 
-.KhungVungMuaHang {
+// Mỗi biến thể là 1 khung riêng biệt (đúng bài mẫu) thay vì 1 bảng chung gộp hết biến thể - vẫn
+// dùng chung 1 ảnh sản phẩm cho mọi khung (DB chưa hỗ trợ ảnh riêng theo biến thể, xem ghi chú ở
+// product_images) nhưng mỗi biến thể có tiêu đề + khung viền tách bạch của riêng nó.
+.TieuDeChonBienThe {
+  font-size: 24px;
+  font-weight: 700;
+  color: #2F2D2E;
+  margin-bottom: 16px;
+}
+
+.KhungBienThe {
   width: 1200px;
   border: 1px solid #EEE;
   border-radius: 12px;
   overflow: hidden;
-  margin-bottom: 50px;
+  margin-bottom: 20px;
   background-color: var(--MauTrang);
+
+  &:last-child { margin-bottom: 50px; }
 }
 
-.TieuDeBangVip {
+.TieuDeBienThe {
   background-color: var(--MauDoDam);
   color: white;
   padding: 12px 20px;
@@ -151,11 +164,11 @@
   font-size: 16px;
 }
 
-.NoiDungBangMuaHang {
+.NoiDungBienThe {
   display: flex;
 }
 
-.CotAnhSanPhamLon {
+.CotAnhBienThe {
   width: 300px;
   background-color: #F5F5F5;
   display: flex;
@@ -164,24 +177,21 @@
   padding: 20px;
   border-right: 1px solid #E0E0E0;
   flex-shrink: 0;
+
+  img { width: 60%; height: auto; object-fit: contain; }
 }
 
-.AnhLonSP {
-  width: 60%;
-  height: auto;
-  object-fit: contain;
-}
-
-.CotThongTinGia {
+.CotThongTinBienThe {
   flex: 1;
   padding: 20px 40px;
 }
 
 .HangTieuDeGrid, .HangDuLieuGrid {
   display: grid;
-  grid-template-columns: 1.5fr 1fr 1fr 100px 80px;
+  grid-template-columns: 1fr 1fr 140px 80px;
   align-items: center;
   padding: 15px 0;
+  gap: 12px;
 }
 
 .HangTieuDeGrid {
@@ -195,20 +205,52 @@
   border-bottom: 1px solid #F9F9F9;
 }
 
-.PackSizeTxt { color: #555; font-size: 16px; font-weight: 500; }
-.TonKhoNho { color: #999; font-size: 12px; font-weight: 400; }
+.TonKhoNho { display: block; color: #999; font-size: 12px; font-weight: 400; margin-top: 6px; }
 .PriceTxt { color: #2F2D2E; font-size: 18px; font-weight: 600; }
 .VipPriceTxt { color: var(--MauDoDam); font-size: 18px; font-weight: 700; }
 .IconVipBang { height: 33px; width: auto; }
 
-.SelectQty {
-  width: 70px;
-  padding: 6px;
+.BoDemSoLuong {
+  display: inline-flex;
+  align-items: center;
   border: 1px solid #CCC;
   border-radius: 12px;
-  text-align: center;
-  font-family: 'Sora', sans-serif;
-  outline: none;
+  overflow: hidden;
+  width: fit-content;
+
+  button {
+    width: 28px;
+    height: 32px;
+    border: none;
+    background-color: #F5F5F5;
+    color: #2F2D2E;
+    font-size: 16px;
+    font-family: 'Sora', sans-serif;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover:not(:disabled) { background-color: #EAEAEA; }
+    &:disabled { opacity: 0.4; cursor: default; }
+  }
+
+  input {
+    width: 40px;
+    height: 32px;
+    border: none;
+    border-left: 1px solid #CCC;
+    border-right: 1px solid #CCC;
+    text-align: center;
+    font-family: 'Sora', sans-serif;
+    outline: none;
+    -moz-appearance: textfield;
+
+    &::-webkit-outer-spin-button, &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+  }
 }
 
 .NutAddNho {
@@ -393,11 +435,15 @@
   padding: 12px 0;
   width: 100%;
   font-weight: 700;
-  margin-top: 15px;
+  font-size: 14px;
+  margin-top: auto;
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 10px;
+  cursor: pointer;
+
+  &:disabled { opacity: 0.6; cursor: default; }
   transition: background 0.2s;
 }
 
@@ -417,10 +463,25 @@
   text-align: center;
   text-decoration: none;
   color: inherit;
-  display: block;
+  // flex column + nút margin-top:auto (xem .NutShopNowGoiY) để nút SHOP NOW luôn nằm sát đáy thẻ,
+  // không bị lệch hàng giữa các thẻ do tên sản phẩm dài/ngắn khác nhau (1 dòng vs 2 dòng).
+  display: flex;
+  flex-direction: column;
   transition: transform 0.3s ease;
 
   &:hover { transform: translateY(-5px); }
+}
+
+.TenSPGoiY {
+  // min-height đủ cho 2 dòng - tên sản phẩm dài (VD "Frontline Flea & Tick Prevention for Dogs")
+  // xuống 2 dòng nhưng tên ngắn chỉ 1 dòng vẫn chiếm cùng khoảng không gian, nhờ vậy khối giá +
+  // nút bên dưới luôn bắt đầu ở cùng 1 vị trí Y giữa các thẻ.
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  font-size: 15px;
+  line-height: 1.3;
 }
 
 .KhungTrangGoiY {
@@ -444,7 +505,7 @@
   justify-content: center;
   align-items: center;
   gap: 8px;
-  margin-top: 5px;
+  margin: 5px 0 16px 0;
 
   b { color: var(--MauDoDam); font-size: 18px; }
 }

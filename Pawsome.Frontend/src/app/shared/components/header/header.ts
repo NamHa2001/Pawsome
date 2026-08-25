@@ -7,7 +7,8 @@ import { Subject, distinctUntilChanged, of, switchMap } from 'rxjs';
 import { TokenService } from '../../../core/models/token.service';
 import { AuthService } from '../../../features/tai-khoan/auth.service';
 import { ProductService } from '../../../features/san-pham/services/product.service';
-import { GoiYSanPham } from '../../../features/san-pham/models/san-pham.model';
+import { BrandService } from '../../../features/san-pham/services/brand.service';
+import { GoiYSanPham, ThuongHieu } from '../../../features/san-pham/models/san-pham.model';
 import { CartService } from '../../../features/gio-hang/gio-hang/services/cart.service';
 
 @Component({
@@ -18,9 +19,14 @@ import { CartService } from '../../../features/gio-hang/gio-hang/services/cart.s
 })
 export class Header {
   private readonly productService = inject(ProductService);
+  private readonly brandService = inject(BrandService);
   private readonly tokenService = inject(TokenService);
   private readonly authService = inject(AuthService);
   private readonly cartService = inject(CartService);
+
+  // Menu "Brands" trước đây hardcode cứng tên + brandId, dễ bị lỗi thời khi danh sách brand thay
+  // đổi (đã xảy ra thật) - giờ lấy trực tiếp từ danh mục thương hiệu thật.
+  readonly danhSachThuongHieu = signal<ThuongHieu[]>([]);
 
   readonly nguoiDungHienTai = toSignal(this.tokenService.currentUser$, {
     initialValue: this.tokenService.getUser()
@@ -44,6 +50,8 @@ export class Header {
   private readonly tuKhoaGoiY$ = new Subject<string>();
 
   constructor(private readonly router: Router) {
+    this.brandService.getAll().subscribe(ds => this.danhSachThuongHieu.set(ds));
+
     // Tải số lượng giỏ hàng thật từ server khi header khởi tạo (và mỗi khi
     // trạng thái đăng nhập thay đổi) để icon luôn khớp với giỏ hàng hiện có.
     effect(() => {
