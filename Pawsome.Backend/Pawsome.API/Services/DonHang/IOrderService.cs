@@ -8,6 +8,11 @@ public interface IOrderService
     Task<OrderDto> CreateFromCartAsync(int userId, CreateOrderRequestDto dto);
     Task<PagedResult<OrderDto>> GetByUserAsync(int userId, OrderFilterRequestDto filter);
     Task<OrderDto?> GetByIdAsync(int userId, int orderId);
+
+    // Dành cho trang quản trị (Phần 5) - không giới hạn theo userId, vì admin cần xem/sửa
+    // đơn của bất kỳ khách hàng nào, không riêng đơn của chính mình.
+    Task<PagedResult<OrderDto>> GetAllAsync(OrderFilterRequestDto filter);
+    Task<OrderDto?> GetByIdAdminAsync(int orderId);
     Task<OrderDto> CancelAsync(int userId, int orderId, CancelOrderRequestDto dto);
     Task<OrderDto> UpdateTrangThaiAsync(int orderId, string trangThaiMoi);
     Task<OrderDto> CapNhatVanDonAsync(int orderId, UpdateShippingRequestDto dto);

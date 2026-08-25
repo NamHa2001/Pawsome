@@ -183,7 +183,42 @@
 }
 .NutThanhToan:hover { opacity: 0.85; }
 
-/* ===== Giỏ hàng trống + Gợi ý sản phẩm ===== */
+
+.KhungHanhDongDuoi {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+
+.NutPhu {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 12px 28px;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  border: 2px solid var(--MauDoDam);
+  background: #fff;
+  color: var(--MauDoDam);
+  transition: background 0.2s, color 0.2s, opacity 0.2s;
+}
+.NutPhu:hover { background: var(--MauDoDam); color: #fff; }
+
+.NutNguyHiem {
+  margin-left: auto;
+  border-color: #e34848;
+  color: #cb3a3a;
+}
+.NutNguyHiem:hover { background: #e93f3f; color: #fff; }
+
+
 .KhungGioHangTrong {
   display: flex;
   flex-direction: column;

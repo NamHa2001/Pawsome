@@ -1,5 +1,5 @@
 import { DecimalPipe } from '@angular/common';
-import { Component, HostListener, computed, inject, signal } from '@angular/core';
+import { Component, HostListener, computed, effect, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -8,6 +8,7 @@ import { TokenService } from '../../../core/models/token.service';
 import { AuthService } from '../../../features/tai-khoan/auth.service';
 import { ProductService } from '../../../features/san-pham/services/product.service';
 import { GoiYSanPham } from '../../../features/san-pham/models/san-pham.model';
+import { CartService } from '../../../features/gio-hang/gio-hang/services/cart.service';
 
 @Component({
   selector: 'app-header',
@@ -19,6 +20,7 @@ export class Header {
   private readonly productService = inject(ProductService);
   private readonly tokenService = inject(TokenService);
   private readonly authService = inject(AuthService);
+  private readonly cartService = inject(CartService);
 
   readonly nguoiDungHienTai = toSignal(this.tokenService.currentUser$, {
     initialValue: this.tokenService.getUser()
@@ -30,7 +32,9 @@ export class Header {
 
   readonly daCuonQua200 = signal(false);
   readonly danHeader = signal(false);
-  readonly soLuongGioHang = signal(0);
+  // Số lượng trên icon giỏ hàng lấy trực tiếp từ CartService (nguồn dữ liệu thật,
+  // tự động đồng bộ khi thêm/sửa/xóa sản phẩm) thay vì đọc localStorage 1 lần lúc khởi tạo.
+  readonly soLuongGioHang = this.cartService.soLuongGioHang;
 
   private viTriCuonTruoc = 0;
   tuKhoaTimKiem = '';
@@ -40,8 +44,13 @@ export class Header {
   private readonly tuKhoaGoiY$ = new Subject<string>();
 
   constructor(private readonly router: Router) {
-    const luu = localStorage.getItem('cartCount');
-    this.soLuongGioHang.set(luu ? parseInt(luu, 10) : 0);
+    // Tải số lượng giỏ hàng thật từ server khi header khởi tạo (và mỗi khi
+    // trạng thái đăng nhập thay đổi) để icon luôn khớp với giỏ hàng hiện có.
+    effect(() => {
+      if (this.daDangNhap()) {
+        this.cartService.taiLaiSoLuong();
+      }
+    });
 
     // Gợi ý ngay trong lúc gõ, không chờ dừng gõ mới gọi API - switchMap tự hủy
     // request cũ mỗi khi có ký tự mới nên gõ nhanh không bị dồn/loạn kết quả.

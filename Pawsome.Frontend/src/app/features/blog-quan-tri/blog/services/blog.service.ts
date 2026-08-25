@@ -4,7 +4,7 @@ import { Observable, map } from 'rxjs';
 import { environment } from '../../../../../environments/environment';
 import { ApiResponse } from '../../../../core/models/api-response.model';
 import { PagedResult } from '../../../../core/models/paged-result.model';
-import { BlogFilterRequest, BlogPost } from '../models/blog.model';
+import { BlogFilterRequest, BlogPost, BlogPostRequest } from '../models/blog.model';
 
 @Injectable({ providedIn: 'root' })
 export class BlogService {
@@ -34,5 +34,18 @@ export class BlogService {
     return this.http
       .get<ApiResponse<BlogPost>>(`${this.baseUrl}/${id}`)
       .pipe(map(res => res.data ?? null));
+  }
+
+  // ── Quản trị (Admin) ───────────────────────────────────────────────────
+  taoBaiViet(dto: BlogPostRequest): Observable<ApiResponse<BlogPost>> {
+    return this.http.post<ApiResponse<BlogPost>>(this.baseUrl, dto);
+  }
+
+  suaBaiViet(postId: number, dto: BlogPostRequest): Observable<ApiResponse<BlogPost>> {
+    return this.http.put<ApiResponse<BlogPost>>(`${this.baseUrl}/${postId}`, dto);
+  }
+
+  xoaBaiViet(postId: number): Observable<ApiResponse<object>> {
+    return this.http.delete<ApiResponse<object>>(`${this.baseUrl}/${postId}`);
   }
 }

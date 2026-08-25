@@ -36,6 +36,11 @@ export const routes: Routes = [
         path: 'ma-giam-gia',
         canActivate: [roleGuard('Admin')],
         loadComponent: () => import('../gio-hang/quan-tri-ma-giam-gia/quan-tri-ma-giam-gia').then(m => m.QuanTriMaGiamGiaComponent)
+      },
+      {
+        path: 'blog',
+        canActivate: [roleGuard('Admin')],
+        loadComponent: () => import('./quan-tri/blog/quan-tri-blog').then(m => m.QuanTriBlog)
       }
     ]
   }

@@ -6,6 +6,18 @@
 
 .MoTaTrang { font-size: 14px; color: #888; margin: 0; }
 
+.ThongBaoLoi {
+  color: #b91c1c;
+  background: #FDECEC;
+  border: 1px solid #F5C2C2;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+.ThongBaoRong { color: #999; font-size: 14px; text-align: center; padding: 50px 22px; margin: 0; }
+
 .TheQuanTri {
   background: var(--MauTrang);
   border-radius: 0.35rem;
@@ -21,5 +33,143 @@
   color: var(--MauDoDam);
 }
 
-.ThanThe { padding: 22px; }
-.ThanTheRong { color: #999; font-size: 14px; text-align: center; padding: 50px 22px; }
+.TieuDeTheBoLoc {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ChonBoLoc, .ChonTrangThai {
+  border: 1px solid #E0D0D0;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 13px;
+  color: var(--MauDen);
+  background: var(--MauTrang);
+}
+
+.ThanThe { padding: 0; }
+
+.BangCuon { overflow-x: auto; }
+
+.BangDonHang {
+  width: 100%;
+  border-collapse: collapse;
+
+  th, td {
+    text-align: left;
+    padding: 14px 22px;
+    border-bottom: 1px solid #F5EBEB;
+    vertical-align: top;
+    white-space: nowrap;
+  }
+
+  th {
+    background: var(--MauHongNhat);
+    color: var(--MauDoDam);
+    font-weight: 700;
+    font-size: 13px;
+    text-transform: uppercase;
+  }
+
+  tbody tr:hover td { background: #FFFAFA; }
+}
+
+.OKhachHang {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.TenKhachHang { font-weight: 600; }
+.EmailKhachHang { font-size: 12px; color: #999; }
+
+.OHanhDong {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.NutXemChiTiet {
+  border: 1px solid var(--MauDoDam);
+  background: transparent;
+  color: var(--MauDoDam);
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+
+  &:hover { background: var(--MauHongNhat); }
+}
+
+.HangChiTiet td {
+  background: #FFFAFA;
+  white-space: normal;
+  padding: 16px 22px;
+}
+
+.ChiTietDonHang {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.DongSanPham {
+  display: flex;
+  gap: 16px;
+  font-size: 13px;
+  color: var(--MauDen);
+
+  span:first-child { flex: 1; min-width: 200px; }
+}
+
+.DongTomTat {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  font-size: 13px;
+  color: #666;
+  padding-top: 8px;
+  border-top: 1px dashed #E0D0D0;
+}
+
+/* ── Status badges - trùng bảng màu với trang lịch sử đơn hàng khách hàng ── */
+.StatusBadge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.StatusPending       { background-color: var(--MauHongNhat); color: #AA9D9D; border: 1px solid #AA9D9D; }
+.StatusProcessing    { background-color: var(--MauHongNhat); color: var(--MauDoDam); }
+.StatusShipped       { background-color: var(--MauHongNhat); color: #8A191C; }
+.StatusDelivered     { background-color: #2F2D2E; color: var(--MauTrang); }
+.StatusCancelled     { background-color: #6D2121; color: var(--MauTrang); }
+.StatusReturnPending { background-color: var(--MauTrang); color: #4D4D4E; border: 1px dashed #4D4D4E; }
+.StatusReturned      { background-color: #4D4D4E; color: var(--MauTrang); }
+
+.PhanTrang {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  padding: 18px 22px;
+
+  button {
+    border: 1px solid #E0D0D0;
+    background: var(--MauTrang);
+    border-radius: 6px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-size: 13px;
+
+    &:disabled { opacity: 0.5; cursor: not-allowed; }
+    &.active { background: var(--MauDoDam); color: var(--MauTrang); border-color: var(--MauDoDam); }
+    &:hover:not(:disabled):not(.active) { background: var(--MauHongNhat); }
+  }
+}
