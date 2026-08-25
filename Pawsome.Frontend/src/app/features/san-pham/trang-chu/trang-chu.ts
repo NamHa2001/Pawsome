@@ -1,16 +1,17 @@
 import { DecimalPipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { ChatAi } from '../../../shared/components/chat-ai/chat-ai';
 import { Footer } from '../../../shared/components/footer/footer';
 import { Header } from '../../../shared/components/header/header';
-import { DanhMuc, SanPham, dichTenDanhMuc } from '../models/san-pham.model';
+import { DanhGia, DanhMuc, SanPham, dichTenDanhMuc } from '../models/san-pham.model';
 import { BrandService } from '../services/brand.service';
 import { CategoryService } from '../services/category.service';
 import { ProductService } from '../services/product.service';
+import { ReviewService } from '../services/review.service';
 import { BannerNoiBat } from '../banner-noi-bat/banner-noi-bat';
 import { WelcomeBonus } from '../welcome-bonus/welcome-bonus';
 import { CouponService } from '../../gio-hang/gio-hang/services/coupon.service';
@@ -39,6 +40,7 @@ export class TrangChu implements OnInit, OnDestroy {
   private readonly productService = inject(ProductService);
   private readonly brandService = inject(BrandService);
   private readonly couponService = inject(CouponService);
+  private readonly reviewService = inject(ReviewService);
   private readonly http = inject(HttpClient);
 
   readonly danhMucList = signal<DanhMuc[]>([]);
@@ -46,6 +48,27 @@ export class TrangChu implements OnInit, OnDestroy {
   readonly thuongHieuList = signal<{ brandId: number; tenThuongHieu: string; logoUrl: string | null }[]>([]);
   readonly blogList = signal<BaiVietBlog[]>([]);
   readonly couponNoiBat = signal<Coupon | null>(null);
+  readonly danhGiaNoiBat = signal<DanhGia[]>([]);
+  readonly saoArr = [1, 2, 3, 4, 5];
+
+  // Hiển thị 2 đánh giá/lần, bấm mũi tên trái/phải để xem cặp tiếp theo (Reviews đã tải sẵn cả
+  // danhGiaNoiBat() từ backend - soLuong=6 - nên chuyển trang chỉ cần cắt mảng, không gọi lại API).
+  private readonly SO_DANH_GIA_MOI_TRANG = 2;
+  readonly trangDanhGiaNoiBat = signal(0);
+
+  readonly tongTrangDanhGiaNoiBat = computed(() =>
+    Math.ceil(this.danhGiaNoiBat().length / this.SO_DANH_GIA_MOI_TRANG)
+  );
+
+  readonly danhGiaHienThi = computed(() => {
+    const batDau = this.trangDanhGiaNoiBat() * this.SO_DANH_GIA_MOI_TRANG;
+    return this.danhGiaNoiBat().slice(batDau, batDau + this.SO_DANH_GIA_MOI_TRANG);
+  });
+
+  doiTrangNoiBat(buoc: number): void {
+    const trangCuoi = this.tongTrangDanhGiaNoiBat() - 1;
+    this.trangDanhGiaNoiBat.update(t => Math.min(Math.max(t + buoc, 0), trangCuoi));
+  }
 
   readonly slideIndex = signal(0);
   readonly slideAnh = ['/img/banner1.png', '/img/banner3.png', '/img/banner2.png'];
@@ -78,6 +101,8 @@ export class TrangChu implements OnInit, OnDestroy {
         next: res => this.blogList.set(res.data?.items ?? []),
         error: () => this.blogList.set([])
       });
+
+    this.reviewService.getNoiBat(6).subscribe(ds => this.danhGiaNoiBat.set(ds));
 
     this.timerSlide = setInterval(() => this.doiSlide(1), 10000);
   }

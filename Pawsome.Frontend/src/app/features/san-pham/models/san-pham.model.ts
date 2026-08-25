@@ -75,6 +75,9 @@ export interface DanhGia {
   binhLuan: string | null;
   trangThai: 'cho_duyet' | 'da_duyet' | 'tu_choi';
   ngayTao: string;
+  tenSanPham?: string | null;
+  anhSanPham?: string | null;
+  diemDanhGiaTbSanPham?: number | null;
 }
 
 export interface GuiDanhGia {

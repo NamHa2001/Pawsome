@@ -32,6 +32,13 @@ public class ReviewsController : ControllerBase
         return Ok(ApiResponse<PagedResult<ReviewDto>>.Ok(result));
     }
 
+    [HttpGet("noi-bat")]
+    public async Task<IActionResult> GetNoiBat([FromQuery] int soLuong = 6)
+    {
+        var result = await _reviewService.GetNoiBatAsync(soLuong);
+        return Ok(ApiResponse<List<ReviewDto>>.Ok(result));
+    }
+
     [HttpPost]
     [Authorize]
     public async Task<IActionResult> Create([FromBody] ReviewRequestDto dto)

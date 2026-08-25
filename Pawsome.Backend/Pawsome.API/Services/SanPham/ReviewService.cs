@@ -41,6 +41,31 @@ public class ReviewService : IReviewService
         };
     }
 
+    public async Task<List<ReviewDto>> GetNoiBatAsync(int soLuong)
+    {
+        var gioiHan = soLuong < 1 ? 6 : Math.Min(soLuong, 20);
+
+        var items = await _dbContext.Reviews
+            .AsNoTracking()
+            .Include(r => r.User)
+            .Include(r => r.Product).ThenInclude(p => p.Images)
+            .Where(r => r.TrangThai == "da_duyet" && r.BinhLuan != null && r.BinhLuan != "")
+            .OrderByDescending(r => r.SoSao)
+            .ThenByDescending(r => r.NgayTao)
+            .Take(gioiHan)
+            .ToListAsync();
+
+        return items.Select(r =>
+        {
+            var dto = MapToDto(r);
+            dto.TenSanPham = r.Product.Ten;
+            dto.AnhSanPham = r.Product.Images.FirstOrDefault(i => i.LaAnhChinh)?.Url
+                ?? r.Product.Images.FirstOrDefault()?.Url;
+            dto.DiemDanhGiaTbSanPham = r.Product.DiemDanhGiaTb;
+            return dto;
+        }).ToList();
+    }
+
     public async Task<List<ReviewDto>> GetChoDuyetAsync()
     {
         var items = await _dbContext.Reviews
