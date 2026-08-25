@@ -6,11 +6,54 @@
 
 .MoTaTrang { font-size: 14px; color: #888; margin: 0; }
 
+.ThongBaoLoi {
+  color: #b91c1c;
+  background: #FDECEC;
+  border: 1px solid #F5C2C2;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+.ThongBaoThanhCong {
+  color: #15803d;
+  background: #EAF7EF;
+  border: 1px solid #BCE3C9;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+.ThongBaoRong { color: #999; font-size: 14px; text-align: center; padding: 50px 22px; margin: 0; }
+
+.ThanhTab {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 16px;
+
+  button {
+    border: none;
+    background: var(--MauTrang);
+    border-radius: 6px 6px 0 0;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    color: #888;
+
+    &.Active { color: var(--MauDoDam); border-bottom: 3px solid var(--MauDoDam); }
+    &:hover:not(.Active) { color: var(--MauDen); }
+  }
+}
+
 .TheQuanTri {
   background: var(--MauTrang);
   border-radius: 0.35rem;
   box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
   overflow: hidden;
+  margin-bottom: 22px;
 }
 
 .TieuDeThe {
@@ -21,5 +64,262 @@
   color: var(--MauDoDam);
 }
 
-.ThanThe { padding: 22px; }
-.ThanTheRong { color: #999; font-size: 14px; text-align: center; padding: 50px 22px; }
+.TieuDeTheBoLoc {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.NhomBoLoc {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  input, select { border: 1px solid #E0D0D0; border-radius: 6px; padding: 6px 10px; font-size: 13px; }
+}
+
+.ThanThe { padding: 0; }
+
+.BangCuon { overflow-x: auto; }
+
+.Bang {
+  width: 100%;
+  border-collapse: collapse;
+
+  th, td {
+    text-align: left;
+    padding: 12px 20px;
+    border-bottom: 1px solid #F5EBEB;
+    vertical-align: middle;
+  }
+
+  th {
+    background: var(--MauHongNhat);
+    color: var(--MauDoDam);
+    font-weight: 700;
+    font-size: 13px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  td input, td select { border: 1px solid #E0D0D0; border-radius: 6px; padding: 5px 8px; font-size: 13px; width: 100%; }
+
+  tbody tr:hover td { background: #FFFAFA; }
+}
+
+.OHanhDong {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+/* ── Buttons ── */
+.NutChinh, .NutPhu, .NutNguyHiem {
+  border: none;
+  border-radius: 6px;
+  padding: 8px 14px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+}
+
+.NutChinh { background: var(--MauDoDam); color: #fff; &:hover:not(:disabled) { background: #8A191C; } }
+.NutPhu { background: var(--MauHongNhat); color: var(--MauDoDam); border: 1px solid #E0C0C0; &:hover:not(:disabled) { background: #F5DCDC; } }
+.NutNguyHiem { background: #6D2121; color: #fff; &:hover:not(:disabled) { background: #4D1616; } }
+.NutNho { padding: 5px 10px; font-size: 12px; }
+
+.NutQuayLai {
+  border: none;
+  background: transparent;
+  color: var(--MauDoDam);
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+  font-size: 14px;
+}
+
+/* ── Form panel (add/edit product/category/brand) ── */
+.FormPanel {
+  padding: 18px 22px;
+  border-bottom: 1px solid #F0E5E5;
+  background: #FFFAFA;
+
+  h3 { margin: 0 0 12px; font-size: 15px; color: var(--MauDen); }
+}
+
+.LuoiForm {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+  margin-bottom: 14px;
+
+  label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #666;
+  }
+
+  input, select, textarea {
+    border: 1px solid #E0D0D0;
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--MauDen);
+    font-family: inherit;
+  }
+
+  .OFull { grid-column: 1 / -1; }
+}
+
+.NhomDieuKien, .NhomDongDuLieu {
+  margin-bottom: 14px;
+}
+
+.NhanNhom {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.DsCheckbox {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 18px;
+}
+
+.MucCheckbox, .MucCheckboxInline {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--MauDen);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.DongDuLieu {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+
+  input { border: 1px solid #E0D0D0; border-radius: 6px; padding: 7px 10px; font-size: 13px; flex: 1; min-width: 0; }
+}
+
+.NutXoaDong {
+  border: none;
+  background: #F5EBEB;
+  color: #6D2121;
+  border-radius: 6px;
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  cursor: pointer;
+  font-weight: 700;
+
+  &:disabled { opacity: 0.4; cursor: not-allowed; }
+  &:hover:not(:disabled) { background: #E9D5D5; }
+}
+
+.NutForm {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+/* ── Chi tiết: biến thể / ảnh ── */
+.TenSPChiTiet { margin: 0 0 18px; font-size: 18px; color: var(--MauDen); }
+
+.KhoiChiTiet {
+  padding: 18px 22px;
+  border-bottom: 1px solid #F0E5E5;
+
+  &:last-child { border-bottom: none; }
+}
+
+.TieuDeKhoi {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  font-weight: 700;
+  color: var(--MauDoDam);
+  font-size: 14px;
+}
+
+.LuoiAnh {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.TheAnh {
+  position: relative;
+  width: 110px;
+  height: 110px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #E0D0D0;
+
+  img { width: 100%; height: 100%; object-fit: cover; }
+}
+
+.NhanAnhChinh {
+  position: absolute;
+  bottom: 4px;
+  left: 4px;
+  background: var(--MauDoDam);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.NutXoaAnh {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  border: none;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
+  font-size: 11px;
+
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+}
+
+.PhanTrang {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  padding: 18px 22px;
+
+  button {
+    border: 1px solid #E0D0D0;
+    background: var(--MauTrang);
+    border-radius: 6px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-size: 13px;
+
+    &:disabled { opacity: 0.5; cursor: not-allowed; }
+    &.active { background: var(--MauDoDam); color: var(--MauTrang); border-color: var(--MauDoDam); }
+    &:hover:not(:disabled):not(.active) { background: var(--MauHongNhat); }
+  }
+}

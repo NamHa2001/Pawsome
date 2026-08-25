@@ -3,9 +3,448 @@
   <p class="MoTaTrang">Add/edit/delete products, variants, stock, categories, and brands.</p>
 </div>
 
-<div class="TheQuanTri">
-  <div class="TieuDeThe">Product List</div>
-  <div class="ThanThe ThanTheRong">
-    <p>The list of products, variants, categories, and brands will appear here.</p>
-  </div>
+@if (thongBao()) {
+  <p class="ThongBaoThanhCong">{{ thongBao() }}</p>
+}
+
+<div class="ThanhTab">
+  <button type="button" [class.Active]="tab() === 'products'" (click)="doiTab('products')">Products</button>
+  <button type="button" [class.Active]="tab() === 'categories'" (click)="doiTab('categories')">Categories</button>
+  <button type="button" [class.Active]="tab() === 'brands'" (click)="doiTab('brands')">Brands</button>
 </div>
+
+@if (tab() === 'products') {
+  @if (cheDo() === 'danh-sach') {
+    <div class="TheQuanTri">
+      <div class="TieuDeThe TieuDeTheBoLoc">
+        <span>Products</span>
+        <div class="NhomBoLoc">
+          <input type="text" placeholder="Search by name..." [ngModel]="tuKhoaSP()" (ngModelChange)="tuKhoaSP.set($event)" (keyup.enter)="timKiemSP()" />
+          <select [ngModel]="locCategoryId()" (ngModelChange)="doiLocDanhMuc($event)">
+            <option [ngValue]="null">All categories</option>
+            @for (dm of categories(); track dm.categoryId) {
+              <option [ngValue]="dm.categoryId">{{ dichTen(dm.tenDanhMuc) }}</option>
+            }
+          </select>
+          <button type="button" class="NutChinh" (click)="timKiemSP()">Search</button>
+          <button type="button" class="NutChinh" (click)="moFormThemSP()">+ Add Product</button>
+        </div>
+      </div>
+
+      @if (formSPMode()) {
+        <div class="FormPanel">
+          <h3>{{ formSPMode() === 'them' ? 'New Product' : 'Edit Product' }}</h3>
+
+          @if (loiFormSP()) {
+            <p class="ThongBaoLoi">{{ loiFormSP() }}</p>
+          }
+
+          <div class="LuoiForm">
+            <label>
+              Name
+              <input type="text" [ngModel]="formSP().ten" (ngModelChange)="formSP.update(f => ({ ...f, ten: $event }))" />
+            </label>
+            <label>
+              Category
+              <select [ngModel]="formSP().categoryId" (ngModelChange)="formSP.update(f => ({ ...f, categoryId: $event }))">
+                <option [ngValue]="null">— choose —</option>
+                @for (dm of categories(); track dm.categoryId) {
+                  <option [ngValue]="dm.categoryId">{{ dichTen(dm.tenDanhMuc) }}</option>
+                }
+              </select>
+            </label>
+            <label>
+              Brand
+              <select [ngModel]="formSP().brandId" (ngModelChange)="formSP.update(f => ({ ...f, brandId: $event }))">
+                <option [ngValue]="null">— none —</option>
+                @for (th of brands(); track th.brandId) {
+                  <option [ngValue]="th.brandId">{{ th.tenThuongHieu }}</option>
+                }
+              </select>
+            </label>
+            <label>
+              Dosage
+              <input type="text" [ngModel]="formSP().lieuLuong" (ngModelChange)="formSP.update(f => ({ ...f, lieuLuong: $event }))" />
+            </label>
+            <label class="OFull">
+              Description
+              <textarea rows="2" [ngModel]="formSP().moTa" (ngModelChange)="formSP.update(f => ({ ...f, moTa: $event }))"></textarea>
+            </label>
+          </div>
+
+          @if (conditions().length > 0) {
+            <div class="NhomDieuKien">
+              <span class="NhanNhom">Health conditions</span>
+              <div class="DsCheckbox">
+                @for (c of conditions(); track c.conditionId) {
+                  <label class="MucCheckbox">
+                    <input type="checkbox" [checked]="formSP().conditionIds.includes(c.conditionId)" (change)="toggleConditionForm(c.conditionId)" />
+                    {{ c.tenTinhTrang }}
+                  </label>
+                }
+              </div>
+            </div>
+          }
+
+          @if (formSPMode() === 'them') {
+            <div class="NhomDongDuLieu">
+              <span class="NhanNhom">Variants (at least 1 required)</span>
+              @for (v of variantsForm(); track $index) {
+                <div class="DongDuLieu">
+                  <input type="text" placeholder="Variant name" [ngModel]="v.tenBienThe" (ngModelChange)="capNhatDongBienThe($index, 'tenBienThe', $event)" />
+                  <input type="number" min="0.01" step="0.01" placeholder="Price" [ngModel]="v.gia" (ngModelChange)="capNhatDongBienThe($index, 'gia', $event)" />
+                  <input type="number" min="0" placeholder="Stock" [ngModel]="v.soLuongTon" (ngModelChange)="capNhatDongBienThe($index, 'soLuongTon', $event)" />
+                  <input type="text" placeholder="SKU" [ngModel]="v.sku" (ngModelChange)="capNhatDongBienThe($index, 'sku', $event)" />
+                  <button type="button" class="NutXoaDong" [disabled]="variantsForm().length === 1" (click)="xoaDongBienThe($index)">✕</button>
+                </div>
+              }
+              <button type="button" class="NutPhu NutNho" (click)="themDongBienThe()">+ Add variant row</button>
+            </div>
+
+            <div class="NhomDongDuLieu">
+              <span class="NhanNhom">Images (optional)</span>
+              @for (img of imagesForm(); track $index) {
+                <div class="DongDuLieu">
+                  <input type="text" placeholder="Image URL" [ngModel]="img.url" (ngModelChange)="capNhatDongAnh($index, 'url', $event)" />
+                  <label class="MucCheckboxInline">
+                    <input type="checkbox" [checked]="img.laAnhChinh" (change)="capNhatDongAnh($index, 'laAnhChinh', $any($event.target).checked)" />
+                    Main image
+                  </label>
+                  <button type="button" class="NutXoaDong" (click)="xoaDongAnh($index)">✕</button>
+                </div>
+              }
+              <button type="button" class="NutPhu NutNho" (click)="themDongAnh()">+ Add image row</button>
+            </div>
+          }
+
+          <div class="NutForm">
+            <button type="button" class="NutChinh" [disabled]="dangLuuSP()" (click)="luuSP()">
+              {{ dangLuuSP() ? 'Saving...' : 'Save' }}
+            </button>
+            <button type="button" class="NutPhu" (click)="dongFormSP()">Cancel</button>
+          </div>
+        </div>
+      }
+
+      <div class="ThanThe">
+        @if (dangTaiSP()) {
+          <p class="ThongBaoRong">Loading...</p>
+        } @else if (loiSP()) {
+          <p class="ThongBaoRong ThongBaoLoi">{{ loiSP() }}</p>
+        } @else if (dsSanPham().length === 0) {
+          <p class="ThongBaoRong">No products found.</p>
+        } @else {
+          <div class="BangCuon">
+            <table class="Bang">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Category</th>
+                  <th>Brand</th>
+                  <th>Price from</th>
+                  <th>Variants</th>
+                  <th>Rating</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (sp of dsSanPham(); track sp.productId) {
+                  <tr>
+                    <td>{{ sp.ten }}</td>
+                    <td>{{ tenDanhMuc(sp.categoryId) }}</td>
+                    <td>{{ tenThuongHieu(sp.brandId) }}</td>
+                    <td>{{ sp.giaTu ? ((sp.giaTu | number:'1.0-0') + ' VND') : '—' }}</td>
+                    <td>{{ sp.variants.length }}</td>
+                    <td>{{ sp.diemDanhGiaTb }} ★ ({{ sp.soLuongDanhGia }})</td>
+                    <td class="OHanhDong">
+                      <button type="button" class="NutNho NutPhu" (click)="moChiTiet(sp)">Variants/Images</button>
+                      <button type="button" class="NutNho NutPhu" (click)="moFormSuaSP(sp)">Edit</button>
+                      <button type="button" class="NutNho NutNguyHiem" [disabled]="dangXoaSP() === sp.productId" (click)="xoaSP(sp)">
+                        {{ dangXoaSP() === sp.productId ? 'Hiding...' : 'Hide' }}
+                      </button>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+
+          @if (tongTrangSP() > 1) {
+            <div class="PhanTrang">
+              <button type="button" [disabled]="trangSP() === 1" (click)="doiTrangSP(trangSP() - 1)">Prev</button>
+              @for (t of cacTrangSP(); track t) {
+                <button type="button" [class.active]="trangSP() === t" (click)="doiTrangSP(t)">{{ t }}</button>
+              }
+              <button type="button" [disabled]="trangSP() === tongTrangSP()" (click)="doiTrangSP(trangSP() + 1)">Next</button>
+            </div>
+          }
+        }
+      </div>
+    </div>
+  } @else {
+    <!-- Chế độ chi tiết: quản lý biến thể / ảnh của 1 sản phẩm -->
+    <div class="TheQuanTri">
+      <div class="TieuDeThe">
+        <button type="button" class="NutQuayLai" (click)="quayVeDanhSach()">← Back to product list</button>
+      </div>
+
+      <div class="ThanThe">
+        @if (dangTaiChiTiet()) {
+          <p class="ThongBaoRong">Loading...</p>
+        } @else if (loiChiTiet()) {
+          <p class="ThongBaoRong ThongBaoLoi">{{ loiChiTiet() }}</p>
+        } @else if (sanPhamChiTiet(); as sp) {
+          <h3 class="TenSPChiTiet">{{ sp.ten }}</h3>
+
+          <div class="KhoiChiTiet">
+            <div class="TieuDeKhoi">
+              <span>Variants</span>
+              <button type="button" class="NutPhu NutNho" (click)="moThemBienThe()">+ Add variant</button>
+            </div>
+
+            @if (loiBienThe()) {
+              <p class="ThongBaoLoi">{{ loiBienThe() }}</p>
+            }
+
+            @if (dangMoThemBienThe()) {
+              <div class="DongDuLieu">
+                <input type="text" placeholder="Variant name" [ngModel]="formThemBienThe().tenBienThe" (ngModelChange)="formThemBienThe.update(f => ({ ...f, tenBienThe: $event }))" />
+                <input type="number" min="0.01" step="0.01" placeholder="Price" [ngModel]="formThemBienThe().gia" (ngModelChange)="formThemBienThe.update(f => ({ ...f, gia: $event }))" />
+                <input type="number" min="0" placeholder="Stock" [ngModel]="formThemBienThe().soLuongTon" (ngModelChange)="formThemBienThe.update(f => ({ ...f, soLuongTon: $event }))" />
+                <input type="text" placeholder="SKU" [ngModel]="formThemBienThe().sku" (ngModelChange)="formThemBienThe.update(f => ({ ...f, sku: $event }))" />
+                <button type="button" class="NutChinh NutNho" [disabled]="dangLuuBienThe()" (click)="luuThemBienThe()">Save</button>
+                <button type="button" class="NutPhu NutNho" (click)="dongThemBienThe()">Cancel</button>
+              </div>
+            }
+
+            <table class="Bang">
+              <thead>
+                <tr><th>Name</th><th>Price</th><th>Stock</th><th>SKU</th><th>Status</th><th></th></tr>
+              </thead>
+              <tbody>
+                @for (v of sp.variants; track v.variantId) {
+                  @if (idDangSuaBienThe() === v.variantId) {
+                    <tr>
+                      <td><input type="text" [ngModel]="formSuaBienThe().tenBienThe" (ngModelChange)="formSuaBienThe.update(f => ({ ...f, tenBienThe: $event }))" /></td>
+                      <td><input type="number" min="0.01" step="0.01" [ngModel]="formSuaBienThe().gia" (ngModelChange)="formSuaBienThe.update(f => ({ ...f, gia: $event }))" /></td>
+                      <td><input type="number" min="0" [ngModel]="formSuaBienThe().soLuongTon" (ngModelChange)="formSuaBienThe.update(f => ({ ...f, soLuongTon: $event }))" /></td>
+                      <td><input type="text" [ngModel]="formSuaBienThe().sku" (ngModelChange)="formSuaBienThe.update(f => ({ ...f, sku: $event }))" /></td>
+                      <td colspan="2">
+                        <button type="button" class="NutChinh NutNho" [disabled]="dangLuuBienThe()" (click)="luuSuaBienThe()">Save</button>
+                        <button type="button" class="NutPhu NutNho" (click)="huySuaBienThe()">Cancel</button>
+                      </td>
+                    </tr>
+                  } @else {
+                    <tr>
+                      <td>{{ v.tenBienThe }}</td>
+                      <td>{{ v.gia | number:'1.0-0' }} VND</td>
+                      <td>{{ v.soLuongTon }}</td>
+                      <td>{{ v.sku || '—' }}</td>
+                      <td>{{ v.dangKinhDoanh ? 'Active' : 'Hidden' }}</td>
+                      <td class="OHanhDong">
+                        @if (v.dangKinhDoanh) {
+                          <button type="button" class="NutNho NutPhu" (click)="moSuaBienThe(v)">Edit</button>
+                          <button type="button" class="NutNho NutNguyHiem" [disabled]="dangAnBienThe() === v.variantId" (click)="anBienThe(v)">
+                            {{ dangAnBienThe() === v.variantId ? 'Hiding...' : 'Hide' }}
+                          </button>
+                        }
+                      </td>
+                    </tr>
+                  }
+                }
+              </tbody>
+            </table>
+          </div>
+
+          <div class="KhoiChiTiet">
+            <div class="TieuDeKhoi">
+              <span>Images</span>
+              <button type="button" class="NutPhu NutNho" (click)="moThemAnh()">+ Add image</button>
+            </div>
+
+            @if (loiAnh()) {
+              <p class="ThongBaoLoi">{{ loiAnh() }}</p>
+            }
+
+            @if (dangMoThemAnh()) {
+              <div class="DongDuLieu">
+                <input type="text" placeholder="Image URL" [ngModel]="formThemAnh().url" (ngModelChange)="formThemAnh.update(f => ({ ...f, url: $event }))" />
+                <label class="MucCheckboxInline">
+                  <input type="checkbox" [checked]="formThemAnh().laAnhChinh" (change)="formThemAnh.update(f => ({ ...f, laAnhChinh: $any($event.target).checked }))" />
+                  Main image
+                </label>
+                <button type="button" class="NutChinh NutNho" [disabled]="dangLuuAnh()" (click)="luuThemAnh()">Save</button>
+                <button type="button" class="NutPhu NutNho" (click)="dongThemAnh()">Cancel</button>
+              </div>
+            }
+
+            <div class="LuoiAnh">
+              @for (img of sp.images; track img.imageId) {
+                <div class="TheAnh">
+                  <img [src]="img.url" alt="" />
+                  @if (img.laAnhChinh) { <span class="NhanAnhChinh">Main</span> }
+                  <button type="button" class="NutXoaAnh" [disabled]="dangXoaAnh() === img.imageId" (click)="xoaAnh(img)">✕</button>
+                </div>
+              }
+              @if (sp.images.length === 0) {
+                <p class="ThongBaoRong">No images yet.</p>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  }
+}
+
+@if (tab() === 'categories') {
+  <div class="TheQuanTri">
+    <div class="TieuDeThe TieuDeTheBoLoc">
+      <span>Categories</span>
+      <button type="button" class="NutChinh" (click)="moFormThemDM()">+ Add Category</button>
+    </div>
+
+    @if (dangMoFormThemDM()) {
+      <div class="FormPanel">
+        @if (loiFormDM()) { <p class="ThongBaoLoi">{{ loiFormDM() }}</p> }
+        <div class="LuoiForm">
+          <label>
+            Name
+            <input type="text" [ngModel]="formThemDM().tenDanhMuc" (ngModelChange)="formThemDM.update(f => ({ ...f, tenDanhMuc: $event }))" />
+          </label>
+          <label>
+            Parent category
+            <select [ngModel]="formThemDM().danhMucChaId" (ngModelChange)="formThemDM.update(f => ({ ...f, danhMucChaId: $event }))">
+              <option [ngValue]="null">— none —</option>
+              @for (dm of categories(); track dm.categoryId) {
+                <option [ngValue]="dm.categoryId">{{ dichTen(dm.tenDanhMuc) }}</option>
+              }
+            </select>
+          </label>
+          <label class="OFull">
+            Description
+            <input type="text" [ngModel]="formThemDM().moTa" (ngModelChange)="formThemDM.update(f => ({ ...f, moTa: $event }))" />
+          </label>
+        </div>
+        <div class="NutForm">
+          <button type="button" class="NutChinh" [disabled]="dangLuuDM()" (click)="luuThemDM()">{{ dangLuuDM() ? 'Saving...' : 'Save' }}</button>
+          <button type="button" class="NutPhu" (click)="dongFormThemDM()">Cancel</button>
+        </div>
+      </div>
+    }
+
+    <div class="ThanThe">
+      @if (categories().length === 0) {
+        <p class="ThongBaoRong">No categories yet.</p>
+      } @else {
+        <div class="BangCuon">
+          <table class="Bang">
+            <thead><tr><th>Name</th><th>Parent</th><th>Description</th><th></th></tr></thead>
+            <tbody>
+              @for (dm of categories(); track dm.categoryId) {
+                @if (idDangSuaDM() === dm.categoryId) {
+                  <tr>
+                    <td><input type="text" [ngModel]="formSuaDM().tenDanhMuc" (ngModelChange)="formSuaDM.update(f => ({ ...f, tenDanhMuc: $event }))" /></td>
+                    <td>
+                      <select [ngModel]="formSuaDM().danhMucChaId" (ngModelChange)="formSuaDM.update(f => ({ ...f, danhMucChaId: $event }))">
+                        <option [ngValue]="null">— none —</option>
+                        @for (dm2 of categories(); track dm2.categoryId) {
+                          @if (dm2.categoryId !== dm.categoryId) {
+                            <option [ngValue]="dm2.categoryId">{{ dichTen(dm2.tenDanhMuc) }}</option>
+                          }
+                        }
+                      </select>
+                    </td>
+                    <td><input type="text" [ngModel]="formSuaDM().moTa" (ngModelChange)="formSuaDM.update(f => ({ ...f, moTa: $event }))" /></td>
+                    <td class="OHanhDong">
+                      <button type="button" class="NutNho NutChinh" [disabled]="dangLuuDM()" (click)="luuSuaDM(dm.categoryId)">Save</button>
+                      <button type="button" class="NutNho NutPhu" (click)="huySuaDM()">Cancel</button>
+                    </td>
+                  </tr>
+                } @else {
+                  <tr>
+                    <td>{{ dichTen(dm.tenDanhMuc) }}</td>
+                    <td>{{ dm.danhMucChaId ? tenDanhMuc(dm.danhMucChaId) : '—' }}</td>
+                    <td>{{ dm.moTa ? dichMoTa(dm.moTa) : '—' }}</td>
+                    <td class="OHanhDong">
+                      <button type="button" class="NutNho NutPhu" (click)="moFormSuaDM(dm)">Edit</button>
+                      <button type="button" class="NutNho NutNguyHiem" [disabled]="dangXoaDM() === dm.categoryId" (click)="xoaDM(dm)">
+                        {{ dangXoaDM() === dm.categoryId ? 'Deleting...' : 'Delete' }}
+                      </button>
+                    </td>
+                  </tr>
+                }
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  </div>
+}
+
+@if (tab() === 'brands') {
+  <div class="TheQuanTri">
+    <div class="TieuDeThe TieuDeTheBoLoc">
+      <span>Brands</span>
+      <button type="button" class="NutChinh" (click)="moFormThemTH()">+ Add Brand</button>
+    </div>
+
+    @if (dangMoFormThemTH()) {
+      <div class="FormPanel">
+        @if (loiFormTH()) { <p class="ThongBaoLoi">{{ loiFormTH() }}</p> }
+        <div class="LuoiForm">
+          <label>
+            Name
+            <input type="text" [ngModel]="formThemTH().tenThuongHieu" (ngModelChange)="formThemTH.update(f => ({ ...f, tenThuongHieu: $event }))" />
+          </label>
+          <label>
+            Logo URL
+            <input type="text" [ngModel]="formThemTH().logoUrl" (ngModelChange)="formThemTH.update(f => ({ ...f, logoUrl: $event }))" />
+          </label>
+        </div>
+        <div class="NutForm">
+          <button type="button" class="NutChinh" [disabled]="dangLuuTH()" (click)="luuThemTH()">{{ dangLuuTH() ? 'Saving...' : 'Save' }}</button>
+          <button type="button" class="NutPhu" (click)="dongFormThemTH()">Cancel</button>
+        </div>
+      </div>
+    }
+
+    <div class="ThanThe">
+      @if (brands().length === 0) {
+        <p class="ThongBaoRong">No brands yet.</p>
+      } @else {
+        <div class="BangCuon">
+          <table class="Bang">
+            <thead><tr><th>Name</th><th>Logo URL</th><th></th></tr></thead>
+            <tbody>
+              @for (th of brands(); track th.brandId) {
+                @if (idDangSuaTH() === th.brandId) {
+                  <tr>
+                    <td><input type="text" [ngModel]="formSuaTH().tenThuongHieu" (ngModelChange)="formSuaTH.update(f => ({ ...f, tenThuongHieu: $event }))" /></td>
+                    <td><input type="text" [ngModel]="formSuaTH().logoUrl" (ngModelChange)="formSuaTH.update(f => ({ ...f, logoUrl: $event }))" /></td>
+                    <td class="OHanhDong">
+                      <button type="button" class="NutNho NutChinh" [disabled]="dangLuuTH()" (click)="luuSuaTH(th.brandId)">Save</button>
+                      <button type="button" class="NutNho NutPhu" (click)="huySuaTH()">Cancel</button>
+                    </td>
+                  </tr>
+                } @else {
+                  <tr>
+                    <td>{{ th.tenThuongHieu }}</td>
+                    <td>{{ th.logoUrl || '—' }}</td>
+                    <td class="OHanhDong">
+                      <button type="button" class="NutNho NutPhu" (click)="moFormSuaTH(th)">Edit</button>
+                      <button type="button" class="NutNho NutNguyHiem" [disabled]="dangXoaTH() === th.brandId" (click)="xoaTH(th)">
+                        {{ dangXoaTH() === th.brandId ? 'Deleting...' : 'Delete' }}
+                      </button>
+                    </td>
+                  </tr>
+                }
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  </div>
+}
