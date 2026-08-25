@@ -215,6 +215,43 @@ public class OrderService : IOrderService
         return order == null ? null : MapToDto(order);
     }
 
+    public async Task<PagedResult<OrderDto>> GetAllAsync(OrderFilterRequestDto filter)
+    {
+        var query = _dbContext.Orders
+            .Include(o => o.User)
+            .Include(o => o.OrderItems).ThenInclude(oi => oi.Variant).ThenInclude(v => v.Product)
+            .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(filter.TrangThai))
+            query = query.Where(o => o.TrangThai == filter.TrangThai);
+
+        query = (IOrderedQueryable<Order>)query.OrderByDescending(o => o.NgayDat);
+
+        var tongSo = await query.CountAsync();
+        var trang = filter.Page < 1 ? 1 : filter.Page;
+        var soDong = filter.PageSize < 1 ? 10 : Math.Min(filter.PageSize, 50);
+
+        var items = await query.Skip((trang - 1) * soDong).Take(soDong).ToListAsync();
+
+        return new PagedResult<OrderDto>
+        {
+            Items = items.Select(MapToDto).ToList(),
+            TotalCount = tongSo,
+            PageNumber = trang,
+            PageSize = soDong
+        };
+    }
+
+    public async Task<OrderDto?> GetByIdAdminAsync(int orderId)
+    {
+        var order = await _dbContext.Orders
+            .Include(o => o.User)
+            .Include(o => o.OrderItems).ThenInclude(oi => oi.Variant).ThenInclude(v => v.Product)
+            .FirstOrDefaultAsync(o => o.OrderId == orderId);
+
+        return order == null ? null : MapToDto(order);
+    }
+
     public async Task<OrderDto> CancelAsync(int userId, int orderId, CancelOrderRequestDto dto)
     {
         var order = await _dbContext.Orders
@@ -294,6 +331,11 @@ public class OrderService : IOrderService
         TrangThai = o.TrangThai,
         DonViVanChuyen = o.DonViVanChuyen,
         MaVanDon = o.MaVanDon,
+        // o.User chỉ khác null khi query có .Include(o => o.User) (đường admin) - các
+        // đường khách hàng tự xem đơn của mình không Include nên giữ nguyên null, không
+        // ảnh hưởng dữ liệu đã trả về trước đây.
+        HoTenKhachHang = o.User?.HoTen,
+        EmailKhachHang = o.User?.Email,
         OrderItems = o.OrderItems.Select(oi => new OrderItemDto
         {
             OrderItemId = oi.OrderItemId,
