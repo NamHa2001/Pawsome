@@ -1,0 +1,77 @@
+.KhungDealMonth {
+  text-align: center;
+  margin: 40px 0 20px 0;
+}
+
+.TieuDeDeal {
+  display: inline-block;
+  font-size: 32px;
+  font-weight: 700;
+  color: #000;
+
+  .Cam { color: orange; margin-right: 8px; }
+}
+
+.BannerDealFull {
+  width: 100%;
+  background-color: #A51F1F;
+  background-image: url('/img/anhnen.png');
+  background-size: cover;
+  background-position: center;
+  padding: 60px 0;
+  margin: 10px 0 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.DealContent {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 30px;
+  width: 1200px;
+  margin: 0 auto;
+}
+
+.CuaSoDeal {
+  width: 375px;
+  height: 483px;
+  background-color: #ffffff;
+  border-radius: 200px 200px 0 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
+  cursor: pointer;
+  border: 3px solid transparent;
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+
+  &:hover { transform: scale(1.05); border-color: var(--MauHongDam); box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2); }
+}
+
+.KhungAnhDeal {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+
+  img { width: 320px; max-height: 320px; object-fit: contain; }
+}
+
+.ThongTinDeal {
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 30px 0;
+  border-top: 1px solid #f0f0f0;
+}
+
+.TenSPDeal { font-size: 20px; font-weight: 700; color: #000000; }
+.GiaSPDeal { font-size: 22px; font-weight: 700; color: var(--MauDoDam); }

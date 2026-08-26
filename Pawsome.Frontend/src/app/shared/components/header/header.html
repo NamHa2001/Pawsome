@@ -26,27 +26,32 @@
           class="OInputTimKiem"
           placeholder="Searching for products..."
           [ngModel]="tuKhoaTimKiem"
-          (ngModelChange)="onTuKhoaThayDoi($event)"
+          (ngModelChange)="tuKhoaTimKiem = $event"
+          (input)="onTuKhoaThayDoi($any($event.target).value)"
           (focus)="onTuKhoaThayDoi(tuKhoaTimKiem)"
           (blur)="dongGoiY()"
           (keyup.enter)="timKiem()"
           name="tuKhoaTimKiem"
           autocomplete="off">
 
-        @if (hienGoiY() && danhSachGoiY().length > 0) {
-          <ul class="DanhSachGoiYTimKiem">
-            @for (sp of danhSachGoiY(); track sp.productId) {
-              <li>
-                <button type="button" class="MucGoiYTimKiem" (mousedown)="chonGoiY(sp)">
-                  <img [src]="sp.anhChinh ?? '/img/logo1.png'" [alt]="sp.ten" class="AnhGoiYTimKiem">
-                  <span class="TenGoiYTimKiem">{{ sp.ten }}</span>
-                  @if (sp.giaTu) {
-                    <span class="GiaGoiYTimKiem">{{ sp.giaTu | number:'1.0-0' }} VND</span>
-                  }
-                </button>
-              </li>
-            }
-          </ul>
+        @if (hienGoiY()) {
+          @if (danhSachGoiY().length > 0) {
+            <ul class="DanhSachGoiYTimKiem">
+              @for (sp of danhSachGoiY(); track sp.productId) {
+                <li>
+                  <button type="button" class="MucGoiYTimKiem" (mousedown)="chonGoiY(sp)">
+                    <img [src]="sp.anhChinh ?? '/img/logo1.png'" [alt]="sp.ten" class="AnhGoiYTimKiem">
+                    <span class="TenGoiYTimKiem">{{ sp.ten }}</span>
+                    @if (sp.giaTu) {
+                      <span class="GiaGoiYTimKiem">{{ sp.giaTu | number:'1.0-0' }} VND</span>
+                    }
+                  </button>
+                </li>
+              }
+            </ul>
+          } @else {
+            <div class="DanhSachGoiYTimKiem ThongBaoKhongCoGoiY">No products found.</div>
+          }
         }
       </div>
 

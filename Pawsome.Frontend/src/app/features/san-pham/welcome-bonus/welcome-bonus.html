@@ -13,14 +13,18 @@
       <div class="SubContent">
         <p class="SubSmallTitle">Subscribe & Get</p>
         <h2 class="SubBigTitle">Instant 15% Discount</h2>
-        <input type="email" placeholder="Enter Your Email Id" class="InputEmail">
+        <input #emailInput type="email" placeholder="Enter Your Email Id" class="InputEmail" [(ngModel)]="email" name="email">
+        @if (thongBao()) {
+          <p class="ThongBaoThanhCong">{{ thongBao() }}</p>
+        }
+        @if (loi()) {
+          <p class="ThongBaoLoi">{{ loi() }}</p>
+        }
         <div class="SubBottom">
-          <div class="CaptchaGia">
-            <input type="checkbox" id="robot">
-            <label for="robot">I'm not a Robot</label>
-            <img src="/img/capcha.png" alt="captcha" class="CaptchaIcon">
-          </div>
-          <button class="NutSubscribe">Subscribe</button>
+          <div #recaptchaBox class="KhungRecaptcha"></div>
+          <button class="NutSubscribe" [disabled]="dangGui()" (click)="subscribe()">
+            {{ dangGui() ? 'Submitting...' : 'Subscribe' }}
+          </button>
         </div>
       </div>
     </div>

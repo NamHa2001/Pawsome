@@ -1,0 +1,46 @@
+@if (sanPhamBanChay().length > 0 || sanPhamCungDanhMuc().length > 0) {
+  <div class="KhungSanPham">
+    <div class="VungGoiY">
+      <div class="ThanhTabGoiY">
+        <button class="NutTabGoiY" [class.active]="tabGoiY() === 'bought'" (click)="tabGoiY.set('bought')">Frequently Bought</button>
+        <button class="NutTabGoiY" [class.active]="tabGoiY() === 'related'" (click)="tabGoiY.set('related')">Related Items</button>
+      </div>
+
+      @if (danhSachGoiYHienThi().length > 0) {
+        <div class="DanhSachGoiY">
+          @for (item of danhSachGoiYHienThi(); track item.productId) {
+            <a class="CardGoiY" [routerLink]="['/san-pham', item.productId]">
+              <div class="KhungTrangGoiY">
+                <img [src]="item.images[0]?.url ?? '/img/logo1.png'" [alt]="item.ten">
+              </div>
+              <div class="StarGoiY"><i class="fa-solid fa-star"></i> <span>{{ item.diemDanhGiaTb }}</span></div>
+              <b class="TenSPGoiY">{{ item.ten }}</b>
+              <div class="GiaGoiY">
+                <div class="GiaVip">
+                  <b>
+                    @if (item.giaTu) {
+                      {{ item.giaTu | number:'1.0-0' }} <span class="DonViTien">vnd</span>
+                    } @else {
+                      Contact us
+                    }
+                  </b>
+                </div>
+              </div>
+              <button type="button" class="NutShopNowGoiY" [disabled]="dangThemGio()" (click)="themVaoGioNhanh(item, $event)">
+                <i class="fas fa-cart-shopping"></i> ADD TO CART
+              </button>
+            </a>
+          }
+        </div>
+      } @else {
+        <p class="TrangThaiTai">
+          @if (tabGoiY() === 'bought') {
+            No purchase data yet to determine best-selling products in this category.
+          } @else {
+            No related products found.
+          }
+        </p>
+      }
+    </div>
+  </div>
+}

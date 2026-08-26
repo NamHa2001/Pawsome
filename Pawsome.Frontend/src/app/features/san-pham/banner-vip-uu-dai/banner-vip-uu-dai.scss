@@ -1,0 +1,112 @@
+.ContainerBannerVip {
+  width: 100%;
+  margin: 20px 0;
+  display: flex;
+  justify-content: center;
+}
+
+.KhungBannerVip {
+  display: flex;
+  justify-content: center;
+  gap: 35px;
+  margin: 0 auto;
+}
+
+.BannerVip {
+  height: 227px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+
+  &.Do { width: 686px; padding: 0 40px; }
+  &.Cam { width: 361px; }
+}
+
+.AnhNenBanner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+}
+
+.NoiDungVip, .NoiDungCoupon {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  display: flex;
+}
+
+.NoiDungVip { align-items: center; }
+
+.LogoPawVip {
+  height: 50px;
+  width: auto;
+  margin-right: 15px;
+  border-radius: 20px;
+}
+
+.TextVip {
+  h3 { color: #ffffff; font-size: 28px; font-weight: 800; line-height: 1.1; }
+  p { color: #ffffff; font-size: 16px; margin: 8px 0 0 0; }
+}
+
+.CumHanhDong {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-left: auto;
+  gap: 10px;
+}
+
+.GiaVip {
+  // File mẫu gốc để font-size 75px vì giá gốc chỉ là "$99" (3 ký tự) - giá thật quy đổi VND dài
+  // hơn nhiều ("2,376,000"), giữ nguyên 75px sẽ tràn ra ngoài khung banner. Bỏ luôn chữ "vnd" và
+  // giảm size cho gọn, không cho xuống dòng để chữ luôn nằm gọn 1 hàng.
+  font-size: 28px;
+  font-weight: 900;
+  color: #FFD700;
+  line-height: 1;
+  white-space: nowrap;
+  text-shadow: 2px 4px 4px rgba(0, 0, 0, 0.3);
+}
+
+.NutJoinNow {
+  width: 150px;
+  height: 45px;
+  background-color: #ffffff;
+  color: #333;
+  border: none;
+  border-radius: 30px;
+  font-weight: 800;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  transition: 0.3s;
+
+  &:hover { transform: scale(1.05); background-color: #fde42a; }
+}
+
+.NoiDungCoupon {
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 25px;
+  box-sizing: border-box;
+}
+
+.CumSale { margin-top: 10px; }
+.ChuSave { font-size: 18px; font-weight: 700; color: #333; }
+.PhanTram { font-size: 45px; font-weight: 900; margin: -5px 0; color: var(--MauDoDam); }
+.FirstOrder { font-size: 14px; font-weight: 700; color: #333; }
+
+.KhungCoupon {
+  align-self: flex-end;
+  text-align: right;
+}
+
+.LabelCoupon { font-size: 12px; color: #ffffff; display: block; }
+.MaCoupon { font-size: 26px; font-weight: 900; color: #ffffff; }

@@ -84,59 +84,14 @@
     <div class="KhungSanPham">
       <div class="TieuDeChonBienThe">Choose a Variant</div>
 
-      @for (v of sp.variants; track v.variantId) {
-        @if (v.dangKinhDoanh) {
-          <div class="KhungBienThe">
-            <div class="TieuDeBienThe">{{ sp.ten }} - {{ v.tenBienThe }}</div>
-
-            <div class="NoiDungBienThe">
-              <div class="CotAnhBienThe">
-                <img [src]="anhDangChon() ?? sp.images[0]?.url ?? '/img/logo1.png'" [alt]="sp.ten">
-              </div>
-
-              <div class="CotThongTinBienThe">
-                <div class="HangTieuDeGrid">
-                  <div>Price</div>
-                  <div><img src="/img/pawvip_white.png" alt="Vip" class="IconVipBang"></div>
-                  <div>Qty.</div>
-                  <div></div>
-                </div>
-
-                <div class="HangDuLieuGrid">
-                  <div class="PriceTxt">{{ v.gia | number:'1.0-0' }} <span class="DonViTien">vnd</span></div>
-                  <div class="VipPriceTxt">{{ giaVipPlaceholder(v.gia) | number:'1.0-0' }} <span class="DonViTien">vnd</span></div>
-                  <div>
-                    <div class="BoDemSoLuong">
-                      <button type="button" [disabled]="soLuongCuaBienThe(v.variantId) <= 1"
-                        (click)="doiSoLuong(v.variantId, soLuongCuaBienThe(v.variantId) - 1)">−</button>
-                      <input #oQty type="number" min="1" [max]="v.soLuongTon" [value]="soLuongCuaBienThe(v.variantId)"
-                        (change)="doiSoLuong(v.variantId, Math.min(Math.max(oQty.valueAsNumber || 1, 1), v.soLuongTon)); oQty.value = soLuongCuaBienThe(v.variantId).toString()">
-                      <button type="button" [disabled]="soLuongCuaBienThe(v.variantId) >= v.soLuongTon"
-                        (click)="doiSoLuong(v.variantId, soLuongCuaBienThe(v.variantId) + 1)">+</button>
-                    </div>
-                    <span class="TonKhoNho">{{ v.soLuongTon > 0 ? v.soLuongTon + ' in stock' : 'Out of stock' }}</span>
-                  </div>
-                  <div><button class="NutAddNho" [disabled]="v.soLuongTon === 0 || dangThemGio()" (click)="themVaoGioTam(v.variantId)">ADD</button></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        }
-      }
+      <app-chon-bien-the
+        [tenSanPham]="sp.ten"
+        [variants]="sp.variants"
+        [anh]="anhDangChon() ?? sp.images[0]?.url ?? '/img/logo1.png'" />
     </div>
 
     <div class="KhungSanPham">
-      <section class="KhungSauLyDo">
-        <div class="TieuDeSauLyDo">6 Reasons to Choose {{ sp.ten }}?</div>
-        <div class="LuoiLyDo">
-          <div class="ItemLyDo"><div class="VongTronSo SoVang">1</div><p>Effective flea and tick collar.</p></div>
-          <div class="ItemLyDo"><div class="VongTronSo SoXanh">2</div><p>Repels fleas and ticks.</p></div>
-          <div class="ItemLyDo"><div class="VongTronSo SoHong">3</div><p>Easy to wear and flexible to fit.</p></div>
-          <div class="ItemLyDo"><div class="VongTronSo SoXanhDam">4</div><p>Odorless and waterproof collar.</p></div>
-          <div class="ItemLyDo"><div class="VongTronSo SoCam">5</div><p>Provides protection for upto 8 months.</p></div>
-          <div class="ItemLyDo"><div class="VongTronSo SoVangNhat">6</div><p>Non-irritant collar.</p></div>
-        </div>
-      </section>
+      <app-ly-do-chon-mua [tenSanPham]="sp.ten" />
     </div>
 
     <div class="KhungSanPham">
@@ -198,52 +153,7 @@
       [diemDanhGiaTb]="sp.diemDanhGiaTb"
       [soLuongDanhGia]="sp.soLuongDanhGia" />
 
-    @if (sanPhamBanChay().length > 0 || sanPhamCungDanhMuc().length > 0) {
-      <div class="KhungSanPham">
-        <div class="VungGoiY">
-          <div class="ThanhTabGoiY">
-            <button class="NutTabGoiY" [class.active]="tabGoiY() === 'bought'" (click)="tabGoiY.set('bought')">Frequently Bought</button>
-            <button class="NutTabGoiY" [class.active]="tabGoiY() === 'related'" (click)="tabGoiY.set('related')">Related Items</button>
-          </div>
-
-          @if (danhSachGoiYHienThi().length > 0) {
-            <div class="DanhSachGoiY">
-              @for (item of danhSachGoiYHienThi(); track item.productId) {
-                <a class="CardGoiY" [routerLink]="['/san-pham', item.productId]">
-                  <div class="KhungTrangGoiY">
-                    <img [src]="item.images[0]?.url ?? '/img/logo1.png'" [alt]="item.ten">
-                  </div>
-                  <div class="StarGoiY"><i class="fa-solid fa-star"></i> <span>{{ item.diemDanhGiaTb }}</span></div>
-                  <b class="TenSPGoiY">{{ item.ten }}</b>
-                  <div class="GiaGoiY">
-                    <div class="GiaVip">
-                      <b>
-                        @if (item.giaTu) {
-                          {{ item.giaTu | number:'1.0-0' }} <span class="DonViTien">vnd</span>
-                        } @else {
-                          Contact us
-                        }
-                      </b>
-                    </div>
-                  </div>
-                  <button type="button" class="NutShopNowGoiY" [disabled]="dangThemGio()" (click)="themVaoGioNhanh(item, $event)">
-                    <i class="fas fa-cart-shopping"></i> ADD TO CART
-                  </button>
-                </a>
-              }
-            </div>
-          } @else {
-            <p class="TrangThaiTai">
-              @if (tabGoiY() === 'bought') {
-                No purchase data yet to determine best-selling products in this category.
-              } @else {
-                No related products found.
-              }
-            </p>
-          }
-        </div>
-      </div>
-    }
+    <app-goi-y-san-pham [productId]="sp.productId" [categoryId]="sp.categoryId" />
   }
 </main>
 

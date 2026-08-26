@@ -1,0 +1,128 @@
+.KhungSanPham {
+  width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.TrangThaiTai {
+  padding: 60px 0;
+  color: #888;
+  font-size: 16px;
+}
+
+.VungGoiY {
+  width: 1200px;
+  margin: 30px auto 60px auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.ThanhTabGoiY {
+  background-color: var(--MauDoDam);
+  border-radius: 40px;
+  padding: 6px;
+  display: flex;
+  gap: 5px;
+  margin-bottom: 30px;
+  width: fit-content;
+}
+
+.NutTabGoiY {
+  padding: 10px 30px;
+  border-radius: 30px;
+  color: white;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  background: none;
+
+  &.active { background-color: white; color: var(--MauDoDam); }
+}
+
+.NutShopNowGoiY {
+  background-color: #D93131;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 0;
+  width: 100%;
+  font-weight: 700;
+  font-size: 14px;
+  margin-top: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+
+  &:disabled { opacity: 0.6; cursor: default; }
+  transition: background 0.2s;
+}
+
+.CardGoiY:hover .NutShopNowGoiY { background-color: var(--MauDoDam); }
+
+.DanhSachGoiY {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  width: 100%;
+}
+
+.CardGoiY {
+  background-color: #FDECEC;
+  border-radius: 15px;
+  padding: 15px;
+  text-align: center;
+  text-decoration: none;
+  color: inherit;
+  // flex column + nút margin-top:auto (xem .NutShopNowGoiY) để nút SHOP NOW luôn nằm sát đáy thẻ,
+  // không bị lệch hàng giữa các thẻ do tên sản phẩm dài/ngắn khác nhau (1 dòng vs 2 dòng).
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease;
+
+  &:hover { transform: translateY(-5px); }
+}
+
+.TenSPGoiY {
+  // min-height đủ cho 2 dòng - tên sản phẩm dài (VD "Frontline Flea & Tick Prevention for Dogs")
+  // xuống 2 dòng nhưng tên ngắn chỉ 1 dòng vẫn chiếm cùng khoảng không gian, nhờ vậy khối giá +
+  // nút bên dưới luôn bắt đầu ở cùng 1 vị trí Y giữa các thẻ.
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  font-size: 15px;
+  line-height: 1.3;
+}
+
+.KhungTrangGoiY {
+  background: white;
+  border-radius: 12px;
+  padding: 15px;
+  margin-bottom: 12px;
+  height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  img { max-width: 100%; max-height: 100%; object-fit: contain; }
+}
+
+.StarGoiY { color: #FFD700; font-size: 14px; margin-bottom: 8px; }
+.StarGoiY span { color: #888; margin-left: 5px; }
+
+.GiaVip {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin: 5px 0 16px 0;
+
+  b { color: var(--MauDoDam); font-size: 18px; }
+}
