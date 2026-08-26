@@ -1,14 +1,14 @@
-import { DatePipe, DecimalPipe } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { Component, computed, inject, input, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
 import { TokenService } from '../../../core/models/token.service';
 import { DanhGia } from '../models/san-pham.model';
 import { ReviewService } from '../services/review.service';
+import { DanhGiaTongQuan } from '../danh-gia-tong-quan/danh-gia-tong-quan';
 
 @Component({
   selector: 'app-danh-gia-san-pham',
-  imports: [RouterLink, FormsModule, DatePipe, DecimalPipe],
+  imports: [FormsModule, DatePipe, DanhGiaTongQuan],
   templateUrl: './danh-gia-san-pham.html',
   styleUrl: './danh-gia-san-pham.scss'
 })

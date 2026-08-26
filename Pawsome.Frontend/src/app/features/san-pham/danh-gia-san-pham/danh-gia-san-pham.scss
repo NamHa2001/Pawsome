@@ -14,41 +14,6 @@
 .TieuDeLonReview { text-align: center; font-size: 36px; font-weight: 800; color: #2F2D2E; margin-bottom: 50px; }
 .ChuDo { color: #FF0000; }
 
-.KhungTongQuanReview {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding-bottom: 40px;
-  border-bottom: 1px solid var(--MauDoDam);
-}
-
-.CotRatingSummary { flex: 1; }
-.TieuDeNhoReview { font-size: 24px; font-weight: 800; margin-bottom: 10px; }
-.TongSoReview { color: #555; font-weight: 600; margin-bottom: 20px; }
-
-.HangSao { display: flex; align-items: center; gap: 15px; margin-bottom: 8px; font-size: 14px; font-weight: 700; color: #2F2D2E; }
-.ThanhPhanTram { width: 200px; height: 8px; background: #F0F0F0; border-radius: 4px; overflow: hidden; }
-.MucDo { height: 100%; background: #FFA500; }
-
-.CotOverallRating { flex: 1; text-align: center; }
-.ChuOverall { font-size: 18px; font-weight: 700; color: #2F2D2E; }
-.DiemSo { font-size: 64px; font-weight: 800; color: #2F2D2E; }
-.icon-sao-vang { color: #FFA500; font-size: 30px; }
-
-.CotWriteReview { flex: 1; display: flex; justify-content: flex-end; }
-
-.KhungChiTieuDanhGia { width: 100%; margin-top: 30px; padding-bottom: 20px; border-bottom: 1px solid #EEE; }
-.TieuDeTrungBinh { text-align: center; font-weight: 700; margin-bottom: 30px; }
-.LuoiChiTieu { display: flex; justify-content: space-between; }
-
-.ItemChiTieu { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; width: 30%; }
-.ItemChiTieu span { font-weight: 600; color: #555; }
-
-.CumThanhVang { display: flex; align-items: center; gap: 4px; }
-.OVuongVang { width: 40px; height: 10px; background: #EEE; border-radius: 2px; }
-.OVuongVang.active { background: #FFA500; }
-.ConSo { margin-left: 10px; font-weight: 700 !important; color: #2F2D2E !important; }
-
 .NutWriteReview {
   background-color: var(--MauDoDam);
   color: white;

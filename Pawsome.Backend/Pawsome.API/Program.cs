@@ -130,6 +130,7 @@ builder.Services.AddScoped<IBrandService, BrandService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IReviewService, ReviewService>();
 builder.Services.AddScoped<IConditionService, ConditionService>();
+builder.Services.AddScoped<IRecaptchaService, RecaptchaService>();
 // Phần 3 - Giỏ hàng:      
 builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<ICouponService, CouponService>();

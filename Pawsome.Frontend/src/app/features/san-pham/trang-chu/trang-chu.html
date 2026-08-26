@@ -112,47 +112,7 @@
   </div>
   }
 
-  <div class="ContainerBannerVip">
-    <div class="VungAnToan KhungBannerVip">
-      <div class="BannerVip Do">
-        <img src="/img/nen1.png" alt="PawVip" class="AnhNenBanner">
-        <div class="NoiDungVip">
-          <img src="/img/pawvip3.png" alt="PawVip" class="LogoPawVip">
-          <div class="TextVip">
-            <h3>One-Time Fee, <br> Full Year Benefits!</h3>
-            <p>Unlock exclusive savings on all essentials.</p>
-          </div>
-          <div class="CumHanhDong">
-            <div class="GiaVip">2,376,000 <span class="DonViTien">vnd</span></div>
-            <button class="NutJoinNow">JOIN NOW</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="BannerVip Cam">
-        <img src="/img/nen2.png" alt="Coupon" class="AnhNenBanner">
-        <div class="NoiDungCoupon">
-          @if (couponNoiBat(); as cp) {
-            <div class="CumSale">
-              <span class="ChuSave">Save</span>
-              <h2 class="PhanTram">{{ hienThiUuDai(cp) }}</h2>
-              <p class="FirstOrder">On Your Next Order</p>
-            </div>
-            <div class="KhungCoupon">
-              <span class="LabelCoupon">Coupon:</span>
-              <div class="MaCoupon">{{ cp.maCode }}</div>
-            </div>
-          } @else {
-            <div class="CumSale">
-              <span class="ChuSave">Stay Tuned</span>
-              <h2 class="PhanTram">New Offers</h2>
-              <p class="FirstOrder">Coming soon</p>
-            </div>
-          }
-        </div>
-      </div>
-    </div>
-  </div>
+  <app-banner-vip-uu-dai />
 
   @if (nhomTheoDanhMuc().length > 1) {
   <app-banner-noi-bat
@@ -212,131 +172,11 @@
   </div>
   }
 
-  <div class="KhungDealMonth">
-    <h2 class="TieuDeDeal"><span class="Cam">Deal Of</span> The Month</h2>
-  </div>
-  <div class="BannerDealFull">
-    <div class="VungAnToan DealContent">
-      @for (sp of sanPhamDealThang(); track sp.productId) {
-        <a class="CuaSoDeal" [routerLink]="['/san-pham', sp.productId]">
-          <div class="KhungAnhDeal">
-            <img [src]="sp.images[0]?.url ?? '/img/logo1.png'" [alt]="sp.ten">
-          </div>
-          <div class="ThongTinDeal">
-            <span class="TenSPDeal">{{ tenNganDeal(sp.ten) }}</span>
-            @if (sp.giaTu) {
-              <span class="GiaSPDeal">{{ sp.giaTu | number:'1.0-0' }} <span class="DonViTien">vnd</span></span>
-            }
-          </div>
-        </a>
-      }
-    </div>
-  </div>
+  <app-deal-thang />
 
-  <div class="BlogSection">
-    <div class="BlogHeader">
-      <div class="ReadOurText">Read Our</div>
-      <div class="MainBlogTitle"><span>Lastest Blogs</span> & Articles</div>
-    </div>
+  <app-blog-noi-bat />
 
-    @if (blogList().length > 0) {
-    <div class="VungAnToan KhungChuaBlog">
-      @for (bai of blogList(); track bai.postId; let i = $index) {
-      <a class="O_Blog" routerLink="/blog/{{ bai.postId }}">
-        <div class="AnhBlog">
-          <img [src]="bai.anhDaiDien ?? anhBlogMacDinh(i)" [alt]="bai.tieuDe">
-        </div>
-        <div class="NoiDungBlog">
-          <h3 class="TenBlog">{{ bai.tieuDe }}</h3>
-          <span class="ReadNow">Read Now...</span>
-        </div>
-      </a>
-      }
-    </div>
-    } @else {
-    <div class="VungAnToan KhungChuaBlog">
-      <div class="O_Blog">
-        <div class="AnhBlog"><img src="/img/blog1.png" alt="Blog 1"></div>
-        <div class="NoiDungBlog">
-          <h3 class="TenBlog">Front Plus vs. Simparica Trio - Which One to Choose for Your Dog?</h3>
-          <span class="ReadNow">Read Now...</span>
-        </div>
-      </div>
-      <div class="O_Blog">
-        <div class="AnhBlog"><img src="/img/blog2.png" alt="Blog 2"></div>
-        <div class="NoiDungBlog">
-          <h3 class="TenBlog">A Quick Guide to Dog's Skin & Coat Care</h3>
-          <span class="ReadNow">Read Now...</span>
-        </div>
-      </div>
-      <div class="O_Blog">
-        <div class="AnhBlog"><img src="/img/blog3.png" alt="Blog 3"></div>
-        <div class="NoiDungBlog">
-          <h3 class="TenBlog">Why Dogs Lick and Chew Their Paws and When to Worry</h3>
-          <span class="ReadNow">Read Now...</span>
-        </div>
-      </div>
-    </div>
-    }
-
-    <div class="NutViewAllContainer">
-      <button class="NutViewAll"><i class="fas fa-paw"></i> VIEW ALL</button>
-    </div>
-  </div>
-
-  @if (danhGiaNoiBat().length > 0) {
-    <div class="KhungDanhGiaNoiBat">
-      <div class="VungAnToanDoc HangTieuDeNoiBat">
-        <div></div>
-        <div>
-          <div class="ReadOurText">What Our</div>
-          <div class="TieuDeDanhGia"><span class="ChuNoiBat">Happy</span> Customers Say</div>
-        </div>
-        <div class="NutDieuHuongNoiBat">
-          @if (tongTrangDanhGiaNoiBat() > 1) {
-            <button type="button" class="NutMuiTenNoiBat" [disabled]="trangDanhGiaNoiBat() === 0" (click)="doiTrangNoiBat(-1)">
-              <i class="fa-solid fa-chevron-left"></i>
-            </button>
-            <button type="button" class="NutMuiTenNoiBat" [disabled]="trangDanhGiaNoiBat() === tongTrangDanhGiaNoiBat() - 1" (click)="doiTrangNoiBat(1)">
-              <i class="fa-solid fa-chevron-right"></i>
-            </button>
-          }
-        </div>
-      </div>
-
-      <div class="VungAnToanDoc LuoiDanhGiaNoiBat">
-        @for (dg of danhGiaHienThi(); track dg.reviewId) {
-          <div class="TheDanhGiaNoiBat">
-            <div class="AnhSPNoiBat">
-              <img [src]="dg.anhSanPham ?? '/img/logo1.png'" [alt]="dg.tenSanPham">
-            </div>
-            <div class="NoiDungTheNoiBat">
-              @if (dg.tenSanPham) {
-                <div class="TenSPNoiBat">{{ dg.tenSanPham }}</div>
-              }
-              <p class="BinhLuanNoiBat">{{ dg.binhLuan }}</p>
-              <div class="DongDuoiNoiBat">
-                <div class="AvatarNoiBat"><i class="fa-solid fa-user"></i></div>
-                <div>
-                  <div class="TenNguoiDanhGiaNoiBat">{{ dg.tenNguoiDanhGia }}</div>
-                  <div class="SaoVaDiemNoiBat">
-                    <span class="SaoVangNoiBat">
-                      @for (s of saoArr; track s) {
-                        <i class="fa-solid fa-star" [class.SaoMo]="s > dg.soSao"></i>
-                      }
-                    </span>
-                    @if (dg.diemDanhGiaTbSanPham) {
-                      <span class="DiemSoNoiBat">{{ dg.diemDanhGiaTbSanPham }}</span>
-                    }
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        }
-      </div>
-    </div>
-  }
+  <app-danh-gia-noi-bat />
 
   <app-welcome-bonus />
 </main>

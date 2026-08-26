@@ -1,0 +1,58 @@
+.KhungSauLyDo {
+  width: 100%;
+  border: 1px solid #FF7676;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 50px;
+  background-color: #FFF;
+}
+
+.TieuDeSauLyDo {
+  background-color: #FF6B6B;
+  color: white;
+  padding: 15px 25px;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.LuoiLyDo {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px 20px;
+  padding: 40px;
+}
+
+.ItemLyDo {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+
+  p { color: #2F2D2E; font-size: 15px; font-weight: 500; line-height: 1.4; }
+}
+
+.VongTronSo {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 800;
+  font-size: 16px;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: -5px;
+    border-radius: 50%;
+    border: 2px dashed #DDD;
+  }
+}
+
+.SoVang { background: #FFD700; color: #000; &::after { border-color: #FFD700; } }
+.SoXanh { background: #B2EBF2; color: #000; &::after { border-color: #B2EBF2; } }
+.SoHong { background: #F8BBD0; color: #000; &::after { border-color: #F8BBD0; } }
+.SoXanhDam { background: #3F51B5; color: #FFF; &::after { border-color: #3F51B5; } }
+.SoCam { background: #FF5722; color: #FFF; &::after { border-color: #FF5722; } }
+.SoVangNhat { background: #FFF9C4; color: #000; &::after { border-color: #FFF9C4; } }

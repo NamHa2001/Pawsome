@@ -1,0 +1,41 @@
+<div class="ContainerBannerVip">
+  <div class="VungAnToan KhungBannerVip">
+    <div class="BannerVip Do">
+      <img src="/img/nen1.png" alt="PawVip" class="AnhNenBanner">
+      <div class="NoiDungVip">
+        <img src="/img/pawvip3.png" alt="PawVip" class="LogoPawVip">
+        <div class="TextVip">
+          <h3>One-Time Fee, <br> Full Year Benefits!</h3>
+          <p>Unlock exclusive savings on all essentials.</p>
+        </div>
+        <div class="CumHanhDong">
+          <div class="GiaVip">2,376,000</div>
+          <button class="NutJoinNow">JOIN NOW</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="BannerVip Cam">
+      <img src="/img/nen2.png" alt="Coupon" class="AnhNenBanner">
+      <div class="NoiDungCoupon">
+        @if (couponNoiBat(); as cp) {
+          <div class="CumSale">
+            <span class="ChuSave">Save</span>
+            <h2 class="PhanTram">{{ hienThiUuDai(cp) }}</h2>
+            <p class="FirstOrder">On Your Next Order</p>
+          </div>
+          <div class="KhungCoupon">
+            <span class="LabelCoupon">Coupon:</span>
+            <div class="MaCoupon">{{ cp.maCode }}</div>
+          </div>
+        } @else {
+          <div class="CumSale">
+            <span class="ChuSave">Stay Tuned</span>
+            <h2 class="PhanTram">New Offers</h2>
+            <p class="FirstOrder">Coming soon</p>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>

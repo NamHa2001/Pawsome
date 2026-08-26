@@ -1,0 +1,39 @@
+@for (v of variants(); track v.variantId) {
+  @if (v.dangKinhDoanh) {
+    <div class="KhungBienThe">
+      <div class="TieuDeBienThe">{{ tenSanPham() }} - {{ v.tenBienThe }}</div>
+
+      <div class="NoiDungBienThe">
+        <div class="CotAnhBienThe">
+          <img [src]="anh()" [alt]="tenSanPham()">
+        </div>
+
+        <div class="CotThongTinBienThe">
+          <div class="HangTieuDeGrid">
+            <div>Price</div>
+            <div><img src="/img/pawvip_white.png" alt="Vip" class="IconVipBang"></div>
+            <div>Qty.</div>
+            <div></div>
+          </div>
+
+          <div class="HangDuLieuGrid">
+            <div class="PriceTxt">{{ v.gia | number:'1.0-0' }} <span class="DonViTien">vnd</span></div>
+            <div class="VipPriceTxt">{{ giaVipPlaceholder(v.gia) | number:'1.0-0' }} <span class="DonViTien">vnd</span></div>
+            <div>
+              <div class="BoDemSoLuong">
+                <button type="button" [disabled]="soLuongCuaBienThe(v.variantId) <= 1"
+                  (click)="doiSoLuong(v.variantId, soLuongCuaBienThe(v.variantId) - 1)">−</button>
+                <input #oQty type="number" min="1" [max]="v.soLuongTon" [value]="soLuongCuaBienThe(v.variantId)"
+                  (change)="doiSoLuong(v.variantId, Math.min(Math.max(oQty.valueAsNumber || 1, 1), v.soLuongTon)); oQty.value = soLuongCuaBienThe(v.variantId).toString()">
+                <button type="button" [disabled]="soLuongCuaBienThe(v.variantId) >= v.soLuongTon"
+                  (click)="doiSoLuong(v.variantId, soLuongCuaBienThe(v.variantId) + 1)">+</button>
+              </div>
+              <span class="TonKhoNho">{{ v.soLuongTon > 0 ? v.soLuongTon + ' in stock' : 'Out of stock' }}</span>
+            </div>
+            <div><button class="NutAddNho" [disabled]="v.soLuongTon === 0 || dangThemGio()" (click)="themVaoGioTam(v.variantId)">ADD</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+}
