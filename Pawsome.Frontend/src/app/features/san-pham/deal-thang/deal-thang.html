@@ -1,0 +1,20 @@
+<div class="KhungDealMonth">
+  <h2 class="TieuDeDeal"><span class="Cam">Deal Of</span> The Month</h2>
+</div>
+<div class="BannerDealFull">
+  <div class="VungAnToan DealContent">
+    @for (sp of sanPhamDealThang(); track sp.productId) {
+      <a class="CuaSoDeal" [routerLink]="['/san-pham', sp.productId]">
+        <div class="KhungAnhDeal">
+          <img [src]="sp.images[0]?.url ?? '/img/logo1.png'" [alt]="sp.ten">
+        </div>
+        <div class="ThongTinDeal">
+          <span class="TenSPDeal">{{ tenNganDeal(sp.ten) }}</span>
+          @if (sp.giaTu) {
+            <span class="GiaSPDeal">{{ sp.giaTu | number:'1.0-0' }} <span class="DonViTien">vnd</span></span>
+          }
+        </div>
+      </a>
+    }
+  </div>
+</div>

@@ -1,0 +1,90 @@
+.BlogSection { padding: 20px 0; text-align: center; }
+
+.ReadOurText {
+  font-family: 'Dancing Script', cursive;
+  font-size: 45px;
+  color: #000;
+  line-height: 1;
+}
+
+.MainBlogTitle {
+  font-size: 36px;
+  font-weight: 600;
+  margin-top: 5px;
+  color: #000;
+
+  span { color: #FF7A00; }
+}
+
+.KhungChuaBlog {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: stretch;
+  gap: 30px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 10px auto;
+}
+
+.O_Blog {
+  width: 380px;
+  min-height: 387px;
+  background-color: #FDECEC;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
+  text-align: left;
+  text-decoration: none;
+  color: inherit;
+}
+
+.AnhBlog {
+  width: 319px;
+  height: 247px;
+  overflow: hidden;
+  background-color: #fff;
+  flex-shrink: 0;
+
+  img { width: 100%; height: 100%; object-fit: cover; }
+}
+
+// flex:1 - tiêu đề dài ngắn khác nhau bao nhiêu dòng cũng không quan trọng, .ReadNow (margin-top:
+// auto) luôn dính sát đáy khung nên "Read Now..." thẳng hàng tuyệt đối giữa 3 bài (khung nào cùng
+// hàng tự giãn bằng nhau theo bài dài nhất nhờ .KhungChuaBlog align-items: stretch).
+.NoiDungBlog {
+  width: 319px;
+  margin-top: 15px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.TenBlog {
+  font-size: 16px;
+  font-weight: 700;
+  color: #000;
+  margin: 0 0 10px 0;
+  line-height: 1.4;
+}
+
+.ReadNow { color: #FF7A00; text-decoration: none; font-weight: 700; font-size: 14px; margin-top: auto; }
+
+.NutViewAllContainer { margin-top: 20px; margin-bottom: 40px; }
+
+.NutViewAll {
+  background-color: #D32F2F;
+  color: white;
+  border: none;
+  padding: 12px 35px;
+  font-size: 16px;
+  font-weight: 700;
+  border-radius: 30px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(211, 47, 47, 0.3);
+  transition: 0.3s;
+
+  &:hover { background-color: #FF7A00; }
+}

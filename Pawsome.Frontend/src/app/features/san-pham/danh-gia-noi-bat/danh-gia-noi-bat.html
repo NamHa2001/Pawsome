@@ -1,0 +1,53 @@
+@if (danhGiaNoiBat().length > 0) {
+  <div class="KhungDanhGiaNoiBat">
+    <div class="VungAnToanDoc HangTieuDeNoiBat">
+      <div></div>
+      <div>
+        <div class="ReadOurText">What Our</div>
+        <div class="TieuDeDanhGia"><span class="ChuNoiBat">Happy</span> Customers Say</div>
+      </div>
+      <div class="NutDieuHuongNoiBat">
+        @if (tongTrangDanhGiaNoiBat() > 1) {
+          <button type="button" class="NutMuiTenNoiBat" [disabled]="trangDanhGiaNoiBat() === 0" (click)="doiTrangNoiBat(-1)">
+            <i class="fa-solid fa-chevron-left"></i>
+          </button>
+          <button type="button" class="NutMuiTenNoiBat" [disabled]="trangDanhGiaNoiBat() === tongTrangDanhGiaNoiBat() - 1" (click)="doiTrangNoiBat(1)">
+            <i class="fa-solid fa-chevron-right"></i>
+          </button>
+        }
+      </div>
+    </div>
+
+    <div class="VungAnToanDoc LuoiDanhGiaNoiBat">
+      @for (dg of danhGiaHienThi(); track dg.reviewId) {
+        <div class="TheDanhGiaNoiBat">
+          <div class="AnhSPNoiBat">
+            <img [src]="dg.anhSanPham ?? '/img/logo1.png'" [alt]="dg.tenSanPham">
+          </div>
+          <div class="NoiDungTheNoiBat">
+            @if (dg.tenSanPham) {
+              <div class="TenSPNoiBat">{{ dg.tenSanPham }}</div>
+            }
+            <p class="BinhLuanNoiBat">{{ dg.binhLuan }}</p>
+            <div class="DongDuoiNoiBat">
+              <div class="AvatarNoiBat"><i class="fa-solid fa-user"></i></div>
+              <div>
+                <div class="TenNguoiDanhGiaNoiBat">{{ dg.tenNguoiDanhGia }}</div>
+                <div class="SaoVaDiemNoiBat">
+                  <span class="SaoVangNoiBat">
+                    @for (s of saoArr; track s) {
+                      <i class="fa-solid fa-star" [class.SaoMo]="s > dg.soSao"></i>
+                    }
+                  </span>
+                  @if (dg.diemDanhGiaTbSanPham) {
+                    <span class="DiemSoNoiBat">{{ dg.diemDanhGiaTbSanPham }}</span>
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+}

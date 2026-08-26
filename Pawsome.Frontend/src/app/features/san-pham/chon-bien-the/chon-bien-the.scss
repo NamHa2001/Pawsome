@@ -1,0 +1,123 @@
+.KhungBienThe {
+  width: 1200px;
+  border: 1px solid #EEE;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 20px;
+  background-color: var(--MauTrang);
+
+  &:last-child { margin-bottom: 50px; }
+}
+
+.TieuDeBienThe {
+  background-color: var(--MauDoDam);
+  color: white;
+  padding: 12px 20px;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.NoiDungBienThe {
+  display: flex;
+}
+
+.CotAnhBienThe {
+  width: 300px;
+  background-color: #F5F5F5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  border-right: 1px solid #E0E0E0;
+  flex-shrink: 0;
+
+  img { width: 60%; height: auto; object-fit: contain; }
+}
+
+.CotThongTinBienThe {
+  flex: 1;
+  padding: 20px 40px;
+}
+
+.HangTieuDeGrid, .HangDuLieuGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 140px 80px;
+  align-items: center;
+  padding: 15px 0;
+  gap: 12px;
+}
+
+.HangTieuDeGrid {
+  font-weight: 700;
+  color: #2F2D2E;
+  font-size: 20px;
+  border-bottom: 1px solid #EEE;
+}
+
+.HangDuLieuGrid {
+  border-bottom: 1px solid #F9F9F9;
+}
+
+.TonKhoNho { display: block; color: #999; font-size: 12px; font-weight: 400; margin-top: 6px; }
+.PriceTxt { color: #2F2D2E; font-size: 18px; font-weight: 600; }
+.VipPriceTxt { color: var(--MauDoDam); font-size: 18px; font-weight: 700; }
+.IconVipBang { height: 33px; width: auto; }
+
+.BoDemSoLuong {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid #CCC;
+  border-radius: 12px;
+  overflow: hidden;
+  width: fit-content;
+
+  button {
+    width: 28px;
+    height: 32px;
+    border: none;
+    background-color: #F5F5F5;
+    color: #2F2D2E;
+    font-size: 16px;
+    font-family: 'Sora', sans-serif;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover:not(:disabled) { background-color: #EAEAEA; }
+    &:disabled { opacity: 0.4; cursor: default; }
+  }
+
+  input {
+    width: 40px;
+    height: 32px;
+    border: none;
+    border-left: 1px solid #CCC;
+    border-right: 1px solid #CCC;
+    text-align: center;
+    font-family: 'Sora', sans-serif;
+    outline: none;
+    -moz-appearance: textfield;
+
+    &::-webkit-outer-spin-button, &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+  }
+}
+
+.NutAddNho {
+  background-color: var(--MauDoDam);
+  color: #FFF;
+  border: none;
+  padding: 6px 15px;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+
+  &:disabled {
+    background-color: #CCC;
+    cursor: not-allowed;
+  }
+}

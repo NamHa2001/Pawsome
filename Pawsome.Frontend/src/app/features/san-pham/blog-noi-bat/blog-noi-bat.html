@@ -1,0 +1,50 @@
+<div class="BlogSection">
+  <div class="BlogHeader">
+    <div class="ReadOurText">Read Our</div>
+    <div class="MainBlogTitle"><span>Lastest Blogs</span> & Articles</div>
+  </div>
+
+  @if (blogList().length > 0) {
+  <div class="VungAnToan KhungChuaBlog">
+    @for (bai of blogList(); track bai.postId; let i = $index) {
+    <a class="O_Blog" routerLink="/blog/{{ bai.postId }}">
+      <div class="AnhBlog">
+        <img [src]="bai.anhDaiDien ?? anhBlogMacDinh(i)" [alt]="bai.tieuDe">
+      </div>
+      <div class="NoiDungBlog">
+        <h3 class="TenBlog">{{ bai.tieuDe }}</h3>
+        <span class="ReadNow">Read Now...</span>
+      </div>
+    </a>
+    }
+  </div>
+  } @else {
+  <div class="VungAnToan KhungChuaBlog">
+    <div class="O_Blog">
+      <div class="AnhBlog"><img src="/img/blog1.png" alt="Blog 1"></div>
+      <div class="NoiDungBlog">
+        <h3 class="TenBlog">Front Plus vs. Simparica Trio - Which One to Choose for Your Dog?</h3>
+        <span class="ReadNow">Read Now...</span>
+      </div>
+    </div>
+    <div class="O_Blog">
+      <div class="AnhBlog"><img src="/img/blog2.png" alt="Blog 2"></div>
+      <div class="NoiDungBlog">
+        <h3 class="TenBlog">A Quick Guide to Dog's Skin & Coat Care</h3>
+        <span class="ReadNow">Read Now...</span>
+      </div>
+    </div>
+    <div class="O_Blog">
+      <div class="AnhBlog"><img src="/img/blog3.png" alt="Blog 3"></div>
+      <div class="NoiDungBlog">
+        <h3 class="TenBlog">Why Dogs Lick and Chew Their Paws and When to Worry</h3>
+        <span class="ReadNow">Read Now...</span>
+      </div>
+    </div>
+  </div>
+  }
+
+  <div class="NutViewAllContainer">
+    <button class="NutViewAll"><i class="fas fa-paw"></i> VIEW ALL</button>
+  </div>
+</div>
