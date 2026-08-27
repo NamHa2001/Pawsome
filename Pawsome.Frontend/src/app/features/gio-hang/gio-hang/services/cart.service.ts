@@ -10,13 +10,12 @@ export class CartService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${environment.apiUrl}/gio-hang`;
 
-  // Số lượng hiển thị trên icon giỏ hàng (header). Tự động đồng bộ mỗi khi giỏ hàng thay đổi (thêm/sửa/xóa sản phẩm)
   private readonly _soLuongGioHang = signal(0);
   readonly soLuongGioHang = this._soLuongGioHang.asReadonly();
 
   private capNhatSoLuongTuGioHang(cart: Cart | null | undefined): void {
-    const tongSoLuong = cart?.items?.reduce((tong, i) => tong + i.soLuong, 0) ?? 0;
-    this._soLuongGioHang.set(tongSoLuong);
+    const soLoaiSanPham = cart?.items?.length ?? 0;
+    this._soLuongGioHang.set(soLoaiSanPham);
   }
 
   taiLaiSoLuong(): void {
@@ -41,8 +40,7 @@ export class CartService {
   }
 
   capNhatSoLuong(cartItemId: number, dto: UpdateCartItem): Observable<ApiResponse<Cart>> {
-    return this.http.put<ApiResponse<Cart>>(`${this.baseUrl}/items/${cartItemId}`, dto)
-      .pipe(tap(res => this.capNhatSoLuongTuGioHang(res.data)));
+    return this.http.put<ApiResponse<Cart>>(`${this.baseUrl}/items/${cartItemId}`, dto);
   }
 
   xoaSanPham(cartItemId: number): Observable<ApiResponse<object>> {

@@ -38,20 +38,15 @@ export class GoiYSanPham {
       this.productService.search({ categoryId, page: 1, pageSize: 5 }).subscribe(ket => {
         this.sanPhamCungDanhMuc.set(ket.items.filter(p => p.productId !== productId).slice(0, 4));
       });
-
-      // "Frequently Bought" - khác "Related Items" (cùng danh mục, mới nhất): sản phẩm bán chạy
-      // nhất (tổng số lượng đã bán từ đơn hàng thật) trong cùng danh mục. Có thể rỗng nếu danh
-      // mục chưa có đơn hàng nào - không bịa dữ liệu thay thế, để trống đúng như thực tế.
       this.productService.getBanChay(productId, 4).subscribe(ds => this.sanPhamBanChay.set(ds));
     });
   }
 
-  // Nút "SHOP NOW" trên thẻ gợi ý - thêm thẳng vào giỏ hàng thay vì chỉ điều hướng như trước
-  // (cả thẻ là 1 thẻ <a> bọc ngoài, nút bên trong phải preventDefault + stopPropagation để không
-  // bị điều hướng theo click cha). Tự chọn biến thể đầu tiên còn hàng, số lượng 1.
   themVaoGioNhanh(item: SanPham, event: Event): void {
     event.preventDefault();
     event.stopPropagation();
+
+    if (this.dangThemGio()) return;
 
     if (!this.tokenService.isLoggedIn()) {
       this.router.navigate(['/tai-khoan/dang-nhap']);

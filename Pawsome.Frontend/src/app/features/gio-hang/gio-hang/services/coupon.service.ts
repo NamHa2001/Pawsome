@@ -10,13 +10,13 @@ export class CouponService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${environment.apiUrl}/coupons`;
 
-  // ── Dùng cho trang giỏ hàng (khách hàng) ──────────────────────────
+  //  Dùng cho trang giỏ hàng (khách hàng) 
   layDangHieuLuc(): Observable<Coupon[]> {
     return this.http.get<ApiResponse<Coupon[]>>(`${this.baseUrl}/dang-hieu-luc`)
       .pipe(map(res => res.data ?? []));
   }
 
-  // ── Dùng cho trang quản trị mã giảm giá (Admin) ───────────────────
+  //  Dùng cho trang quản trị mã giảm giá (Admin)
   layTatCa(): Observable<Coupon[]> {
     return this.http.get<ApiResponse<Coupon[]>>(this.baseUrl)
       .pipe(map(res => res.data ?? []));

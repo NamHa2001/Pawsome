@@ -4,7 +4,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 
-import { Cart, CartItem, Coupon, TanSuatDonTuDong } from './models/gio-hang.model';
+import { ApplyCouponResult, Cart, CartItem, Coupon, TanSuatDonTuDong } from './models/gio-hang.model';
 import { CartService } from './services/cart.service';
 import { CouponService } from './services/coupon.service';
 import { AutoOrderService } from '../dat-hang-tu-dong/services/auto-order.services';
@@ -30,7 +30,6 @@ interface ThongBaoCoupon {
   noiDung: string;
 }
 
-const PHAN_TRAM_GIAM_PAWVIP = 0.2;
 const PHI_VAN_CHUYEN_CO_THEO_DOI = 30000;
 const PHAN_TRAM_GIAM_AUTO_ORDER = 0.1; 
 
@@ -56,44 +55,41 @@ export class GioHangComponent {
   readonly dangTai = signal(true);
   readonly loi = signal<string | null>(null);
 
-  //Gợi ý sản phẩm khi giỏ hàng trống
   readonly tabGoiY = signal<TabGoiY>('thuong-mua');
   readonly dangThemGoiY = signal<number | null>(null);
-  // TODO: nạp dữ liệu thật từ API gợi ý sản phẩm (thuộc Part sản phẩm) khi có.
-  private readonly sanPhamThuongMua = signal<SanPhamGoiY[]>([]);
-  private readonly sanPhamLienQuan = signal<SanPhamGoiY[]>([]);
+
+  readonly sanPhamThuongMua = signal<SanPhamGoiY[]>([]);
+  readonly sanPhamLienQuan = signal<SanPhamGoiY[]>([]);
 
   readonly sanPhamGoiYHienThi = computed(() =>
     this.tabGoiY() === 'thuong-mua' ? this.sanPhamThuongMua() : this.sanPhamLienQuan()
   );
 
-  // PawVip banner
-  readonly tietKiemPawVip = computed(() => (this.gioHang()?.tienHang ?? 0) * PHAN_TRAM_GIAM_PAWVIP);
-  readonly tongTienPawVip = computed(() => (this.gioHang()?.tienHang ?? 0) - this.tietKiemPawVip());
+  readonly saoArr = [1, 2, 3, 4, 5];
 
-  // Auto Order theo từng dòng sản phẩm 
+  phanTramSaoGoiY(sao: number, diem: number): number {
+    if (diem >= sao) return 100;
+    if (diem <= sao - 1) return 0;
+    return (diem - (sao - 1)) * 100;
+  }
+
   readonly autoOrderIdTheoDong = signal<Record<number, number>>({});
   readonly dangXuLyAutoOrderDong = signal<number | null>(null);
 
-  // Tổng tiền được giảm 10% từ các dòng sản phẩm đang bật Auto Order.
-  // Tính trên thanhTien (đơn giá x số lượng) của từng dòng đang bật.
   readonly giamGiaAutoOrder = computed(() => {
     const gh = this.gioHang();
     if (!gh) return 0;
-
     const cacDongDangBat = this.autoOrderIdTheoDong();
     return gh.items
       .filter(item => !!cacDongDangBat[item.cartItemId])
       .reduce((tong, item) => tong + item.thanhTien * PHAN_TRAM_GIAM_AUTO_ORDER, 0);
   });
 
-  //  Mã giảm giá 
   readonly maCoupon = signal('');
   readonly dangApDungMa = signal(false);
   readonly thongBaoCoupon = signal<ThongBaoCoupon | null>(null);
   readonly danhSachMaGiamGia = signal<Coupon[]>([]);
 
-  // Vận chuyển 
   readonly loaiVanChuyen = signal<'free' | 'tracked'>('free');
   readonly phiVanChuyenCoTheoDoi = PHI_VAN_CHUYEN_CO_THEO_DOI;
 
@@ -114,11 +110,9 @@ export class GioHangComponent {
     this.taiMaGiamGiaGoiY();
   }
 
-  //  Tải dữ liệu 
   taiGioHang(): void {
     this.dangTai.set(true);
     this.loi.set(null);
-
     this.cartService.layGioHang().subscribe({
       next: res => {
         this.gioHang.set(res.data ?? null);
@@ -138,10 +132,10 @@ export class GioHangComponent {
     });
   }
 
-  //  Gợi ý sản phẩm 
   themVaoGioTuGoiY(sp: SanPhamGoiY): void {
-    this.dangThemGoiY.set(sp.variantId);
+    if (this.dangThemGoiY() !== null) return;
 
+    this.dangThemGoiY.set(sp.variantId);
     this.cartService.themSanPham({ variantId: sp.variantId, soLuong: 1 }).subscribe({
       next: res => {
         this.gioHang.set(res.data ?? this.gioHang());
@@ -151,128 +145,179 @@ export class GioHangComponent {
     });
   }
 
-  //  PawVip 
-  kichHoatPawVip(): void {
-   
-  }
-
-  //  Số lượng / xoá sản phẩm 
-  tangSoLuong(cartItemId: number, soLuongHienTai: number): void {
-    this.cartService.capNhatSoLuong(cartItemId, { soLuong: soLuongHienTai + 1 }).subscribe({
-      next: res => this.gioHang.set(res.data ?? this.gioHang())
-    });
-  }
-
-  giamSoLuong(cartItemId: number, soLuongHienTai: number): void {
-    if (soLuongHienTai <= 1) return;
-
-    this.cartService.capNhatSoLuong(cartItemId, { soLuong: soLuongHienTai - 1 }).subscribe({
-      next: res => this.gioHang.set(res.data ?? this.gioHang())
-    });
-  }
-
-  xoaSanPham(cartItemId: number): void {
-    this.cartService.xoaSanPham(cartItemId).subscribe({
-      next: () => {
-        this.gioHang.update(gh => gh
-          ? { ...gh, items: gh.items.filter(i => i.cartItemId !== cartItemId) }
-          : gh);
-        this.taiGioHang();
-      }
-    });
-  }
-
-  xoaSachGioHang(): void {
-    if (!confirm('Remove all items from your cart?')) return;
-
-    this.cartService.xoaSachGioHang().subscribe({
-      next: () => this.gioHang.update(gh => gh ? { ...gh, items: [] } : gh)
-    });
-  }
-
-  //  Auto Order theo dòng
-  toggleAutoOrderDong(item: CartItem): void {
-    this.dangXuLyAutoOrderDong.set(item.cartItemId);
-    const autoOrderIdHienTai = this.autoOrderIdTheoDong()[item.cartItemId];
-
-    if (autoOrderIdHienTai) {
-      this.autoOrderService.huy(autoOrderIdHienTai).subscribe({
-        next: () => {
-          this.autoOrderIdTheoDong.update(map => {
-            const { [item.cartItemId]: _, ...rest } = map;
-            return rest;
-          });
-          this.dangXuLyAutoOrderDong.set(null);
-        },
-        error: () => this.dangXuLyAutoOrderDong.set(null)
-      });
-      return;
+tangSoLuong(cartItemId: number, soLuongHienTai: number): void {
+  const soLuongMoi = soLuongHienTai + 1;
+  this.cartService.capNhatSoLuong(cartItemId, { soLuong: soLuongMoi }).subscribe({
+    next: res => this.apDungKetQuaSuaSoLuong(cartItemId, soLuongMoi, res.data),
+    error: () => {
+      // Có thể xử lý lỗi nếu cần, ví dụ hiển thị thông báo
     }
+  });
+}
 
-    const tanSuatMacDinh: TanSuatDonTuDong = 'monthly';
+giamSoLuong(cartItemId: number, soLuongHienTai: number): void {
+  if (soLuongHienTai <= 1) return;
+  const soLuongMoi = soLuongHienTai - 1;
+  this.cartService.capNhatSoLuong(cartItemId, { soLuong: soLuongMoi }).subscribe({
+    next: res => this.apDungKetQuaSuaSoLuong(cartItemId, soLuongMoi, res.data),
+    error: () => {
+      // Có thể xử lý lỗi nếu cần
+    }
+  });
+}
 
-    this.autoOrderService.tao({
-      variantId: item.variantId,
-      soLuong: item.soLuong,
-      tanSuat: tanSuatMacDinh
-    }).subscribe({
-      next: res => {
-        if (res.data) {
-          this.autoOrderIdTheoDong.update(map => ({ ...map, [item.cartItemId]: res.data!.autoOrderId }));
-        }
+toggleAutoOrderDong(item: CartItem): void {
+  const autoOrderIdHienTai = this.autoOrderIdTheoDong()[item.cartItemId];
+  this.dangXuLyAutoOrderDong.set(item.cartItemId);
+
+  if (autoOrderIdHienTai) {
+    this.autoOrderService.huy(autoOrderIdHienTai).subscribe({
+      next: () => {
+        this.autoOrderIdTheoDong.update(cac => {
+          const { [item.cartItemId]: _, ...con } = cac;
+          return con;
+        });
         this.dangXuLyAutoOrderDong.set(null);
       },
       error: () => this.dangXuLyAutoOrderDong.set(null)
     });
+    return;
   }
 
-  //  Mã giảm giá 
-  apDungMaGiamGia(): void {
-    const ma = this.maCoupon().trim();
-    if (!ma) return;
+  this.autoOrderService.tao({
+    variantId: item.variantId,
+    soLuong: item.soLuong,
+    tanSuat: 'monthly' as TanSuatDonTuDong
+  }).subscribe({
+    next: res => {
+      const autoOrderId = res.data?.autoOrderId;
+      if (autoOrderId) {
+        this.autoOrderIdTheoDong.update(cac => ({ ...cac, [item.cartItemId]: autoOrderId }));
+      }
+      this.dangXuLyAutoOrderDong.set(null);
+    },
+    error: () => this.dangXuLyAutoOrderDong.set(null)
+  });
+}
 
-    this.dangApDungMa.set(true);
-
-    this.cartService.apDungMaGiamGia({ maCode: ma }).subscribe({
-      next: res => {
-        this.dangApDungMa.set(false);
-        const ketQua = res.data;
-
-        if (!ketQua || !ketQua.hopLe) {
-          this.thongBaoCoupon.set({ loai: 'loi', noiDung: ketQua?.thongBao ?? 'Invalid coupon code.' });
-          return;
-        }
-
-        this.gioHang.update(gh => gh ? {
+xoaSanPham(cartItemId: number): void {
+  this.cartService.xoaSanPham(cartItemId).subscribe({
+    next: () => {
+      this.gioHang.update(gh => {
+        if (!gh) return gh;
+        const items = gh.items.filter(item => item.cartItemId !== cartItemId);
+        const tienHang = items.reduce((tong, i) => tong + i.thanhTien, 0);
+        return {
           ...gh,
-          maCouponDangApDung: ma,
-          tienHang: ketQua.tienHang,
-          giamGia: ketQua.giamGia,
-          phiVanChuyenTamTinh: ketQua.phiVanChuyenTamTinh,
-          tongTien: ketQua.tongTien
-        } : gh);
+          items,
+          tienHang,
+          tongTien: Math.max(0, tienHang - gh.giamGia + gh.phiVanChuyenTamTinh)
+        };
+      });
+    },
+    error: () => {
+      // Có thể xử lý lỗi nếu cần
+    }
+  });
+}
 
-        this.thongBaoCoupon.set({ loai: 'thanh-cong', noiDung: ketQua.thongBao ?? 'Coupon applied successfully.' });
-      },
-      error: err => {
-        this.dangApDungMa.set(false);
-        this.thongBaoCoupon.set({ loai: 'loi', noiDung: err?.error?.message ?? 'Failed to apply coupon.' });
+xoaSachGioHang(): void {
+  if (!confirm('Remove all items from your cart?')) return;
+
+  this.cartService.xoaSachGioHang().subscribe({
+    next: () => {
+      this.gioHang.update(gh => gh ? { ...gh, items: [], tienHang: 0, giamGia: 0, tongTien: 0, maCouponDangApDung: null } : gh);
+      this.maCoupon.set('');
+      this.thongBaoCoupon.set(null);
+    },
+    error: () => {
+      // Có thể xử lý lỗi nếu cần
+    }
+  });
+}
+
+apDungMaGiamGia(): void {
+  const ma = this.maCoupon().trim();
+  if (!ma) {
+    this.thongBaoCoupon.set({ loai: 'loi', noiDung: 'Please enter a coupon code.' });
+    return;
+  }
+
+  this.dangApDungMa.set(true);
+  this.cartService.apDungMaGiamGia({ maCode: ma }).subscribe({
+    next: res => {
+      this.dangApDungMa.set(false);
+      const ketQua = res.data;
+      if (!ketQua || !ketQua.hopLe) {
+        this.thongBaoCoupon.set({ loai: 'loi', noiDung: ketQua?.thongBao ?? 'Invalid coupon code.' });
+        return;
       }
-    });
+      this.apDungKetQuaCoupon(ma, ketQua);
+      this.thongBaoCoupon.set({ loai: 'thanh-cong', noiDung: ketQua.thongBao ?? `Coupon "${ma}" applied.` });
+    },
+    error: err => {
+      this.dangApDungMa.set(false);
+      this.thongBaoCoupon.set({ loai: 'loi', noiDung: err?.error?.message ?? 'Failed to apply coupon.' });
+    }
+  });
+}
+
+xoaMaGiamGia(): void {
+  this.cartService.xoaMaGiamGia().subscribe({
+    next: res => {
+      this.gioHang.set(res.data ?? this.gioHang());
+      this.maCoupon.set('');
+      this.thongBaoCoupon.set(null);
+    },
+    error: err => {
+      this.thongBaoCoupon.set({ loai: 'loi', noiDung: err?.error?.message ?? 'Failed to remove coupon.' });
+    }
+  });
+}
+
+chonMa(maCode: string): void {
+  this.maCoupon.set(maCode);
+  this.apDungMaGiamGia();
+}
+
+private apDungKetQuaCoupon(maCode: string, ketQua: ApplyCouponResult): void {
+  this.gioHang.update(gh => {
+    if (!gh) return gh;
+    return {
+      ...gh,
+      maCouponDangApDung: maCode,
+      tienHang: ketQua.tienHang,
+      giamGia: ketQua.giamGia,
+      phiVanChuyenTamTinh: ketQua.phiVanChuyenTamTinh,
+      tongTien: ketQua.tongTien
+    };
+  });
+}
+
+private apDungKetQuaSuaSoLuong(cartItemId: number, soLuongMoi: number, cartTuServer: Cart | null | undefined): void {
+  const ghHienTai = this.gioHang();
+
+  if (cartTuServer && ghHienTai && cartTuServer.items.length === ghHienTai.items.length) {
+    this.gioHang.set(cartTuServer);
+    return;
   }
 
-  xoaMaGiamGia(): void {
-    this.cartService.xoaMaGiamGia().subscribe({
-      next: res => {
-        this.gioHang.set(res.data ?? this.gioHang());
-        this.maCoupon.set('');
-        this.thongBaoCoupon.set(null);
-      }
-    });
-  }
+  this.gioHang.update(gh => {
+    if (!gh) return gh;
 
-  chonMa(maCode: string): void {
-    this.maCoupon.set(maCode);
-    this.apDungMaGiamGia();
-  }
+    const items = gh.items.map(item =>
+      item.cartItemId === cartItemId
+        ? { ...item, soLuong: soLuongMoi, thanhTien: item.donGia * soLuongMoi }
+        : item
+    );
+    const tienHang = items.reduce((tong, i) => tong + i.thanhTien, 0);
+
+    return {
+      ...gh,
+      items,
+      tienHang,
+      tongTien: Math.max(0, tienHang - gh.giamGia + gh.phiVanChuyenTamTinh)
+    };
+  });
+}
 }

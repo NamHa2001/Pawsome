@@ -1,0 +1,60 @@
+<app-header />
+
+<main class="NoiDungChinh">
+<div class="TrangPawVip">
+  <div class="VungAnToan KhungTieuDe">
+    <a routerLink="/gio-hang" class="LienKetQuayLai">← Back to Cart</a>
+    <h1 class="TieuDeTrang">🐾 PawVip <strong>Membership</strong></h1>
+    <p class="MoTaTrangPawVip">Choose a plan and save on every order, all year round.</p>
+  </div>
+
+  <div class="VungAnToan">
+    <div class="LuoiGoiPawVip">
+      @for (goi of goiPawVipList; track goi.id) {
+        <div class="TheGoiPawVipItem" [class.NoiBat]="goi.noiBat" [class.DangChonGoi]="goiPawVipDangChon() === goi.id">
+          @if (goi.noiBat) {
+            <span class="NhanNoiBat">Most Popular</span>
+          }
+          <div class="DauTheGoi">
+            <span class="TenGoi">{{ goi.ten }}</span>
+            <span class="PhanTramGoi">{{ goi.phanTramGiam * 100 | number:'1.0-0' }}% <small>Discount</small></span>
+          </div>
+
+          <ul class="DanhSachQuyenLoiGoi">
+            @for (ql of goi.quyenLoi; track ql) {
+              <li>{{ ql }}</li>
+            }
+          </ul>
+
+          <div class="CuoiTheGoi">
+            <span class="GiaGoi">{{ goi.giaNam | number:'1.0-0' }} đ<small>/year</small></span>
+            <button type="button" class="NutChonGoi" (click)="chonGoiPawVip(goi.id)">
+              {{ goiPawVipDangChon() === goi.id ? 'Selected' : 'Select Plan' }}
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="KhuTomTatPawVip">
+      <div class="ChanKhuPawVip">
+        <div class="BangSoSanhPawVip">
+          @if (dangTai()) {
+            <p class="DangTaiPawVip">Loading your cart total...</p>
+          } @else {
+            <div class="DongSoSanh"><span>Item ({{ soLuongSanPham() }})</span><span>{{ tienHangHienTai() | number:'1.0-0' }} đ</span></div>
+            <div class="DongSoSanh"><span>You Save ({{ goiPawVipHienTai().phanTramGiam * 100 | number:'1.0-0' }}%)</span><span>−{{ tietKiemPawVip() | number:'1.0-0' }} đ</span></div>
+            <div class="DongSoSanh DongTongSoSanh"><span>Total with {{ goiPawVipHienTai().ten }}</span><span>{{ tongTienPawVip() | number:'1.0-0' }} đ</span></div>
+          }
+        </div>
+        <button type="button" class="NutKichHoatPawVip" [disabled]="dangTai()" (click)="kichHoatPawVip()">
+          Activate {{ goiPawVipHienTai().ten }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+</main>
+
+<app-footer />
+<app-chat-ai />

@@ -103,6 +103,8 @@ export class DanhSachSanPham implements OnInit {
     event.preventDefault();
     event.stopPropagation();
 
+    if (this.dangThemGioNhanh()) return;
+
     if (!this.tokenService.isLoggedIn()) {
       this.router.navigate(['/tai-khoan/dang-nhap']);
       return;
@@ -124,6 +126,12 @@ export class DanhSachSanPham implements OnInit {
         alert(err?.error?.message ?? 'Failed to add to cart.');
       }
     });
+  }
+
+  diToiPawVip(event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.router.navigate(['/gio-hang/pawvip']);
   }
 
   private thanhQueryParams(loc: BoLocSanPham): Record<string, string | number> {
