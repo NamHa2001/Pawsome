@@ -13,7 +13,15 @@
               <div class="KhungTrangGoiY">
                 <img [src]="item.images[0]?.url ?? '/img/logo1.png'" [alt]="item.ten">
               </div>
-              <div class="StarGoiY"><i class="fa-solid fa-star"></i> <span>{{ item.diemDanhGiaTb }}</span></div>
+              <div class="StarGoiY">
+                @for (s of saoArr; track s) {
+                  <span class="SaoO">
+                    <i class="fas fa-star SaoNen"></i>
+                    <i class="fas fa-star SaoDay" [style.width.%]="phanTramSao(s, item.diemDanhGiaTb)"></i>
+                  </span>
+                }
+                <span>{{ item.diemDanhGiaTb }}</span>
+              </div>
               <b class="TenSPGoiY">{{ item.ten }}</b>
               <div class="GiaGoiY">
                 <div class="GiaVip">

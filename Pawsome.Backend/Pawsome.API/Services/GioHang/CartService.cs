@@ -45,7 +45,12 @@ namespace Pawsome.API.Services.GioHang
                     VariantId = dto.VariantId,
                     SoLuong = dto.SoLuong
                 };
-                _context.CartItems.Add(item);
+                // Chỉ cần add vào navigation collection - EF Core tự track vì cart đang là entity
+                // được theo dõi (đã Include ở LayHoacTaoGioHangAsync). Trước đây add cả 2 nơi
+                // (_context.CartItems.Add + cart.CartItems.Add) khiến cart.CartItems trong bộ nhớ
+                // chứa 2 phần tử trỏ cùng 1 item, làm MapToCartDtoAsync bên dưới sinh ra 2
+                // CartItemDto giống hệt nhau cho lần thêm sản phẩm mới đầu tiên (DB vẫn chỉ có
+                // đúng 1 dòng, chỉ sai ở response ngay lúc đó).
                 cart.CartItems.Add(item);
             }
 

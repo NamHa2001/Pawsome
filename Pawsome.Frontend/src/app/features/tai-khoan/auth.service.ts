@@ -5,6 +5,7 @@ import { environment } from '../../../environments/environment';
 import { ApiResponse } from '../../core/models/api-response.model';
 import { AuthUser } from '../../core/models/auth-user.model';
 import { TokenService } from '../../core/models/token.service';
+import { CartService } from '../gio-hang/gio-hang/services/cart.service';
 
 export interface RegisterRequest {
   email: string;
@@ -45,6 +46,7 @@ export interface ChangePasswordRequest {
 export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly tokenService = inject(TokenService);
+  private readonly cartService = inject(CartService);
   private readonly baseUrl = `${environment.apiUrl}/Auth`;
 
   register(dto: RegisterRequest): Observable<ApiResponse<AuthUser>> {
@@ -75,6 +77,7 @@ export class AuthService {
   }
 
   logout(): void {
+    this.cartService.resetSoLuong();
     this.tokenService.clear();
     this.http.post(`${this.baseUrl}/logout`, {}).subscribe({ error: () => { } });
   }

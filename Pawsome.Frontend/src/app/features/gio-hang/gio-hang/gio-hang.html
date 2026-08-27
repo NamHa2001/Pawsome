@@ -64,10 +64,17 @@
                 <div class="TheSanPhamGoiY">
                   <img [src]="sp.hinhAnh" [alt]="sp.ten" class="AnhGoiY" />
                   <span class="TenGoiY">{{ sp.ten }}</span>
-                  <span class="DanhGiaGoiY">★ {{ sp.diemDanhGia }} ({{ sp.soLuotDanhGia }})</span>
+                  <div class="SaoVangNho">
+                    @for (s of saoArr; track s) {
+                      <span class="SaoONho">
+                        <i class="fa-solid fa-star SaoNenNho"></i>
+                        <i class="fa-solid fa-star SaoDayNho" [style.width.%]="phanTramSaoGoiY(s, sp.diemDanhGia)"></i>
+                      </span>
+                    }
+                    <span class="DiemSoNho">{{ sp.diemDanhGia }}</span>
+                  </div>
                   <div class="GiaGoiY">
-                    <span class="GiaGocGoiY">{{ sp.giaGoc | number:'1.0-0' }} đ</span>
-                    <span class="GiaKhuyenMaiGoiY">{{ sp.giaKhuyenMai | number:'1.0-0' }} đ</span>
+                    <span class="GiaChinhGoiY">{{ sp.gia | number:'1.0-0' }} đ</span>
                   </div>
                   <button
                     type="button"
@@ -207,12 +214,11 @@
                             <i class="fa-solid fa-star SaoDayNho" [style.width.%]="phanTramSaoGoiY(s, sp.diemDanhGia)"></i>
                           </span>
                         }
-                        <span class="SoDanhGiaNho">({{ sp.soLuotDanhGia }})</span>
+                        <span class="DiemSoNho">{{ sp.diemDanhGia }}</span>
                       </div>
 
                       <div class="GiaGoiYBenPhai">
-                        <span class="GiaGocGoiYBenPhai">{{ sp.giaGoc | number:'1.0-0' }} đ</span>
-                        <span class="GiaKhuyenMaiGoiYBenPhai">{{ sp.giaKhuyenMai | number:'1.0-0' }} đ</span>
+                        <span class="GiaChinhGoiYBenPhai">{{ sp.gia | number:'1.0-0' }} đ</span>
                       </div>
                     </div>
 

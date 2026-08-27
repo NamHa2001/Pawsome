@@ -1,4 +1,5 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { Coupon } from '../../gio-hang/gio-hang/models/gio-hang.model';
 import { CouponService } from '../../gio-hang/gio-hang/services/coupon.service';
 
@@ -8,6 +9,7 @@ import { CouponService } from '../../gio-hang/gio-hang/services/coupon.service';
 // - chọn coupon % giảm cao nhất để làm nổi bật.
 @Component({
   selector: 'app-banner-vip-uu-dai',
+  imports: [RouterLink],
   templateUrl: './banner-vip-uu-dai.html',
   styleUrl: './banner-vip-uu-dai.scss'
 })

@@ -79,6 +79,12 @@ export class TrangChu implements OnInit, OnDestroy {
   protected readonly giaVipPlaceholder = giaVipPlaceholder;
   protected readonly phanTramSao = phanTramSao;
 
+  diToiPawVip(event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.router.navigate(['/gio-hang/pawvip']);
+  }
+
   private doiSlide(buoc: number): void {
     const tong = this.slideAnh.length;
     this.slideIndex.update(i => (i + buoc + tong) % tong);

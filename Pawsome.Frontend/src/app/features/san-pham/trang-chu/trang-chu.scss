@@ -168,8 +168,9 @@
 
 .KeNgang {
   width: 100%;
-  height: 1.5px;
-  background-color: #c1b9b9;
+  height: 1px;
+  border: none;
+  background-color: #d0d0d0;
   padding: 0 20px;
   margin-bottom: 10px;
 }
@@ -200,5 +201,5 @@
   color: var(--MauDoDam);
 }
 
-.VipIconGrid { height: 25px; }
+.VipIconGrid { height: 25px; cursor: pointer; }
 

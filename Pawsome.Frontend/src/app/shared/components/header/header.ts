@@ -53,6 +53,10 @@ export class Header {
     effect(() => {
       if (this.daDangNhap()) {
         this.cartService.taiLaiSoLuong();
+      } else {
+        // Lớp bảo hiểm cho các nơi tự clear token mà không qua AuthService.logout() (vd
+        // interceptor 401 tự đăng xuất) - badge giỏ hàng vẫn phải về 0 khi hết đăng nhập.
+        this.cartService.resetSoLuong();
       }
     });
 
