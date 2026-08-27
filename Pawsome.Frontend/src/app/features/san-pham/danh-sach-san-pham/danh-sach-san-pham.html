@@ -115,7 +115,7 @@
                     <div class="GiaChinhGrid">{{ sp.giaTu | number:'1.0-0' }} <span class="DonViTien">vnd</span></div>
                     <div class="GiaMoiHang">
                       <span class="GiaMoiGrid">{{ giaVipPlaceholder(sp.giaTu) | number:'1.0-0' }} <span class="DonViTien">vnd</span></span>
-                      <img src="/img/pawvip.png" alt="PawVip" class="VipIconGrid">
+                      <img src="/img/pawvip.png" alt="PawVip" class="VipIconGrid" (click)="diToiPawVip($event)">
                     </div>
                   } @else {
                     <div class="GiaChinhGrid">Contact us</div>

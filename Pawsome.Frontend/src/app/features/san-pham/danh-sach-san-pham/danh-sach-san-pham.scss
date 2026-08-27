@@ -1,4 +1,3 @@
-
 :host {
   display: contents;
 }
@@ -180,7 +179,7 @@
   color: var(--MauDoDam);
 }
 
-.VipIconGrid { height: 25px; }
+.VipIconGrid { height: 25px; cursor: pointer; }
 
 .VungPhanTrang {
   display: flex;

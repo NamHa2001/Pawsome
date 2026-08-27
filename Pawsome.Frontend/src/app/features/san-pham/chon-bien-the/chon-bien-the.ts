@@ -35,6 +35,8 @@ export class ChonBienThe {
   }
 
   themVaoGioTam(variantId: number): void {
+    if (this.dangThemGio()) return;
+
     const soLuongThem = this.soLuongCuaBienThe(variantId);
     if (soLuongThem <= 0) return;
 

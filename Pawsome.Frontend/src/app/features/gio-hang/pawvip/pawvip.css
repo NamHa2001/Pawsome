@@ -1,0 +1,138 @@
+:host {
+  display: contents;
+}
+
+.TrangPawVip {
+  width: 100%;
+  padding: 40px 0 80px;
+}
+
+.KhungTieuDe {
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.LienKetQuayLai {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--MauDoDam);
+  text-decoration: none;
+  margin-bottom: 14px;
+}
+.LienKetQuayLai:hover { opacity: 0.85; }
+
+.TieuDeTrang { font-size: 28px; font-weight: 700; color: var(--MauDen); }
+.MoTaTrangPawVip { font-size: 14px; color: #666; margin: 8px 0 0; line-height: 1.5; }
+
+/* Horizontal on laptop/desktop, vertical on mobile */
+.LuoiGoiPawVip {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 900px) {
+  .LuoiGoiPawVip { grid-template-columns: 1fr; }
+}
+
+.TheGoiPawVipItem {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border: 1px solid #eee;
+  border-radius: 14px;
+  padding: 22px;
+  background: #fff;
+  transition: border-color 0.2s, background 0.2s;
+}
+.TheGoiPawVipItem.NoiBat { border-color: var(--MauDoDam); }
+.TheGoiPawVipItem.DangChonGoi { border-color: var(--MauDoDam); background: var(--MauHongNhat); }
+
+.NhanNoiBat {
+  position: absolute;
+  top: -10px;
+  right: 18px;
+  background: var(--MauDoDam);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 12px;
+  border-radius: 999px;
+}
+
+.DauTheGoi { display: flex; flex-direction: column; gap: 4px; }
+.TenGoi { font-weight: 800; font-size: 16px; color: #222; }
+.PhanTramGoi { font-size: 26px; font-weight: 800; color: var(--MauDoDam); }
+.PhanTramGoi small { font-size: 12px; font-weight: 600; color: #888; }
+
+.DanhSachQuyenLoiGoi { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+.DanhSachQuyenLoiGoi li { font-size: 13px; color: #555; padding-left: 18px; position: relative; }
+.DanhSachQuyenLoiGoi li::before { content: '✓'; position: absolute; left: 0; color: #1a7f37; font-weight: 700; }
+
+.CuoiTheGoi {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: auto;
+  padding-top: 14px;
+  border-top: 1px dashed #eee;
+}
+.GiaGoi { font-weight: 800; font-size: 17px; color: #222; }
+.GiaGoi small { font-weight: 500; font-size: 12px; color: #888; }
+
+.NutChonGoi {
+  background: #fff;
+  border: 2px solid var(--MauDoDam);
+  color: var(--MauDoDam);
+  border-radius: 999px;
+  padding: 10px 0;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.TheGoiPawVipItem.DangChonGoi .NutChonGoi { background: var(--MauDoDam); color: #fff; }
+.NutChonGoi:hover { opacity: 0.85; }
+
+/* Savings summary block + activate button */
+.KhuTomTatPawVip {
+  border: 1px solid #eee;
+  border-radius: 14px;
+  padding: 20px;
+  background: #fff;
+}
+
+.ChanKhuPawVip {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 900px) {
+  .ChanKhuPawVip { flex-direction: column; align-items: stretch; }
+}
+
+.NutKichHoatPawVip {
+  background: var(--MauDoDam);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 12px 26px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.NutKichHoatPawVip:hover { opacity: 0.85; }
+.NutKichHoatPawVip:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.BangSoSanhPawVip { flex: 1; min-width: 240px; font-size: 14px; }
+.DangTaiPawVip { color: #888; }
+.DongSoSanh { display: flex; justify-content: space-between; padding: 5px 0; color: #555; }
+.DongTongSoSanh { font-weight: 800; color: var(--MauDoDam); border-top: 1px dashed #eee; margin-top: 8px; padding-top: 10px; }

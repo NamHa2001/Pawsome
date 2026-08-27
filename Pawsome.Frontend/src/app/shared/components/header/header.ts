@@ -24,8 +24,6 @@ export class Header {
   private readonly authService = inject(AuthService);
   private readonly cartService = inject(CartService);
 
-  // Menu "Brands" trước đây hardcode cứng tên + brandId, dễ bị lỗi thời khi danh sách brand thay
-  // đổi (đã xảy ra thật) - giờ lấy trực tiếp từ danh mục thương hiệu thật.
   readonly danhSachThuongHieu = signal<ThuongHieu[]>([]);
 
   readonly nguoiDungHienTai = toSignal(this.tokenService.currentUser$, {
@@ -38,8 +36,8 @@ export class Header {
 
   readonly daCuonQua200 = signal(false);
   readonly danHeader = signal(false);
-  // Số lượng trên icon giỏ hàng lấy trực tiếp từ CartService (nguồn dữ liệu thật,
-  // tự động đồng bộ khi thêm/sửa/xóa sản phẩm) thay vì đọc localStorage 1 lần lúc khởi tạo.
+  
+  // Tự động nhận giá trị items.length từ CartService
   readonly soLuongGioHang = this.cartService.soLuongGioHang;
 
   private viTriCuonTruoc = 0;
@@ -52,16 +50,12 @@ export class Header {
   constructor(private readonly router: Router) {
     this.brandService.getAll().subscribe(ds => this.danhSachThuongHieu.set(ds));
 
-    // Tải số lượng giỏ hàng thật từ server khi header khởi tạo (và mỗi khi
-    // trạng thái đăng nhập thay đổi) để icon luôn khớp với giỏ hàng hiện có.
     effect(() => {
       if (this.daDangNhap()) {
         this.cartService.taiLaiSoLuong();
       }
     });
 
-    // Gợi ý ngay trong lúc gõ, không chờ dừng gõ mới gọi API - switchMap tự hủy
-    // request cũ mỗi khi có ký tự mới nên gõ nhanh không bị dồn/loạn kết quả.
     this.tuKhoaGoiY$
       .pipe(
         distinctUntilChanged(),
@@ -84,7 +78,6 @@ export class Header {
   }
 
   dongGoiY(): void {
-    // Trễ 1 nhịp để kịp nhận sự kiện click vào item gợi ý trước khi ẩn danh sách.
     setTimeout(() => this.hienGoiY.set(false), 150);
   }
 
