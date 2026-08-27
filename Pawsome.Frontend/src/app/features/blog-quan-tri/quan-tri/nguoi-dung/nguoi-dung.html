@@ -3,9 +3,103 @@
   <p class="MoTaTrang">Account list, lock/unlock, and role assignment.</p>
 </div>
 
+@if (loiHanhDong()) {
+  <p class="ThongBaoLoi">{{ loiHanhDong() }}</p>
+}
+
 <div class="TheQuanTri">
-  <div class="TieuDeThe">Account List</div>
-  <div class="ThanThe ThanTheRong">
-    <p>The account list, lock/unlock, and role assignment controls will appear here.</p>
+  <div class="TieuDeThe TieuDeTheBoLoc">
+    <span>Accounts ({{ tongSo() }})</span>
+    <div class="KhungBoLoc">
+      <input
+        class="OTimKiem"
+        type="text"
+        placeholder="Search by name or email..."
+        [ngModel]="tuKhoa()"
+        (ngModelChange)="tuKhoa.set($event)"
+        (keyup.enter)="timKiem()">
+      <select class="ChonBoLoc" [ngModel]="trangThaiLoc()" (ngModelChange)="doiBoLocTrangThai($event)">
+        <option value="">All statuses</option>
+        <option value="active">Active</option>
+        <option value="locked">Locked</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="ThanThe">
+    @if (dangTai()) {
+      <p class="ThongBaoRong">Loading...</p>
+    } @else if (loiTai()) {
+      <p class="ThongBaoRong ThongBaoLoi">{{ loiTai() }}</p>
+    } @else if (danhSach().length === 0) {
+      <p class="ThongBaoRong">No accounts found.</p>
+    } @else {
+      <div class="BangCuon">
+        <table class="BangNguoiDung">
+          <thead>
+            <tr>
+              <th>Account</th>
+              <th>Phone</th>
+              <th>PawPoints</th>
+              <th>Joined</th>
+              <th>Status</th>
+              <th>Role</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (user of danhSach(); track user.userId) {
+              <tr>
+                <td>
+                  <div class="OTaiKhoan">
+                    <span class="TenNguoiDung">{{ user.hoTen }}</span>
+                    <span class="EmailNguoiDung">{{ user.email }}</span>
+                  </div>
+                </td>
+                <td>{{ user.soDienThoai || '—' }}</td>
+                <td>{{ user.diemPawpoints | number:'1.0-0' }}</td>
+                <td>{{ user.ngayTao | date:'dd/MM/yyyy' }}</td>
+                <td>
+                  <span class="StatusBadge" [class.StatusActive]="user.trangThai === 'active'" [class.StatusLocked]="user.trangThai === 'locked'">
+                    {{ user.trangThai === 'locked' ? 'Locked' : 'Active' }}
+                  </span>
+                </td>
+                <td>
+                  <select
+                    class="ChonVaiTro"
+                    [ngModel]="user.role"
+                    [disabled]="dangCapNhatDong(user.userId)"
+                    (ngModelChange)="doiVaiTro(user, $event)">
+                    @for (vaiTro of cacVaiTro; track vaiTro.id) {
+                      <option [value]="vaiTro.ten">{{ vaiTro.ten }}</option>
+                    }
+                  </select>
+                </td>
+                <td>
+                  <button
+                    type="button"
+                    class="NutKhoa"
+                    [class.DangKhoa]="user.trangThai === 'locked'"
+                    [disabled]="dangCapNhatDong(user.userId)"
+                    (click)="toggleKhoa(user)">
+                    {{ user.trangThai === 'locked' ? 'Unlock' : 'Lock' }}
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      @if (tongTrang() > 1) {
+        <div class="PhanTrang">
+          <button type="button" [disabled]="trang() === 1" (click)="doiTrang(trang() - 1)">Prev</button>
+          @for (t of cacTrang(); track t) {
+            <button type="button" [class.active]="trang() === t" (click)="doiTrang(t)">{{ t }}</button>
+          }
+          <button type="button" [disabled]="trang() === tongTrang()" (click)="doiTrang(trang() + 1)">Next</button>
+        </div>
+      }
+    }
   </div>
 </div>
