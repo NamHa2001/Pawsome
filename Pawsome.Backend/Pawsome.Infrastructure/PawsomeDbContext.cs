@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Pawsome.Domain.Entities.BlogQuanTri;
 using Pawsome.Domain.Entities.Common;
 using Pawsome.Domain.Entities.DonHang;
@@ -52,5 +53,28 @@ public class PawsomeDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(PawsomeDbContext).Assembly);
+
+        // Toàn hệ thống lưu thời gian bằng DateTime.UtcNow (chuẩn UTC), nhưng cột datetime2 của
+        // SQL Server không lưu thông tin múi giờ nên EF Core đọc lại luôn ra Kind=Unspecified -
+        // khi serialize JSON bị thiếu hậu tố "Z", frontend hiểu nhầm là giờ local nên hiển thị
+        // chậm hơn giờ Việt Nam 7 tiếng. Ép lại Kind=Utc ngay khi đọc để JSON luôn có "Z", trình
+        // duyệt tự quy đổi đúng sang giờ máy người dùng.
+        var utcConverter = new ValueConverter<DateTime, DateTime>(
+            v => v,
+            v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
+        var utcConverterNullable = new ValueConverter<DateTime?, DateTime?>(
+            v => v,
+            v => v.HasValue ? DateTime.SpecifyKind(v.Value, DateTimeKind.Utc) : v);
+
+        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        {
+            foreach (var property in entityType.GetProperties())
+            {
+                if (property.ClrType == typeof(DateTime))
+                    property.SetValueConverter(utcConverter);
+                else if (property.ClrType == typeof(DateTime?))
+                    property.SetValueConverter(utcConverterNullable);
+            }
+        }
     }
 }
