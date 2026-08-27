@@ -188,54 +188,6 @@
             <p class="GhiChuPawPoints">You will earn {{ diemThuongDuKien() }} PawPoints by placing this order.</p>
           </div>
 
-          <!-- Gợi ý sản phẩm bên phải -->
-          <div class="TheGoiYBenPhai">
-            <h4>You Might Also Like</h4>
-            <div class="TabGoiYBenPhai">
-              <button type="button" class="NutTabGoiYBenPhai" [class.DangChon]="tabGoiY() === 'thuong-mua'" (click)="tabGoiY.set('thuong-mua')">Frequently Bought</button>
-              <button type="button" class="NutTabGoiYBenPhai" [class.DangChon]="tabGoiY() === 'lien-quan'" (click)="tabGoiY.set('lien-quan')">Related</button>
-            </div>
-
-            @if (sanPhamGoiYHienThi().length === 0) {
-              <p class="KhongCoGoiYBenPhai">No suggestions available right now.</p>
-            } @else {
-              <div class="DanhSachGoiYBenPhai">
-                @for (sp of sanPhamGoiYHienThi(); track sp.variantId) {
-                  <div class="DongGoiYBenPhai">
-                    <img [src]="sp.hinhAnh" [alt]="sp.ten" class="AnhGoiYBenPhai" />
-
-                    <div class="ThongTinGoiYBenPhai">
-                      <span class="TenGoiYBenPhai">{{ sp.ten }}</span>
-
-                      <div class="SaoVangNho">
-                        @for (s of saoArr; track s) {
-                          <span class="SaoONho">
-                            <i class="fa-solid fa-star SaoNenNho"></i>
-                            <i class="fa-solid fa-star SaoDayNho" [style.width.%]="phanTramSaoGoiY(s, sp.diemDanhGia)"></i>
-                          </span>
-                        }
-                        <span class="DiemSoNho">{{ sp.diemDanhGia }}</span>
-                      </div>
-
-                      <div class="GiaGoiYBenPhai">
-                        <span class="GiaChinhGoiYBenPhai">{{ sp.gia | number:'1.0-0' }} đ</span>
-                      </div>
-                    </div>
-
-                    <button
-                      type="button"
-                      class="NutThemGoiYBenPhai"
-                      [disabled]="dangThemGoiY() === sp.variantId"
-                      [attr.aria-label]="'Add ' + sp.ten + ' to cart'"
-                      (click)="themVaoGioTuGoiY(sp)">
-                      <i class="fa-solid" [class.fa-plus]="dangThemGoiY() !== sp.variantId" [class.fa-spinner]="dangThemGoiY() === sp.variantId" [class.fa-spin]="dangThemGoiY() === sp.variantId"></i>
-                    </button>
-                  </div>
-                }
-              </div>
-            }
-          </div>
-
           <!-- Khối mã giảm giá (Đã dọn dẹp mã trùng lặp) -->
           <div class="TheMaGiamGia">
             <h4>Promo Code</h4>
