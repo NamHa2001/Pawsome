@@ -17,8 +17,7 @@ export interface PawPointsHistoryFilter {
   pageSize?: number;
 }
 
-// Khớp PawPointsService.VndMoiDiem bên backend - đổi ở cả 2 nơi nếu tỉ lệ thay đổi
-export const VND_PER_PAWPOINT = 10000;
+export const VND_PER_PAWPOINT = 1000;
 
 export const PAWPOINTS_TYPE_LABELS: Record<string, string> = {
   earn: 'Earned from Order',
