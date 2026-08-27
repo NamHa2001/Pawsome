@@ -1,7 +1,7 @@
 import { DecimalPipe } from '@angular/common';
 import { Component, computed, effect, inject, input, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { SanPham } from '../models/san-pham.model';
+import { SanPham, phanTramSao } from '../models/san-pham.model';
 import { ProductService } from '../services/product.service';
 import { CartService } from '../../gio-hang/gio-hang/services/cart.service';
 import { TokenService } from '../../../core/models/token.service';
@@ -20,6 +20,9 @@ export class GoiYSanPham {
 
   readonly productId = input.required<number>();
   readonly categoryId = input.required<number>();
+
+  readonly saoArr = [1, 2, 3, 4, 5];
+  protected readonly phanTramSao = phanTramSao;
 
   readonly sanPhamCungDanhMuc = signal<SanPham[]>([]);
   readonly sanPhamBanChay = signal<SanPham[]>([]);

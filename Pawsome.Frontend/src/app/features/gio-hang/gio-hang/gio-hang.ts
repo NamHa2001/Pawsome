@@ -12,6 +12,8 @@ import { ChatAi } from '../../../shared/components/chat-ai/chat-ai';
 import { Footer } from '../../../shared/components/footer/footer';
 import { Header } from '../../../shared/components/header/header';
 import { TokenService } from '../../../core/models/token.service';
+import { ProductService } from '../../san-pham/services/product.service';
+import { SanPham } from '../../san-pham/models/san-pham.model';
 
 type TabGoiY = 'thuong-mua' | 'lien-quan';
 
@@ -21,8 +23,7 @@ interface SanPhamGoiY {
   hinhAnh: string;
   diemDanhGia: number;
   soLuotDanhGia: number;
-  giaGoc: number;
-  giaKhuyenMai: number;
+  gia: number;
 }
 
 interface ThongBaoCoupon {
@@ -45,6 +46,7 @@ export class GioHangComponent {
   private readonly couponService = inject(CouponService);
   private readonly autoOrderService = inject(AutoOrderService);
   private readonly tokenService = inject(TokenService);
+  private readonly productService = inject(ProductService);
 
   private readonly nguoiDungHienTai = toSignal(this.tokenService.currentUser$, {
     initialValue: this.tokenService.getUser()
@@ -117,6 +119,7 @@ export class GioHangComponent {
       next: res => {
         this.gioHang.set(res.data ?? null);
         this.dangTai.set(false);
+        this.taiSanPhamGoiY();
       },
       error: () => {
         this.loi.set('Could not load your cart. Please try again.');
@@ -130,6 +133,62 @@ export class GioHangComponent {
       next: ds => this.danhSachMaGiamGia.set(ds),
       error: () => this.danhSachMaGiamGia.set([])
     });
+  }
+
+  // "Frequently Bought"/"Related Products" cần 1 sản phẩm/danh mục làm mốc để gọi API gợi ý có
+  // sẵn của Phần 2 (getBanChay/search) - nhưng CartItem chỉ có variantId, không có productId/
+  // categoryId (backend chưa trả). Tra ngược bằng cách tìm đúng tên sản phẩm của dòng đầu tiên
+  // trong giỏ (tuKhoa khớp chính xác tên). Giỏ trống hoặc tra không ra thì lấy sản phẩm đầu tiên
+  // của toàn catalog làm mốc mặc định - luôn có gợi ý thật thay vì để trống vĩnh viễn.
+  private taiSanPhamGoiY(): void {
+    const dongDauTien = this.gioHang()?.items[0];
+    if (!dongDauTien) {
+      this.layGoiYMacDinh();
+      return;
+    }
+
+    this.productService.search({ tuKhoa: dongDauTien.tenSanPham, page: 1, pageSize: 1 }).subscribe({
+      next: ket => {
+        const sp = ket.items[0];
+        if (sp) {
+          this.taiGoiYTheoSanPham(sp.productId, sp.categoryId);
+        } else {
+          this.layGoiYMacDinh();
+        }
+      },
+      error: () => this.layGoiYMacDinh()
+    });
+  }
+
+  private layGoiYMacDinh(): void {
+    this.productService.search({ page: 1, pageSize: 1 }).subscribe(ket => {
+      const sp = ket.items[0];
+      if (sp) this.taiGoiYTheoSanPham(sp.productId, sp.categoryId);
+    });
+  }
+
+  private taiGoiYTheoSanPham(productId: number, categoryId: number): void {
+    this.productService.getBanChay(productId, 4).subscribe(ds =>
+      this.sanPhamThuongMua.set(ds.map(sp => this.mapSanPhamThanhGoiY(sp)))
+    );
+
+    this.productService.search({ categoryId, page: 1, pageSize: 5 }).subscribe(ket =>
+      this.sanPhamLienQuan.set(
+        ket.items.filter(sp => sp.productId !== productId).slice(0, 4).map(sp => this.mapSanPhamThanhGoiY(sp))
+      )
+    );
+  }
+
+  private mapSanPhamThanhGoiY(sp: SanPham): SanPhamGoiY {
+    const bienThe = sp.variants.find(v => v.dangKinhDoanh && v.soLuongTon > 0) ?? sp.variants[0];
+    return {
+      variantId: bienThe?.variantId ?? 0,
+      ten: sp.ten,
+      hinhAnh: sp.images.find(i => i.laAnhChinh)?.url ?? sp.images[0]?.url ?? '/img/logo1.png',
+      diemDanhGia: sp.diemDanhGiaTb,
+      soLuotDanhGia: sp.soLuongDanhGia,
+      gia: sp.giaTu ?? 0
+    };
   }
 
   themVaoGioTuGoiY(sp: SanPhamGoiY): void {

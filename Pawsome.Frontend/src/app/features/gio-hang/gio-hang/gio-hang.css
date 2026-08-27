@@ -155,25 +155,12 @@
   height: 32px;
 }
 
-.DanhGiaGoiY {
-  font-size: 11px;
-  color: #ffa800;
-  font-weight: 600;
-}
-
 .GiaGoiY {
   display: flex;
-  gap: 8px;
   align-items: baseline;
 }
 
-.GiaGocGoiY {
-  font-size: 11px;
-  color: #888;
-  text-decoration: line-through;
-}
-
-.GiaKhuyenMaiGoiY {
+.GiaChinhGoiY {
   font-size: 14px;
   font-weight: 800;
   color: var(--MauDoDam);
@@ -692,25 +679,19 @@
   color: #ffd700;
 }
 
-.SoDanhGiaNho {
+.DiemSoNho {
   font-size: 10px;
-  color: #888;
+  color: #222;
+  font-weight: 600;
   margin-left: 4px;
 }
 
 .GiaGoiYBenPhai {
   display: flex;
   align-items: baseline;
-  gap: 6px;
 }
 
-.GiaGocGoiYBenPhai {
-  font-size: 10px;
-  color: #888;
-  text-decoration: line-through;
-}
-
-.GiaKhuyenMaiGoiYBenPhai {
+.GiaChinhGoiYBenPhai {
   font-size: 12px;
   font-weight: 800;
   color: var(--MauDoDam);

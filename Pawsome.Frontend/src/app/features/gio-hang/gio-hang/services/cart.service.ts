@@ -25,6 +25,12 @@ export class CartService {
     });
   }
 
+  // Gọi khi đăng xuất - giỏ hàng thuộc về tài khoản đã đăng nhập, không tự động về 0 nếu không
+  // reset thủ công (badge vẫn giữ nguyên số lượng của phiên trước đó).
+  resetSoLuong(): void {
+    this._soLuongGioHang.set(0);
+  }
+
   private layGioHangGoc(): Observable<ApiResponse<Cart>> {
     return this.http.get<ApiResponse<Cart>>(this.baseUrl);
   }
