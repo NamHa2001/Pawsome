@@ -1,5 +1,4 @@
 $sidebar-rong: 224px;
-$sidebar-thu-gon: 78px;
 $topbar-cao: 60px;
 
 .KhungQuanTri {
@@ -20,7 +19,6 @@ $topbar-cao: 60px;
   height: 100vh;
   background: linear-gradient(180deg, var(--MauDoDam) 0%, #6D2121 100%);
   box-shadow: 0.15rem 0 1rem rgba(0, 0, 0, 0.15);
-  transition: width 0.2s ease;
   z-index: 20;
 }
 
@@ -93,28 +91,6 @@ $topbar-cao: 60px;
   }
 }
 
-.NutThuGon {
-  margin: 12px 16px 28px;
-  background: rgba(255, 255, 255, 0.08);
-  border: none;
-  color: var(--MauTrang);
-  border-radius: 8px;
-  padding: 10px 0;
-  cursor: pointer;
-
-  &:hover { background: rgba(255, 255, 255, 0.18); }
-}
-
-// ── Trạng thái thu gọn ───────────────────────────────────────────────────
-.KhungQuanTri.DaThuGon {
-  .SidebarQuanTri { width: $sidebar-thu-gon; }
-  .TenLogo, .TieuDeNhomMenu { display: none; }
-  .LogoQuanTri { justify-content: center; padding: 22px 0; }
-  .MucMenu { justify-content: center; padding: 12px 0; border-left: none; }
-  .MucMenu.active { border-left: none; box-shadow: inset 3px 0 0 #FFD700; }
-  .KhungPhai { margin-left: $sidebar-thu-gon; }
-}
-
 // ── Phần bên phải: topbar + nội dung + footer ───────────────────────────
 // margin-left = đúng bề rộng sidebar (đang fixed, ra khỏi luồng) để Main
 // Content trải hết phần chiều rộng còn lại của màn hình
@@ -123,7 +99,6 @@ $topbar-cao: 60px;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  transition: margin-left 0.2s ease;
 }
 
 .TopbarQuanTri {
@@ -138,18 +113,6 @@ $topbar-cao: 60px;
   position: sticky;
   top: 0;
   z-index: 10;
-}
-
-.NutMenuDiDong {
-  background: none;
-  border: none;
-  font-size: 18px;
-  color: var(--MauDoDam);
-  cursor: pointer;
-  padding: 6px 8px;
-  border-radius: 6px;
-
-  &:hover { background: var(--MauHongNhat); }
 }
 
 .KhoangTrongTopbar { flex: 1; }

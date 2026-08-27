@@ -1,4 +1,4 @@
-<div class="KhungQuanTri" [class.DaThuGon]="dongThuGon()">
+<div class="KhungQuanTri">
   <aside class="SidebarQuanTri">
     <div class="LogoQuanTri">
       <i class="fa-solid fa-paw"></i>
@@ -43,19 +43,10 @@
         <span class="ChuMucMenu">Review Moderation</span>
       </a>
     </nav>
-
-    <hr class="GachSidebar GachDuoi">
-    <button type="button" class="NutThuGon" (click)="toggleThuGonSidebar()" title="Collapse/expand menu">
-      <i class="fa-solid" [class.fa-angles-left]="!dongThuGon()" [class.fa-angles-right]="dongThuGon()"></i>
-    </button>
   </aside>
 
   <div class="KhungPhai">
     <header class="TopbarQuanTri">
-      <button type="button" class="NutMenuDiDong" (click)="toggleThuGonSidebar()">
-        <i class="fa-solid fa-bars"></i>
-      </button>
-
       <div class="KhoangTrongTopbar"></div>
 
       <div class="KhungNguoiDung">
