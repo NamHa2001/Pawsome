@@ -70,9 +70,6 @@ public class OrderService : IOrderService
             giamGiaCoupon = Math.Min(giamGiaCoupon, tienHang);
         }
 
-        // quy đổi PawPoints thành giảm giá (tùy chọn) - chỉ VALIDATE ở đây (đọc số dư),
-        // chưa ghi transaction trừ điểm - việc ghi thật nằm trong khối transaction bên dưới,
-        // để chắc chắn đơn tạo thành công thì điểm mới thực sự bị trừ.
         decimal giamGiaDiem = 0;
         if (dto.SoDiemMuonDoi is > 0)
         {
@@ -115,26 +112,20 @@ public class OrderService : IOrderService
             };
 
             _dbContext.Orders.Add(order);
-            await _dbContext.SaveChangesAsync(); // cần OrderId trước khi ghi pawpoints_transactions (FK order_id)
+            await _dbContext.SaveChangesAsync(); 
 
-            // Trừ tồn kho qua hàm dùng chung của Phần 2 (ExecuteUpdateAsync vẫn tham gia
-            // transaction đang mở vì dùng chung PawsomeDbContext/connection)
             foreach (var item in cart.CartItems)
                 await _productService.TruTonKhoAsync(item.VariantId, item.SoLuong);
 
-            // Trừ lượt dùng coupon - gọi hàm của Phần 3 (cũng dùng chung DbContext nên vẫn nằm trong transaction này)
+            // Trừ lượt dùng coupon 
             if (dto.CouponId.HasValue)
             {
                 var coupon = await _dbContext.Coupons.FindAsync(dto.CouponId.Value);
                 await _couponService.SuDungMaAsync(coupon!.MaCode);
             }
 
-            /* Cộng PawPoints: 1 điểm / 10.000đ CHI TIÊU CHO HÀNG (không tính phí ship, và tính
-             trên số tiền hàng SAU khi trừ giảm giá - không phải trên thanh_tien vì thanh_tien
-             còn cộng thêm pBhí vận chuyển). Bảng diem_pawpoints trên users tự đồng bộ qua
-             trigger trg_pawpoints_sync_balance - KHÔNG tự sửa users.diem_pawpoints ở đây.*/
             var tienHangThucChi = Math.Max(0, tienHang - giamGia);
-            var soDiemTich = (int)(tienHangThucChi / 10000);
+            var soDiemTich = (int)(tienHangThucChi / 1000);
             if (soDiemTich > 0)
             {
                 _dbContext.PawPointsTransactions.Add(new PawPointsTransaction
@@ -162,7 +153,7 @@ public class OrderService : IOrderService
 
             await _dbContext.SaveChangesAsync();
 
-            // Xóa giỏ hàng - gọi hàm của Phần 3 (chỉ sau khi mọi bước trên đã chắc chắn ổn)
+            // Xóa giỏ hàng 
             await _cartService.XoaSachGioHangAsync(userId);
 
             await _auditLogService.LogAsync(userId, "TAO_DON_HANG", "orders", order.OrderId,
@@ -331,9 +322,6 @@ public class OrderService : IOrderService
         TrangThai = o.TrangThai,
         DonViVanChuyen = o.DonViVanChuyen,
         MaVanDon = o.MaVanDon,
-        // o.User chỉ khác null khi query có .Include(o => o.User) (đường admin) - các
-        // đường khách hàng tự xem đơn của mình không Include nên giữ nguyên null, không
-        // ảnh hưởng dữ liệu đã trả về trước đây.
         HoTenKhachHang = o.User?.HoTen,
         EmailKhachHang = o.User?.Email,
         OrderItems = o.OrderItems.Select(oi => new OrderItemDto

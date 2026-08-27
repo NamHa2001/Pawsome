@@ -62,9 +62,7 @@ public class PawPointsService : IPawPointsService
         };
     }
 
-    // Tỉ lệ quy đổi khi TIÊU điểm - đề xuất đối xứng với tỉ lệ TÍCH điểm ở YC-5.1
-    // (1 điểm được cộng mỗi 10.000đ chi tiêu). CẦN CHỐT LẠI với nhóm nếu muốn tỉ lệ khác.
-    private const decimal VndMoiDiem = 10000m;
+    private const decimal VndMoiDiem = 1000m;
 
     public async Task<decimal> KiemTraVaTinhQuyDoiAsync(int userId, int soDiemMuonDoi)
     {
@@ -82,10 +80,6 @@ public class PawPointsService : IPawPointsService
         return soDiemMuonDoi * VndMoiDiem;
     }
 
-    // Gọi từ AuthService.RegisterAsync (Phần 1) ngay sau khi tạo user thành công - xem
-    // Pawsome_KhungDuAn.md/SRS YC-5.2. Nhờ bạn làm Phần 1 thêm 1 dòng:
-    //   await _pawPointsService.CongDiemThuongDangKyAsync(user.UserId);
-    // vào cuối RegisterAsync (cần inject thêm IPawPointsService vào constructor của AuthService).
     public async Task CongDiemThuongDangKyAsync(int userId)
     {
         _dbContext.PawPointsTransactions.Add(new Pawsome.Domain.Entities.DonHang.PawPointsTransaction

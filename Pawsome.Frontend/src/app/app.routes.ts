@@ -8,4 +8,9 @@ export const routes: Routes = [
   { path: 'blog',      loadChildren: () => import('./features/blog-quan-tri/blog.routes').then(m => m.routes) },
   { path: 'wishlist',  loadChildren: () => import('./features/blog-quan-tri/wishlist.routes').then(m => m.routes) },
   { path: 'quan-tri',  loadChildren: () => import('./features/blog-quan-tri/quan-tri.routes').then(m => m.routes) },
+  {
+    path: 'checkout/result',
+    loadComponent: () =>
+      import('./features/don-hang/ket-qua-thanh-toan/ket-qua-thanh-toan').then(m => m.KetQuaThanhToanComponent)
+  },
 ];
