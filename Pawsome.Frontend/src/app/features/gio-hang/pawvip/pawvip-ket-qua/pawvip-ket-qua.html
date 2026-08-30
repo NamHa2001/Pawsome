@@ -1,0 +1,60 @@
+<app-header />
+
+<main class="NoiDungChinh">
+<div class="KetQuaPage">
+  <div class="VungAnToan">
+    <div class="ResultCard">
+
+      @switch (ketQua()) {
+        @case ('dang_xac_nhan') {
+          <div class="IconCircle Verifying">
+            <i class="fa-solid fa-spinner fa-spin"></i>
+          </div>
+          <h1 class="ResultTitle">Verifying your payment...</h1>
+          <p class="ResultText">Please wait a moment while we confirm your PawVip payment.</p>
+        }
+        @case ('thanh_cong') {
+          <div class="IconCircle Success">
+            <i class="fa-solid fa-check"></i>
+          </div>
+          <h1 class="ResultTitle">PawVip Activated!</h1>
+          <p class="ResultText">
+            @if (tier()) {
+              Your <strong>{{ tier() }}</strong> plan is now active. Enjoy your discount on every order!
+            } @else {
+              Your PawVip membership is now active.
+            }
+          </p>
+        }
+        @case ('that_bai') {
+          <div class="IconCircle Failed">
+            <i class="fa-solid fa-xmark"></i>
+          </div>
+          <h1 class="ResultTitle">Payment Failed</h1>
+          <p class="ResultText">
+            Your PawVip payment could not be completed. No charges were made. You can try again from the PawVip page.
+          </p>
+        }
+        @default {
+          <div class="IconCircle Unknown">
+            <i class="fa-solid fa-question"></i>
+          </div>
+          <h1 class="ResultTitle">We couldn't confirm this payment</h1>
+          <p class="ResultText">
+            Please check back on the PawVip page in a moment — it may take a little longer to update.
+          </p>
+        }
+      }
+
+      <div class="ResultActions">
+        <button type="button" class="PrimaryButton" (click)="goNgayVePawVip()">
+          Back to PawVip ({{ demNguoc() }}s)
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+</main>
+
+<app-footer />

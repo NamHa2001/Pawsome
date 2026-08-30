@@ -112,6 +112,13 @@
             </div>
           }
 
+          @if (pawVipDiscount() > 0) {
+            <div class="SummaryLine Discount">
+              <span>PawVip Discount</span>
+              <span>−{{ pawVipDiscount() | number:'1.0-0' }} VND</span>
+            </div>
+          }
+
           <div class="SummaryLine">
             <span>Estimated Shipping</span>
             <span>{{ cart()!.phiVanChuyenTamTinh | number:'1.0-0' }} VND</span>

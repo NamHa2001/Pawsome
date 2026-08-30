@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Pawsome.Infrastructure;
 
@@ -11,9 +12,11 @@ using Pawsome.Infrastructure;
 namespace Pawsome.Infrastructure.Migrations
 {
     [DbContext(typeof(PawsomeDbContext))]
-    partial class PawsomeDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260830110509_AddPawVipPayments")]
+    partial class AddPawVipPayments
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1223,10 +1226,6 @@ namespace Pawsome.Infrastructure.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)")
                         .HasColumnName("password_hash");
-
-                    b.Property<DateOnly?>("PawVipHetHan")
-                        .HasColumnType("date")
-                        .HasColumnName("pawvip_het_han");
 
                     b.Property<string>("PawVipTier")
                         .HasMaxLength(20)

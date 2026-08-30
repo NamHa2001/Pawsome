@@ -7,6 +7,8 @@ public class UserProfileDto
     public string HoTen { get; set; } = null!;
     public string? SoDienThoai { get; set; }
     public int DiemPawpoints { get; set; }
+    public string? PawVipTier { get; set; }
+    public DateOnly? PawVipHetHan { get; set; }
     public string Role { get; set; } = null!;
     public DateTime NgayTao { get; set; }
 }
