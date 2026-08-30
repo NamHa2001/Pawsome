@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { AdminUser, ROLE_OPTIONS } from './models/nguoi-dung.model';
+import { RouterLink } from '@angular/router';
+import { AdminUser, PAWVIP_TIER_LABELS, ROLE_OPTIONS } from './models/nguoi-dung.model';
 import { AdminUserService } from './services/admin-user.service';
 
 const PAGE_SIZE = 10;
@@ -9,7 +10,7 @@ const PAGE_SIZE = 10;
 @Component({
   selector: 'app-quan-tri-nguoi-dung',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './nguoi-dung.html',
   styleUrl: './nguoi-dung.scss'
 })
@@ -29,9 +30,18 @@ export class QuanTriNguoiDung {
 
   readonly cacVaiTro = ROLE_OPTIONS;
   readonly cacTrang = computed(() => Array.from({ length: this.tongTrang() }, (_, i) => i + 1));
+  readonly nhanGoiPawVip = PAWVIP_TIER_LABELS;
 
   constructor() {
     this.taiDanhSach();
+  }
+
+  // pawvip_het_han lưu ngày hết hạn theo NĂM (xem PawVipTiers.ConHieuLuc ở backend) - admin
+  // vẫn cần thấy các gói đã hết hạn để tra soát, nên so sánh ngay ở đây thay vì lọc từ backend
+  // như hồ sơ khách tự xem, chỉ để đánh dấu "Expired" cho rõ chứ không ẩn đi.
+  daHetHan(hetHan: string | null): boolean {
+    if (!hetHan) return false;
+    return new Date(hetHan) < new Date(new Date().toDateString());
   }
 
   taiDanhSach(): void {

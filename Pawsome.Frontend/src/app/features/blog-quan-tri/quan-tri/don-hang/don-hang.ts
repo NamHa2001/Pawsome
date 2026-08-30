@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import {
   ORDER_STATUS_FILTERS,
   orderStatusCssClass,
@@ -20,6 +21,8 @@ const PAGE_SIZE = 10;
 })
 export class QuanTriDonHang {
   private readonly adminOrderService = inject(AdminOrderService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
 
   readonly danhSach = signal<AdminOrder[]>([]);
   readonly tongSo = signal(0);
@@ -32,12 +35,30 @@ export class QuanTriDonHang {
   readonly moRong = signal<number | null>(null);
   readonly trangThaiLoc = signal('');
 
+  // Đến từ link "View all orders" ở trang nguoi-dung (?userId=...) - lọc bảng theo đúng khách
+  // đó, khác trangThaiLoc chỉ set qua UI dropdown ở trang này.
+  readonly userIdLoc = signal<number | null>(null);
+
   readonly boLocTrangThai = ORDER_STATUS_FILTERS;
   readonly tuyChonTrangThai = ORDER_STATUS_FILTERS.filter(o => o.value !== '');
 
   readonly cacTrang = computed(() => Array.from({ length: this.tongTrang() }, (_, i) => i + 1));
 
+  // Lấy tên khách từ chính danh sách đơn đã tải (mọi đơn trong trang đều của cùng 1 khách khi
+  // đang lọc theo userIdLoc) - không cần gọi thêm API riêng chỉ để hiện tên trên banner lọc.
+  readonly tenKhachDangLoc = computed(() => this.danhSach()[0]?.hoTenKhachHang ?? null);
+
   constructor() {
+    const userIdParam = this.route.snapshot.queryParamMap.get('userId');
+    if (userIdParam) this.userIdLoc.set(Number(userIdParam));
+
+    this.taiDanhSach();
+  }
+
+  xoaBoLocKhach(): void {
+    this.userIdLoc.set(null);
+    this.router.navigate([], { relativeTo: this.route, queryParams: {} });
+    this.trang.set(1);
     this.taiDanhSach();
   }
 
@@ -47,6 +68,7 @@ export class QuanTriDonHang {
 
     this.adminOrderService.layDanhSach({
       trangThai: this.trangThaiLoc() || undefined,
+      userId: this.userIdLoc() ?? undefined,
       page: this.trang(),
       pageSize: PAGE_SIZE
     }).subscribe({

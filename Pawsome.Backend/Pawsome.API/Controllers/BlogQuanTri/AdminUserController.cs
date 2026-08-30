@@ -31,6 +31,16 @@ public class AdminUserController : ControllerBase
         return Ok(ApiResponse<PagedResult<AdminUserDto>>.Ok(result));
     }
 
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById(int id)
+    {
+        var result = await _userService.GetUserByIdAdminAsync(id);
+        if (result == null)
+            return NotFound(ApiResponse<AdminUserDto>.Fail("Không tìm thấy người dùng."));
+
+        return Ok(ApiResponse<AdminUserDto>.Ok(result));
+    }
+
     [HttpPut("{id}/lock")]
     public async Task<IActionResult> Lock(int id)
     {

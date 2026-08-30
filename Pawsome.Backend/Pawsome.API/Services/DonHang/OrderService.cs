@@ -232,6 +232,9 @@ public class OrderService : IOrderService
         if (!string.IsNullOrWhiteSpace(filter.TrangThai))
             query = query.Where(o => o.TrangThai == filter.TrangThai);
 
+        if (filter.UserId.HasValue)
+            query = query.Where(o => o.UserId == filter.UserId.Value);
+
         query = (IOrderedQueryable<Order>)query.OrderByDescending(o => o.NgayDat);
 
         var tongSo = await query.CountAsync();

@@ -1,0 +1,170 @@
+<div class="TieuDeTrang">
+  <a routerLink="/quan-tri/nguoi-dung" class="LienKetQuayLai">← Back to Users</a>
+</div>
+
+@if (dangTai()) {
+  <p class="ThongBaoRong">Loading...</p>
+} @else if (loiTai()) {
+  <p class="ThongBaoRong ThongBaoLoi">{{ loiTai() }}</p>
+} @else if (user(); as u) {
+  <div class="KhuHoSo">
+    <div class="TheHoSo TheThongTinChinh">
+      <div class="DauHoSo">
+        <div>
+          <h1 class="TenKhach">{{ u.hoTen }}</h1>
+          <p class="EmailKhach">{{ u.email }}</p>
+        </div>
+        <span class="StatusBadge" [class.StatusActive]="u.trangThai === 'active'" [class.StatusLocked]="u.trangThai === 'locked'">
+          {{ u.trangThai === 'locked' ? 'Locked' : 'Active' }}
+        </span>
+      </div>
+
+      @if (loiHanhDong()) {
+        <p class="ThongBaoLoi">{{ loiHanhDong() }}</p>
+      }
+
+      <div class="LuoiThongTin">
+        <div class="OThongTin">
+          <span class="NhanThongTin">Phone</span>
+          <span class="GiaTriThongTin">{{ u.soDienThoai || '—' }}</span>
+        </div>
+        <div class="OThongTin">
+          <span class="NhanThongTin">Joined</span>
+          <span class="GiaTriThongTin">{{ u.ngayTao | date:'dd/MM/yyyy' }}</span>
+        </div>
+        <div class="OThongTin">
+          <span class="NhanThongTin">PawPoints</span>
+          <span class="GiaTriThongTin">{{ u.diemPawpoints | number:'1.0-0' }}</span>
+        </div>
+        <div class="OThongTin">
+          <span class="NhanThongTin">Role</span>
+          <select
+            class="ChonVaiTro"
+            [ngModel]="u.role"
+            [disabled]="dangCapNhat()"
+            (ngModelChange)="doiVaiTro($event)">
+            @for (vaiTro of cacVaiTro; track vaiTro.id) {
+              <option [value]="vaiTro.ten">{{ vaiTro.ten }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <button
+        type="button"
+        class="NutKhoa"
+        [class.DangKhoa]="u.trangThai === 'locked'"
+        [disabled]="dangCapNhat()"
+        (click)="toggleKhoa()">
+        {{ u.trangThai === 'locked' ? 'Unlock Account' : 'Lock Account' }}
+      </button>
+    </div>
+
+    <div class="TheHoSo ThePawVip">
+      <span class="TieuDeThePawVip">PawVip Membership</span>
+      @if (u.pawVipTier) {
+        <span class="PawVipBadgeLon" [class.PawVipHetHan]="daHetHan(u.pawVipHetHan)">
+          {{ nhanGoiPawVip[u.pawVipTier] ?? u.pawVipTier }}
+        </span>
+        @if (u.pawVipHetHan) {
+          <span class="NgayHetHanPawVip">
+            {{ daHetHan(u.pawVipHetHan) ? 'Expired on' : 'Valid until' }} {{ u.pawVipHetHan | date:'dd/MM/yyyy' }}
+          </span>
+        }
+        @if (goiPawVipDaChon(); as goi) {
+          <ul class="DanhSachQuyenLoi">
+            @for (ql of goi.quyenLoi; track ql) {
+              <li>{{ ql }}</li>
+            }
+          </ul>
+        }
+      } @else {
+        <span class="KhongPhaiPawVip">Not a PawVip member</span>
+      }
+    </div>
+  </div>
+
+  <div class="TheQuanTri KhuDonHang">
+    <div class="TieuDeThe">
+      <span>Order History ({{ tongSoDon() }})</span>
+    </div>
+
+    <div class="ThanThe">
+      @if (dangTaiDon()) {
+        <p class="ThongBaoRong">Loading orders...</p>
+      } @else if (loiTaiDon()) {
+        <p class="ThongBaoRong ThongBaoLoi">{{ loiTaiDon() }}</p>
+      } @else if (donHang().length === 0) {
+        <p class="ThongBaoRong">This customer has no orders yet.</p>
+      } @else {
+        <div class="BangCuon">
+          <table class="BangDonHang">
+            <thead>
+              <tr>
+                <th>Order</th>
+                <th>Date</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (order of donHang(); track order.orderId) {
+                <tr>
+                  <td>#{{ order.orderId }}</td>
+                  <td>{{ order.ngayDat | date:'dd/MM/yyyy HH:mm' }}</td>
+                  <td>{{ order.thanhTien | number:'1.0-0' }} VND</td>
+                  <td>
+                    <span class="StatusBadge" [ngClass]="orderStatusCssClass(order.trangThai)">
+                      {{ orderStatusLabel(order.trangThai) }}
+                    </span>
+                  </td>
+                  <td class="OHanhDong">
+                    <button type="button" class="NutXemChiTiet" (click)="toggleMoRongDon(order.orderId)">
+                      {{ moRongDon() === order.orderId ? 'Hide' : 'View' }}
+                    </button>
+                  </td>
+                </tr>
+                @if (moRongDon() === order.orderId) {
+                  <tr class="HangChiTiet">
+                    <td colspan="5">
+                      <div class="ChiTietDonHang">
+                        @for (item of order.orderItems; track item.orderItemId) {
+                          <div class="DongSanPham">
+                            <span>{{ item.tenSanPham }} — {{ item.tenBienThe }}</span>
+                            <span>x{{ item.soLuong }}</span>
+                            <span>{{ item.donGia | number:'1.0-0' }} VND</span>
+                          </div>
+                        }
+                        <div class="DongTomTat">
+                          <span>Subtotal: {{ order.tienHang | number:'1.0-0' }} VND</span>
+                          <span>Shipping: {{ order.phiVanChuyen | number:'1.0-0' }} VND</span>
+                          @if (order.giamGia > 0) {
+                            <span>Discount: −{{ order.giamGia | number:'1.0-0' }} VND</span>
+                          }
+                          @if (order.maVanDon) {
+                            <span>Tracking: {{ order.maVanDon }} ({{ order.donViVanChuyen }})</span>
+                          }
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                }
+              }
+            </tbody>
+          </table>
+        </div>
+
+        @if (tongTrangDon() > 1) {
+          <div class="PhanTrang">
+            <button type="button" [disabled]="trangDon() === 1" (click)="doiTrangDon(trangDon() - 1)">Prev</button>
+            @for (t of cacTrangDon(); track t) {
+              <button type="button" [class.active]="trangDon() === t" (click)="doiTrangDon(t)">{{ t }}</button>
+            }
+            <button type="button" [disabled]="trangDon() === tongTrangDon()" (click)="doiTrangDon(trangDon() + 1)">Next</button>
+          </div>
+        }
+      }
+    </div>
+  </div>
+}

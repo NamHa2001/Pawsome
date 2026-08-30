@@ -1,0 +1,264 @@
+.TieuDeTrang { margin-bottom: 16px; }
+
+.LienKetQuayLai {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--MauDoDam);
+  text-decoration: none;
+}
+.LienKetQuayLai:hover { opacity: 0.85; }
+
+.ThongBaoLoi {
+  color: #b91c1c;
+  background: #FDECEC;
+  border: 1px solid #F5C2C2;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+.ThongBaoRong { color: #999; font-size: 14px; text-align: center; padding: 50px 22px; margin: 0; }
+
+.KhuHoSo {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 900px) {
+  .KhuHoSo { grid-template-columns: 1fr; }
+}
+
+.TheHoSo {
+  background: var(--MauTrang);
+  border-radius: 0.35rem;
+  box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+  padding: 22px;
+}
+
+.DauHoSo {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.TenKhach { font-size: 20px; font-weight: 800; color: var(--MauDen); margin: 0 0 4px; }
+.EmailKhach { font-size: 13px; color: #888; margin: 0; }
+
+.LuoiThongTin {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.OThongTin { display: flex; flex-direction: column; gap: 4px; }
+.NhanThongTin { font-size: 12px; font-weight: 700; text-transform: uppercase; color: #AA9D9D; }
+.GiaTriThongTin { font-size: 14px; color: var(--MauDen); font-weight: 600; }
+
+.ChonVaiTro {
+  border: 1px solid #E0D0D0;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 13px;
+  color: var(--MauDen);
+  background: var(--MauTrang);
+  width: fit-content;
+}
+
+.StatusBadge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.StatusActive { background-color: var(--MauHongNhat); color: #2F8A4B; }
+.StatusLocked { background-color: #6D2121; color: var(--MauTrang); }
+
+/* Trạng thái đơn hàng - trùng bảng màu với quan-tri/don-hang */
+.StatusPending       { background-color: var(--MauHongNhat); color: #AA9D9D; border: 1px solid #AA9D9D; }
+.StatusProcessing    { background-color: var(--MauHongNhat); color: var(--MauDoDam); }
+.StatusShipped       { background-color: var(--MauHongNhat); color: #8A191C; }
+.StatusDelivered     { background-color: #2F2D2E; color: var(--MauTrang); }
+.StatusCancelled     { background-color: #6D2121; color: var(--MauTrang); }
+.StatusReturnPending { background-color: var(--MauTrang); color: #4D4D4E; border: 1px dashed #4D4D4E; }
+.StatusReturned      { background-color: #4D4D4E; color: var(--MauTrang); }
+
+.NutKhoa {
+  border: 1px solid var(--MauDoDam);
+  background: transparent;
+  color: var(--MauDoDam);
+  border-radius: 6px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+
+  &:hover { background: var(--MauHongNhat); }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  &.DangKhoa {
+    border-color: #2F8A4B;
+    color: #2F8A4B;
+
+    &:hover { background: #EAF7EE; }
+  }
+}
+
+.ThePawVip {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.TieuDeThePawVip { font-size: 13px; font-weight: 700; color: var(--MauDoDam); text-transform: uppercase; }
+
+.PawVipBadgeLon {
+  display: inline-block;
+  align-self: flex-start;
+  padding: 6px 16px;
+  border-radius: 999px;
+  font-size: 16px;
+  font-weight: 800;
+  background-color: var(--MauHongNhat);
+  color: var(--MauDoDam);
+}
+.PawVipBadgeLon.PawVipHetHan { background-color: #F0E5E5; color: #999; }
+
+.NgayHetHanPawVip { font-size: 13px; color: #888; }
+.KhongPhaiPawVip { font-size: 14px; color: #ccc; }
+
+.DanhSachQuyenLoi {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  li {
+    font-size: 13px;
+    color: #555;
+    padding-left: 18px;
+    position: relative;
+  }
+
+  li::before { content: '✓'; position: absolute; left: 0; color: #1a7f37; font-weight: 700; }
+}
+
+.KhuDonHang.TheQuanTri {
+  background: var(--MauTrang);
+  border-radius: 0.35rem;
+  box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+  overflow: hidden;
+}
+
+.TieuDeThe {
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid #F0E5E5;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--MauDoDam);
+}
+
+.ThanThe { padding: 0; }
+
+.BangCuon { overflow-x: auto; }
+
+.BangDonHang {
+  width: 100%;
+  border-collapse: collapse;
+
+  th, td {
+    text-align: left;
+    padding: 14px 22px;
+    border-bottom: 1px solid #F5EBEB;
+    vertical-align: top;
+    white-space: nowrap;
+  }
+
+  th {
+    background: var(--MauHongNhat);
+    color: var(--MauDoDam);
+    font-weight: 700;
+    font-size: 13px;
+    text-transform: uppercase;
+  }
+
+  tbody tr:hover td { background: #FFFAFA; }
+}
+
+.OHanhDong { display: flex; align-items: center; gap: 8px; }
+
+.NutXemChiTiet {
+  border: 1px solid #E0D0D0;
+  background: transparent;
+  color: var(--MauDen);
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+
+  &:hover { background: var(--MauHongNhat); }
+}
+
+.HangChiTiet td {
+  background: #FFFAFA;
+  white-space: normal;
+  padding: 16px 22px;
+}
+
+.ChiTietDonHang {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.DongSanPham {
+  display: flex;
+  gap: 16px;
+  font-size: 13px;
+  color: var(--MauDen);
+
+  span:first-child { flex: 1; min-width: 200px; }
+}
+
+.DongTomTat {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  font-size: 13px;
+  color: #666;
+  padding-top: 8px;
+  border-top: 1px dashed #E0D0D0;
+}
+
+.PhanTrang {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  padding: 18px 22px;
+
+  button {
+    border: 1px solid #E0D0D0;
+    background: var(--MauTrang);
+    border-radius: 6px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-size: 13px;
+
+    &:disabled { opacity: 0.5; cursor: not-allowed; }
+    &.active { background: var(--MauDoDam); color: var(--MauTrang); border-color: var(--MauDoDam); }
+    &:hover:not(:disabled):not(.active) { background: var(--MauHongNhat); }
+  }
+}

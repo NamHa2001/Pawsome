@@ -77,6 +77,15 @@ public class UserService : IUserService
         };
     }
 
+    public async Task<AdminUserDto?> GetUserByIdAdminAsync(int userId)
+    {
+        var user = await _dbContext.Users
+            .Include(u => u.Role)
+            .FirstOrDefaultAsync(u => u.UserId == userId);
+
+        return user == null ? null : MapToAdminDto(user);
+    }
+
     public async Task SetLockStatusAsync(int userId, bool locked)
     {
         var user = await _dbContext.Users.FindAsync(userId);
@@ -122,6 +131,10 @@ public class UserService : IUserService
         HoTen = user.HoTen,
         SoDienThoai = user.SoDienThoai,
         DiemPawpoints = user.DiemPawpoints,
+        // Không lọc theo ConHieuLuc như MapToProfileDto - admin cần thấy cả gói đã hết hạn để
+        // tra soát/hỗ trợ, không chỉ trạng thái còn hiệu lực như khách tự xem hồ sơ của mình.
+        PawVipTier = user.PawVipTier,
+        PawVipHetHan = user.PawVipHetHan,
         TrangThai = user.TrangThai,
         Role = user.Role.TenVaiTro,
         NgayTao = user.NgayTao

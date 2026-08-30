@@ -16,6 +16,7 @@ export class AdminOrderService {
       .set('page', filter.page ?? 1)
       .set('pageSize', filter.pageSize ?? 10);
     if (filter.trangThai) params = params.set('trangThai', filter.trangThai);
+    if (filter.userId) params = params.set('userId', filter.userId);
 
     return this.http
       .get<ApiResponse<PagedResult<AdminOrder>>>(this.baseUrl, { params })

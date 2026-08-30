@@ -25,6 +25,12 @@ export class AdminUserService {
       }));
   }
 
+  layChiTiet(userId: number): Observable<AdminUser> {
+    return this.http
+      .get<ApiResponse<AdminUser>>(`${this.baseUrl}/${userId}`)
+      .pipe(map(res => res.data!));
+  }
+
   khoa(userId: number): Observable<void> {
     return this.http.put<ApiResponse<object>>(`${this.baseUrl}/${userId}/lock`, {}).pipe(map(() => undefined));
   }

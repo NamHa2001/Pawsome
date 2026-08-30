@@ -18,6 +18,33 @@
 
 .ThongBaoRong { color: #999; font-size: 14px; text-align: center; padding: 50px 22px; margin: 0; }
 
+.BoLocKhach {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--MauHongNhat);
+  color: var(--MauDoDam);
+  border-radius: 8px;
+  padding: 10px 16px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.NutXoaBoLoc {
+  border: 1px solid var(--MauDoDam);
+  background: transparent;
+  color: var(--MauDoDam);
+  border-radius: 6px;
+  padding: 5px 12px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+
+  &:hover { background: var(--MauTrang); }
+}
+
 .TheQuanTri {
   background: var(--MauTrang);
   border-radius: 0.35rem;
