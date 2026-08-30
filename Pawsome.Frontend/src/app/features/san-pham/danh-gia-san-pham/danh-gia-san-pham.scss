@@ -132,7 +132,9 @@
   font-weight: 700;
   transition: 0.2s;
 
-  &:hover { color: #8A191C; }
+  &:hover:not(:disabled) { color: #8A191C; }
+  &:disabled { cursor: not-allowed; opacity: 0.6; }
+  &.DangChonVote { color: #8A191C; }
 }
 
 .PhanChiSoReview {

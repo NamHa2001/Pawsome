@@ -25,9 +25,26 @@ export class ReviewService {
       .pipe(map(res => res.data ?? []));
   }
 
+  // "Verified purchase" - chỉ khách đã mua VÀ đã nhận sản phẩm này (đơn ở trạng thái da_giao)
+  // mới được gửi đánh giá. Dùng để quyết định hiện form gửi đánh giá hay hiện thông báo cần mua
+  // trước - backend (ReviewService.CreateAsync) vẫn tự kiểm tra lại, không chỉ tin phía client.
+  coTheDanhGia(productId: number): Observable<boolean> {
+    return this.http
+      .get<ApiResponse<boolean>>(`${this.baseUrl}/product/${productId}/co-the-danh-gia`)
+      .pipe(map(res => res.data ?? false));
+  }
+
   create(dto: GuiDanhGia): Observable<DanhGia> {
     return this.http
       .post<ApiResponse<DanhGia>>(this.baseUrl, dto)
+      .pipe(map(res => res.data as DanhGia));
+  }
+
+  // Bấm lại đúng lựa chọn cũ thì gỡ vote, bấm lựa chọn khác thì đổi vote - xử lý thật ở backend
+  // (ReviewService.VoteAsync), không phải chỉ tăng số đếm ở client.
+  vote(reviewId: number, huuIch: boolean): Observable<DanhGia> {
+    return this.http
+      .post<ApiResponse<DanhGia>>(`${this.baseUrl}/${reviewId}/vote`, { huuIch })
       .pipe(map(res => res.data as DanhGia));
   }
 }

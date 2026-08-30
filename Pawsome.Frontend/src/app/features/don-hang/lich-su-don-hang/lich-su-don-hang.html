@@ -95,6 +95,13 @@
                     Request Return
                   </button>
                 }
+                @if (order.trangThai === 'da_giao') {
+                  @for (item of order.orderItems; track item.orderItemId) {
+                    <a [routerLink]="['/san-pham', item.productId]" fragment="reviews" class="SecondaryButton">
+                      Write a Review{{ order.orderItems.length > 1 ? ' – ' + item.tenSanPham : '' }}
+                    </a>
+                  }
+                }
                 <a [routerLink]="['/don-hang/theo-doi', order.orderId]" class="SecondaryButton">
                 Track Shipment</a>
               </div>

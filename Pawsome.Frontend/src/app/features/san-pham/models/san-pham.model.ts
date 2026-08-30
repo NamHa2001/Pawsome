@@ -78,12 +78,23 @@ export interface DanhGia {
   tenSanPham?: string | null;
   anhSanPham?: string | null;
   diemDanhGiaTbSanPham?: number | null;
+  // null = review gửi trước khi có tính năng chấm điểm phụ, không có dữ liệu thật
+  diemChatLuong: number | null;
+  diemGiaTri: number | null;
+  diemHaiLongThuCung: number | null;
+  soPhieuHuuIch: number;
+  soPhieuKhongHuuIch: number;
+  // null = người xem hiện tại chưa vote (hoặc chưa đăng nhập)
+  phieuCuaToi: boolean | null;
 }
 
 export interface GuiDanhGia {
   productId: number;
   soSao: number;
   binhLuan?: string;
+  diemChatLuong: number;
+  diemGiaTri: number;
+  diemHaiLongThuCung: number;
 }
 
 const TEN_DANH_MUC_TIENG_ANH: Record<string, string> = {

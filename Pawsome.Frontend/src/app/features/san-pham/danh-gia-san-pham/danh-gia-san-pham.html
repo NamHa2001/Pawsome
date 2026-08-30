@@ -12,11 +12,33 @@
       <div class="KhungGuiDanhGia">
         @if (guiThanhCong()) {
           <p class="ThongBaoThanhCong">Review submitted successfully, pending approval.</p>
+        } @else if (dangKiemTraDieuKien()) {
+          <!-- đang kiểm tra "verified purchase", không hiện gì để tránh nháy form rồi ẩn ngay -->
+        } @else if (!coTheDanhGia()) {
+          <p class="ThongBaoLoi">You need to purchase and receive this product before you can leave a review.</p>
         } @else {
           <div class="HangChonSao">
-            <span>Rating:</span>
+            <span>Overall Rating:</span>
             @for (s of saoArr; track s) {
               <i class="fa-solid fa-star ChonSao" [class.active]="s <= soSaoMoi" (click)="soSaoMoi = s"></i>
+            }
+          </div>
+          <div class="HangChonSao">
+            <span>Quality of Product:</span>
+            @for (s of saoArr; track s) {
+              <i class="fa-solid fa-star ChonSao" [class.active]="s <= diemChatLuongMoi" (click)="diemChatLuongMoi = s"></i>
+            }
+          </div>
+          <div class="HangChonSao">
+            <span>Value of Product:</span>
+            @for (s of saoArr; track s) {
+              <i class="fa-solid fa-star ChonSao" [class.active]="s <= diemGiaTriMoi" (click)="diemGiaTriMoi = s"></i>
+            }
+          </div>
+          <div class="HangChonSao">
+            <span>Pet Satisfaction:</span>
+            @for (s of saoArr; track s) {
+              <i class="fa-solid fa-star ChonSao" [class.active]="s <= diemHaiLongMoi" (click)="diemHaiLongMoi = s"></i>
             }
           </div>
           <textarea class="OTextareaDanhGia" placeholder="Share your thoughts..." [(ngModel)]="binhLuanMoi"></textarea>
@@ -43,6 +65,10 @@
       </div>
     </div>
 
+    @if (loiVote()) {
+      <p class="ThongBaoLoi">{{ loiVote() }}</p>
+    }
+
     <div class="VungDanhSachNhanXet">
       @for (r of reviewsDaSapXep(); track r.reviewId) {
         <div class="KhoiReviewCaNhan">
@@ -61,18 +87,36 @@
             @if (r.binhLuan) {
               <h5 class="TieuDeCmtReview">{{ r.binhLuan }}</h5>
             }
-            <div class="TuongTacHuuIch">
-              <span>Was this review helpful?</span>
-              <button class="NutBamHuuIch" type="button"><i class="fa-solid fa-thumbs-up"></i> 0</button>
-              <button class="NutBamHuuIch" type="button"><i class="fa-solid fa-thumbs-down"></i> 0</button>
-            </div>
+            @if (!laDanhGiaCuaToi(r)) {
+              <div class="TuongTacHuuIch">
+                <span>Was this review helpful?</span>
+                <button
+                  class="NutBamHuuIch"
+                  type="button"
+                  [class.DangChonVote]="r.phieuCuaToi === true"
+                  [disabled]="!tokenService.isLoggedIn() || dangVoteReview(r.reviewId)"
+                  (click)="vote(r, true)">
+                  <i class="fa-solid fa-thumbs-up"></i> {{ r.soPhieuHuuIch }}
+                </button>
+                <button
+                  class="NutBamHuuIch"
+                  type="button"
+                  [class.DangChonVote]="r.phieuCuaToi === false"
+                  [disabled]="!tokenService.isLoggedIn() || dangVoteReview(r.reviewId)"
+                  (click)="vote(r, false)">
+                  <i class="fa-solid fa-thumbs-down"></i> {{ r.soPhieuKhongHuuIch }}
+                </button>
+              </div>
+            }
           </div>
 
-          <div class="PhanChiSoReview">
-            <div class="DongChiSo"><span>Quality of Product</span><div class="ThanhVachXam"><div class="VachCamChay" style="width: 40%;"></div></div><span class="ConSoDiem">2.0</span></div>
-            <div class="DongChiSo"><span>Value of Product</span><div class="ThanhVachXam"><div class="VachCamChay" style="width: 40%;"></div></div><span class="ConSoDiem">2.0</span></div>
-            <div class="DongChiSo"><span>Pet Satisfaction</span><div class="ThanhVachXam"><div class="VachCamChay" style="width: 40%;"></div></div><span class="ConSoDiem">2.0</span></div>
-          </div>
+          @if (r.diemChatLuong && r.diemGiaTri && r.diemHaiLongThuCung) {
+            <div class="PhanChiSoReview">
+              <div class="DongChiSo"><span>Quality of Product</span><div class="ThanhVachXam"><div class="VachCamChay" [style.width.%]="r.diemChatLuong / 5 * 100"></div></div><span class="ConSoDiem">{{ r.diemChatLuong }}.0</span></div>
+              <div class="DongChiSo"><span>Value of Product</span><div class="ThanhVachXam"><div class="VachCamChay" [style.width.%]="r.diemGiaTri / 5 * 100"></div></div><span class="ConSoDiem">{{ r.diemGiaTri }}.0</span></div>
+              <div class="DongChiSo"><span>Pet Satisfaction</span><div class="ThanhVachXam"><div class="VachCamChay" [style.width.%]="r.diemHaiLongThuCung / 5 * 100"></div></div><span class="ConSoDiem">{{ r.diemHaiLongThuCung }}.0</span></div>
+            </div>
+          }
         </div>
       } @empty {
         <p class="TrangThaiTai">No approved reviews yet for this product.</p>

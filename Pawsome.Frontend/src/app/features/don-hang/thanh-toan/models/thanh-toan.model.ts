@@ -1,6 +1,7 @@
 export interface OrderItem {
   orderItemId: number;
   variantId: number;
+  productId: number;
   tenSanPham: string;
   tenBienThe: string;
   soLuong: number;

@@ -355,6 +355,7 @@ public class OrderService : IOrderService
         {
             OrderItemId = oi.OrderItemId,
             VariantId = oi.VariantId,
+            ProductId = oi.Variant.ProductId,
             TenSanPham = oi.Variant.Product.Ten,
             TenBienThe = oi.Variant.TenBienThe,
             SoLuong = oi.SoLuong,
@@ -441,5 +442,13 @@ public class OrderService : IOrderService
 
         await _dbContext.SaveChangesAsync();
         return MapToDto(order);
+    }
+
+    public async Task<bool> DaMuaVaNhanHangAsync(int userId, int productId)
+    {
+        return await _dbContext.Orders
+            .Where(o => o.UserId == userId && o.TrangThai == OrderStatus.DaGiao)
+            .SelectMany(o => o.OrderItems)
+            .AnyAsync(oi => oi.Variant.ProductId == productId);
     }
 }

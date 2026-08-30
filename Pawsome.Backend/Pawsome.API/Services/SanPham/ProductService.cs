@@ -476,7 +476,9 @@ public class ProductService : IProductService
         LieuLuong = p.LieuLuong,
         GiaTu = p.GiaTu,
         DiemDanhGiaTb = p.DiemDanhGiaTb,
-        SoLuongDanhGia = p.Reviews.Count,
+        // Chỉ đếm review đã duyệt - trước đây đếm cả cho_duyet/tu_choi, khiến số "X reviews" hiện
+        // ra nhiều hơn số review thực sự thấy được trong danh sách (GetByProductAsync chỉ lọc da_duyet).
+        SoLuongDanhGia = p.Reviews.Count(r => r.TrangThai == "da_duyet"),
         DangKinhDoanh = p.DangKinhDoanh,
         Variants = p.Variants.Select(MapVariantToDto).ToList(),
         Images = p.Images.Select(i => new ProductImageDto

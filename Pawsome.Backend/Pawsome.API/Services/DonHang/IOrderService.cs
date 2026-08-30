@@ -18,4 +18,9 @@ public interface IOrderService
     Task<OrderDto> CapNhatVanDonAsync(int orderId, UpdateShippingRequestDto dto);
     Task<OrderDto> YeuCauTraHangAsync(int userId, int orderId, ReturnRequestDto dto);
     Task<OrderDto> DuyetTraHangAsync(int orderId, bool dongY);
+
+    // Dùng bởi ReviewService (Phần 2) để chặn "verified purchase" - chỉ khách đã mua VÀ đã nhận
+    // hàng (trạng thái da_giao) mới được đánh giá sản phẩm đó, xem Pawsome_KhungDuAn.md mục 2:
+    // Phần 2 không tự query bảng orders, phải gọi qua IOrderService của Phần 4.
+    Task<bool> DaMuaVaNhanHangAsync(int userId, int productId);
 }
