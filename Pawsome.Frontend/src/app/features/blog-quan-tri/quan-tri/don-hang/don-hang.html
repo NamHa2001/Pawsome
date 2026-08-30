@@ -7,6 +7,13 @@
   <p class="ThongBaoLoi">{{ loiHanhDong() }}</p>
 }
 
+@if (userIdLoc()) {
+  <div class="BoLocKhach">
+    <span>Showing orders for {{ tenKhachDangLoc() ?? ('customer #' + userIdLoc()) }}</span>
+    <button type="button" class="NutXoaBoLoc" (click)="xoaBoLocKhach()">Clear filter</button>
+  </div>
+}
+
 <div class="TheQuanTri">
   <div class="TieuDeThe TieuDeTheBoLoc">
     <span>Orders</span>

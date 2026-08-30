@@ -28,6 +28,11 @@ export const routes: Routes = [
         loadComponent: () => import('./quan-tri/nguoi-dung/nguoi-dung').then(m => m.QuanTriNguoiDung)
       },
       {
+        path: 'nguoi-dung/:id',
+        canActivate: [roleGuard('Admin')],
+        loadComponent: () => import('./quan-tri/nguoi-dung/chi-tiet/chi-tiet-nguoi-dung').then(m => m.ChiTietNguoiDung)
+      },
+      {
         path: 'kiem-duyet-danh-gia',
         canActivate: [roleGuard('Admin', 'Moderator')],
         loadComponent: () => import('./quan-tri/kiem-duyet-danh-gia/kiem-duyet-danh-gia').then(m => m.QuanTriKiemDuyet)

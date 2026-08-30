@@ -106,6 +106,28 @@
 .StatusActive { background-color: var(--MauHongNhat); color: #2F8A4B; }
 .StatusLocked { background-color: #6D2121; color: var(--MauTrang); }
 
+.PawVipBadge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  background-color: var(--MauHongNhat);
+  color: var(--MauDoDam);
+}
+.PawVipBadge.PawVipHetHan { background-color: #F0E5E5; color: #999; }
+
+.NgayHetHanPawVip { display: block; font-size: 11px; color: #999; margin-top: 3px; }
+.KhongPhaiPawVip { color: #ccc; }
+
+.OHanhDong {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
 .NutKhoa {
   border: 1px solid var(--MauDoDam);
   background: transparent;
@@ -125,6 +147,21 @@
 
     &:hover { background: #EAF7EE; }
   }
+}
+
+.NutXemChiTiet {
+  display: inline-block;
+  border: 1px solid #E0D0D0;
+  background: transparent;
+  color: var(--MauDen);
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+  text-decoration: none;
+
+  &:hover { background: var(--MauHongNhat); }
 }
 
 .PhanTrang {

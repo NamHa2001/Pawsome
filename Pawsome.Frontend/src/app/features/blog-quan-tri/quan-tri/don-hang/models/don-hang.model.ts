@@ -27,6 +27,7 @@ export interface AdminOrder {
 
 export interface AdminOrderFilter {
   trangThai?: string;
+  userId?: number;
   page?: number;
   pageSize?: number;
 }

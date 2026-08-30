@@ -41,6 +41,7 @@
               <th>Account</th>
               <th>Phone</th>
               <th>PawPoints</th>
+              <th>PawVip</th>
               <th>Joined</th>
               <th>Status</th>
               <th>Role</th>
@@ -58,6 +59,20 @@
                 </td>
                 <td>{{ user.soDienThoai || '—' }}</td>
                 <td>{{ user.diemPawpoints | number:'1.0-0' }}</td>
+                <td>
+                  @if (user.pawVipTier) {
+                    <span class="PawVipBadge" [class.PawVipHetHan]="daHetHan(user.pawVipHetHan)">
+                      {{ nhanGoiPawVip[user.pawVipTier] ?? user.pawVipTier }}
+                    </span>
+                    @if (user.pawVipHetHan) {
+                      <span class="NgayHetHanPawVip">
+                        {{ daHetHan(user.pawVipHetHan) ? 'Expired' : 'Until' }} {{ user.pawVipHetHan | date:'dd/MM/yyyy' }}
+                      </span>
+                    }
+                  } @else {
+                    <span class="KhongPhaiPawVip">—</span>
+                  }
+                </td>
                 <td>{{ user.ngayTao | date:'dd/MM/yyyy' }}</td>
                 <td>
                   <span class="StatusBadge" [class.StatusActive]="user.trangThai === 'active'" [class.StatusLocked]="user.trangThai === 'locked'">
@@ -75,7 +90,7 @@
                     }
                   </select>
                 </td>
-                <td>
+                <td class="OHanhDong">
                   <button
                     type="button"
                     class="NutKhoa"
@@ -84,6 +99,7 @@
                     (click)="toggleKhoa(user)">
                     {{ user.trangThai === 'locked' ? 'Unlock' : 'Lock' }}
                   </button>
+                  <a class="NutXemChiTiet" [routerLink]="['/quan-tri/nguoi-dung', user.userId]">View</a>
                 </td>
               </tr>
             }
