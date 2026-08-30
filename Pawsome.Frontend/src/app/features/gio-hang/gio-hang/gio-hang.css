@@ -442,8 +442,7 @@
 }
 
 .TheMaGiamGia,
-.TheDoiDiem,
-.TheLoaiVanChuyen {
+.TheDoiDiem {
   border: 1px solid #eee;
   border-radius: 14px;
   padding: 16px;
@@ -451,8 +450,7 @@
 }
 
 .TheMaGiamGia h4,
-.TheDoiDiem h4,
-.TheLoaiVanChuyen h4 {
+.TheDoiDiem h4 {
   font-size: 13px;
   font-weight: 700;
   margin: 0 0 12px;
@@ -553,21 +551,9 @@
   font-weight: 700;
 }
 
-.DongRadio {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  margin-bottom: 8px;
-  cursor: pointer;
-}
-
-.DongRadio:last-child {
-  margin-bottom: 0;
-}
-
-.DongRadio input[type="radio"] {
-  accent-color: var(--MauDoDam);
+.MienPhiShip {
+  color: #1a7f37;
+  font-weight: 700;
 }
 
 .NutThanhToan {

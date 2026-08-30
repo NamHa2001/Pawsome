@@ -179,7 +179,7 @@ namespace Pawsome.API.Services.GioHang
             var dto = new CartDto
             {
                 CartId = cart.CartId,
-                PhiVanChuyenTamTinh = TinhPhiVanChuyenTamTinh()
+                PhiVanChuyenTamTinh = await TinhPhiVanChuyenTamTinhAsync(cart.UserId)
             };
 
             foreach (var item in cart.CartItems)
@@ -234,6 +234,23 @@ namespace Pawsome.API.Services.GioHang
             dto.GiamGia = TinhGiamGia(coupon.LoaiGiam, coupon.GiaTri, dto.TienHang);
         }
 
-        private static decimal TinhPhiVanChuyenTamTinh() => 30000m;
+        // Trước đây constant 30.000đ cho mọi khách, không kiểm tra gói PawVip - khách Advanced/VIP
+        // vẫn bị tính phí dù đặc quyền miễn phí ship đã quảng cáo sẵn ở trang PawVip. Đây chỉ là
+        // số TẠM TÍNH hiển thị ở giỏ hàng (chưa biết địa chỉ giao) - số thật theo tỉnh/thành
+        // được OrderService tính lại khi tạo đơn, cũng áp cùng điều kiện miễn phí PawVip này.
+        private async Task<decimal> TinhPhiVanChuyenTamTinhAsync(int userId)
+        {
+            var user = await _context.Users
+                .Where(u => u.UserId == userId)
+                .Select(u => new { u.PawVipTier, u.PawVipHetHan })
+                .FirstOrDefaultAsync();
+
+            var homNay = DateOnly.FromDateTime(DateTime.Now);
+            var mienPhiShip = user != null
+                && PawVipTiers.ConHieuLuc(user.PawVipTier, user.PawVipHetHan, homNay)
+                && PawVipTiers.TierMienPhiShip.Contains(user.PawVipTier!);
+
+            return mienPhiShip ? 0m : 30000m;
+        }
     }
 }

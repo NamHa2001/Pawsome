@@ -180,7 +180,16 @@
             @if (giamGiaAutoOrder() > 0) {
               <div class="DongTienTom"><span>Auto Order Discount (10%)</span><span>−{{ giamGiaAutoOrder() | number:'1.0-0' }} đ</span></div>
             }
-            <div class="DongTienTom"><span>Shipping</span><span>{{ phiVanChuyenHienThi() | number:'1.0-0' }} đ</span></div>
+            <div class="DongTienTom">
+              <span>Shipping</span>
+              <span>
+                @if (gioHang()!.phiVanChuyenTamTinh === 0) {
+                  <span class="MienPhiShip">FREE</span>
+                } @else {
+                  {{ gioHang()!.phiVanChuyenTamTinh | number:'1.0-0' }} đ
+                }
+              </span>
+            </div>
             <div class="OTongCongTom">
               <span>Total</span>
               <span>{{ tongTienHienThi() | number:'1.0-0' }} đ</span>
@@ -236,19 +245,6 @@
             } @else {
               <p class="GhiChuDoiDiem">PawPoints redemption coming soon.</p>
             }
-          </div>
-
-          <!-- Khối chọn phương thức vận chuyển -->
-          <div class="TheLoaiVanChuyen">
-            <h4>Select Shipping Type</h4>
-            <label class="DongRadio">
-              <input type="radio" name="loaiVanChuyen" [checked]="loaiVanChuyen() === 'free'" (change)="loaiVanChuyen.set('free')" />
-              <span>FREE – Free Shipping</span>
-            </label>
-            <label class="DongRadio">
-              <input type="radio" name="loaiVanChuyen" [checked]="loaiVanChuyen() === 'tracked'" (change)="loaiVanChuyen.set('tracked')" />
-              <span>{{ phiVanChuyenCoTheoDoi | number:'1.0-0' }} đ – Tracked Shipping</span>
-            </label>
           </div>
 
           <!-- Nút Thanh toán -->
