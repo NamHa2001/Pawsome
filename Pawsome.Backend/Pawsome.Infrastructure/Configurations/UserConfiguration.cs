@@ -12,6 +12,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         {
             t.HasCheckConstraint("CK_users_trangthai", "trang_thai IN (N'active', N'locked')");
             t.HasCheckConstraint("CK_users_diem_pawpoints", "diem_pawpoints >= 0");
+            t.HasCheckConstraint("CK_users_pawvip_tier", "pawvip_tier IS NULL OR pawvip_tier IN (N'thuong', N'nang-cao', N'vip')");
             // Bảng có trigger trg_users_set_ngaycapnhat (AFTER UPDATE) -> tắt OUTPUT clause của EF Core,
             // nếu không mọi UPDATE (vd cập nhật hồ sơ cá nhân) sẽ lỗi 500 do SQL Server chặn OUTPUT trên bảng có trigger.
             t.UseSqlOutputClause(false);
@@ -25,7 +26,8 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(u => u.HoTen).HasColumnName("ho_ten").HasMaxLength(100).IsRequired();
         builder.Property(u => u.SoDienThoai).HasColumnName("so_dien_thoai").HasMaxLength(20);
         builder.Property(u => u.DiemPawpoints).HasColumnName("diem_pawpoints").HasDefaultValue(0);
-        builder.Property(u => u.LaPawvip).HasColumnName("la_pawvip").HasDefaultValue(false).IsRequired();
+        builder.Property(u => u.PawVipTier).HasColumnName("pawvip_tier").HasMaxLength(20);
+        builder.Property(u => u.PawVipHetHan).HasColumnName("pawvip_het_han");
         builder.Property(u => u.TrangThai).HasColumnName("trang_thai").HasMaxLength(20).HasDefaultValue("active");
         builder.Property(u => u.NgayTao).HasColumnName("ngay_tao").HasDefaultValueSql("GETDATE()");
         builder.Property(u => u.NgayCapNhat).HasColumnName("ngay_cap_nhat").HasDefaultValueSql("GETDATE()");
@@ -51,7 +53,6 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             HoTen = "Quản trị viên",
             SoDienThoai = null,
             DiemPawpoints = 0,
-            LaPawvip = false,
             TrangThai = "active",
             NgayTao = new DateTime(2026, 1, 1),
             NgayCapNhat = new DateTime(2026, 1, 1)

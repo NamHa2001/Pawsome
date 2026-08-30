@@ -1,0 +1,50 @@
+<app-header />
+
+<main class="NoiDungChinh">
+<div class="TrangThanhToanPawVip">
+  <div class="VungAnToan KhungTieuDe">
+    <a routerLink="/gio-hang/pawvip" class="LienKetQuayLai">← Change Plan</a>
+    <h1 class="TieuDeTrang">Complete Your PawVip Subscription</h1>
+  </div>
+
+  @if (goiDaChon) {
+    <div class="VungAnToan">
+      <div class="TheThanhToanPawVip">
+        <div class="DauTheGoiDaChon">
+          <span class="TenGoiDaChon">{{ goiDaChon.ten }}</span>
+          <span class="PhanTramGoiDaChon">{{ goiDaChon.phanTramGiam * 100 | number:'1.0-0' }}% <small>Discount</small></span>
+        </div>
+
+        <div class="TomTatDonPawVip">
+          <div class="DongSoSanh"><span>{{ goiDaChon.ten }} (billed annually)</span><span>{{ goiDaChon.giaNam | number:'1.0-0' }} đ</span></div>
+          <div class="DongSoSanh DongTongSoSanh"><span>Total due today</span><span>{{ goiDaChon.giaNam | number:'1.0-0' }} đ</span></div>
+        </div>
+
+        <div class="ChonPhuongThucPawVip">
+          <label class="TuyChonPhuongThuc" [class.DangChon]="selectedPaymentMethod() === 'momo'">
+            <input type="radio" name="pawvip-payment" [checked]="selectedPaymentMethod() === 'momo'"
+                   (change)="selectPaymentMethod('momo')" />
+            MoMo Wallet
+          </label>
+          <label class="TuyChonPhuongThuc" [class.DangChon]="selectedPaymentMethod() === 'vnpay'">
+            <input type="radio" name="pawvip-payment" [checked]="selectedPaymentMethod() === 'vnpay'"
+                   (change)="selectPaymentMethod('vnpay')" />
+            VNPay (ATM / Visa / Mastercard)
+          </label>
+        </div>
+
+        @if (thongBaoLoi()) {
+          <p class="ThongBaoPawVip Loi">{{ thongBaoLoi() }}</p>
+        }
+
+        <button type="button" class="NutKichHoatPawVip" [disabled]="dangXuLy()" (click)="xacNhanThanhToan()">
+          {{ dangXuLy() ? 'Redirecting to payment...' : 'Pay & Activate ' + goiDaChon.ten }}
+        </button>
+      </div>
+    </div>
+  }
+</div>
+</main>
+
+<app-footer />
+<app-chat-ai />

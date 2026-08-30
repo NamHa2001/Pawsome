@@ -1,6 +1,4 @@
-﻿using System.Net;
-using System.Security.Cryptography;
-using System.Text;
+﻿using System.Text;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Pawsome.API.DTOs.DonHang;
@@ -49,7 +47,7 @@ public class PaymentService : IPaymentService
             $"&ipnUrl={ipnUrl}&orderId={momoOrderId}&orderInfo={orderInfo}" +
             $"&partnerCode={partnerCode}&redirectUrl={redirectUrl}" +
             $"&requestId={requestId}&requestType={requestType}";
-        var signature = KyHmacSha256(rawSignature, secretKey);
+        var signature = PaymentGatewaySigner.KyHmacSha256(rawSignature, secretKey);
 
         var body = new
         {
@@ -92,7 +90,7 @@ public class PaymentService : IPaymentService
             $"&orderType={dto.OrderType}&partnerCode={dto.PartnerCode}&payType={dto.PayType}" +
             $"&requestId={dto.RequestId}&responseTime={dto.ResponseTime}" +
             $"&resultCode={dto.ResultCode}&transId={dto.TransId}";
-        var chuKyDung = KyHmacSha256(rawSignature, secretKey);
+        var chuKyDung = PaymentGatewaySigner.KyHmacSha256(rawSignature, secretKey);
 
         if (chuKyDung != dto.Signature)
             throw new UnauthorizedAccessException("Chữ ký IPN MoMo không hợp lệ.");
@@ -124,8 +122,8 @@ public class PaymentService : IPaymentService
             ["vnp_CreateDate"] = DateTime.UtcNow.AddHours(7).ToString("yyyyMMddHHmmss")
         };
 
-        var (queryString, hashData) = BuildVnPayQuery(vnpParams);
-        var secureHash = KyHmacSha512(hashData, vnpay["HashSecret"]!);
+        var (queryString, hashData) = PaymentGatewaySigner.BuildVnPayQuery(vnpParams);
+        var secureHash = PaymentGatewaySigner.KyHmacSha512(hashData, vnpay["HashSecret"]!);
         var payUrl = $"{vnpay["PaymentUrl"]}?{queryString}&vnp_SecureHash={secureHash}";
 
         var payment = await TaoPaymentChoDonAsync(order.OrderId, "VNPay", order.ThanhTien, txnRef);
@@ -144,8 +142,8 @@ public class PaymentService : IPaymentService
             if (kv.Key is "vnp_SecureHash" or "vnp_SecureHashType") continue;
             vnpParams[kv.Key] = kv.Value;
         }
-        var (_, hashData) = BuildVnPayQuery(vnpParams);
-        var expectedHash = KyHmacSha512(hashData, vnpay["HashSecret"]!);
+        var (_, hashData) = PaymentGatewaySigner.BuildVnPayQuery(vnpParams);
+        var expectedHash = PaymentGatewaySigner.KyHmacSha512(hashData, vnpay["HashSecret"]!);
 
         if (!expectedHash.Equals(receivedHash, StringComparison.OrdinalIgnoreCase))
             return false;
@@ -223,30 +221,4 @@ public class PaymentService : IPaymentService
         };
     }
 
-    private static (string queryString, string hashData) BuildVnPayQuery(SortedList<string, string> vnpParams)
-    {
-        var query = new StringBuilder();
-        var hashData = new StringBuilder();
-        foreach (var kv in vnpParams)
-        {
-            if (string.IsNullOrEmpty(kv.Value)) continue;
-            hashData.Append(WebUtility.UrlEncode(kv.Key)).Append('=').Append(WebUtility.UrlEncode(kv.Value)).Append('&');
-            query.Append(WebUtility.UrlEncode(kv.Key)).Append('=').Append(WebUtility.UrlEncode(kv.Value)).Append('&');
-        }
-        if (hashData.Length > 0) hashData.Length--;
-        if (query.Length > 0) query.Length--;
-        return (query.ToString(), hashData.ToString());
-    }
-
-    private static string KyHmacSha256(string data, string key)
-    {
-        using var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(key));
-        return Convert.ToHexString(hmac.ComputeHash(Encoding.UTF8.GetBytes(data))).ToLower();
-    }
-
-    private static string KyHmacSha512(string data, string key)
-    {
-        using var hmac = new HMACSHA512(Encoding.UTF8.GetBytes(key));
-        return Convert.ToHexString(hmac.ComputeHash(Encoding.UTF8.GetBytes(data))).ToLower();
-    }
 }

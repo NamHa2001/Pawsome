@@ -52,12 +52,12 @@ public class OrderService : IOrderService
         }
 
         var tienHang = cart.CartItems.Sum(ci => ci.Variant.Gia * ci.SoLuong);
+        var homNay = DateOnly.FromDateTime(DateTime.UtcNow);
 
         decimal giamGiaCoupon = 0;
         if (dto.CouponId.HasValue)
         {
             var coupon = await _dbContext.Coupons.FindAsync(dto.CouponId.Value);
-            var homNay = DateOnly.FromDateTime(DateTime.UtcNow);
             if (coupon == null
                 || (coupon.NgayBatDau.HasValue && coupon.NgayBatDau.Value > homNay)
                 || (coupon.NgayKetThuc.HasValue && coupon.NgayKetThuc.Value < homNay)
@@ -76,7 +76,23 @@ public class OrderService : IOrderService
             giamGiaDiem = await _pawPointsService.KiemTraVaTinhQuyDoiAsync(userId, dto.SoDiemMuonDoi.Value);
         }
 
-        var giamGia = Math.Min(giamGiaCoupon + giamGiaDiem, tienHang);
+        // PawVip là quyền lợi thường trực của tài khoản (không phải khách chọn từng đơn như
+        // coupon/điểm) - backend tự đọc user.PawVipTier đang lưu và áp giảm giá, không cần
+        // CreateOrderRequestDto có field riêng. Gói theo NĂM nên phải kiểm tra còn hạn
+        // (PawVipHetHan) trước khi áp - không phải cứ có pawvip_tier là giảm giá vĩnh viễn.
+        decimal giamGiaPawVip = 0;
+        var pawVipInfo = await _dbContext.Users
+            .Where(u => u.UserId == userId)
+            .Select(u => new { u.PawVipTier, u.PawVipHetHan })
+            .FirstOrDefaultAsync();
+        if (pawVipInfo != null
+            && PawVipTiers.ConHieuLuc(pawVipInfo.PawVipTier, pawVipInfo.PawVipHetHan, homNay)
+            && PawVipTiers.PhanTramGiam.TryGetValue(pawVipInfo.PawVipTier!, out var phanTramPawVip))
+        {
+            giamGiaPawVip = Math.Round(tienHang * phanTramPawVip, 0);
+        }
+
+        var giamGia = Math.Min(giamGiaCoupon + giamGiaDiem + giamGiaPawVip, tienHang);
 
         // Phí vận chuyển: tạm tính cố định theo tỉnh/thành nơi giao
         var phiVanChuyen = address.TinhThanh.Trim().Equals("Hồ Chí Minh", StringComparison.OrdinalIgnoreCase)

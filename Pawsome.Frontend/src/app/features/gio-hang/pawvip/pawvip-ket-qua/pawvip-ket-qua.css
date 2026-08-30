@@ -1,0 +1,79 @@
+:host { display: contents; }
+
+.KetQuaPage {
+  width: 100%;
+  min-height: 60vh;
+  padding: 60px 0 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.ResultCard {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  background-color: var(--MauTrang);
+  border: 1px solid var(--MauHongNhat);
+  border-radius: 16px;
+  padding: 48px 36px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.IconCircle {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  font-size: 34px;
+  color: var(--MauTrang);
+}
+
+.IconCircle.Success   { background-color: #2F2D2E; }
+.IconCircle.Failed    { background-color: var(--MauDoDam); }
+.IconCircle.Unknown   { background-color: #AA9D9D; }
+.IconCircle.Verifying { background-color: var(--MauHongDam); }
+
+.ResultTitle {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--MauDen);
+  margin-bottom: 12px;
+}
+
+.ResultText {
+  font-size: 14px;
+  color: var(--MauDen);
+  opacity: 0.75;
+  line-height: 1.6;
+  margin-bottom: 32px;
+}
+
+.ResultActions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.PrimaryButton {
+  width: 100%;
+  padding: 13px;
+  border: none;
+  border-radius: 10px;
+  background-color: var(--MauDoDam);
+  color: var(--MauTrang);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.PrimaryButton:hover { opacity: 0.9; }

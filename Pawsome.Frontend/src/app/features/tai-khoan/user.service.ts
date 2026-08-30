@@ -11,6 +11,7 @@ export interface UserProfile {
   hoTen: string;
   soDienThoai: string | null;
   diemPawpoints: number;
+  pawVipTier: string | null;
   role: string;
   ngayTao: string;
 }

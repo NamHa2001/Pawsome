@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Pawsome.API.Common;
 using Pawsome.API.DTOs.TaiKhoan;
+using Pawsome.API.Services.GioHang;
 using Pawsome.Infrastructure;
 
 namespace Pawsome.API.Services.TaiKhoan;
@@ -107,6 +108,9 @@ public class UserService : IUserService
         HoTen = user.HoTen,
         SoDienThoai = user.SoDienThoai,
         DiemPawpoints = user.DiemPawpoints,
+        PawVipTier = PawVipTiers.ConHieuLuc(user.PawVipTier, user.PawVipHetHan, DateOnly.FromDateTime(DateTime.UtcNow))
+            ? user.PawVipTier : null,
+        PawVipHetHan = user.PawVipHetHan,
         Role = user.Role.TenVaiTro,
         NgayTao = user.NgayTao
     };

@@ -15,7 +15,8 @@ public class User
     public string HoTen { get; set; } = null!;
     public string? SoDienThoai { get; set; }
     public int DiemPawpoints { get; set; }
-    public bool LaPawvip { get; set; }
+    public string? PawVipTier { get; set; }
+    public DateOnly? PawVipHetHan { get; set; }
     public string TrangThai { get; set; } = "active";
     public DateTime NgayTao { get; set; }
     public DateTime NgayCapNhat { get; set; }

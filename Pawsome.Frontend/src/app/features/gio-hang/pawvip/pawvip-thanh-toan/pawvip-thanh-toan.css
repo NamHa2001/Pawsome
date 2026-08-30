@@ -1,0 +1,91 @@
+:host {
+  display: contents;
+}
+
+.TrangThanhToanPawVip {
+  width: 100%;
+  padding: 40px 0 80px;
+}
+
+.KhungTieuDe {
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.LienKetQuayLai {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--MauDoDam);
+  text-decoration: none;
+  margin-bottom: 14px;
+}
+.LienKetQuayLai:hover { opacity: 0.85; }
+
+.TieuDeTrang { font-size: 24px; font-weight: 700; color: var(--MauDen); }
+
+.TheThanhToanPawVip {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  border: 1px solid #eee;
+  border-radius: 14px;
+  padding: 24px;
+  background: #fff;
+}
+
+.DauTheGoiDaChon { display: flex; flex-direction: column; gap: 4px; }
+.TenGoiDaChon { font-weight: 800; font-size: 18px; color: #222; }
+.PhanTramGoiDaChon { font-size: 26px; font-weight: 800; color: var(--MauDoDam); }
+.PhanTramGoiDaChon small { font-size: 12px; font-weight: 600; color: #888; }
+
+.TomTatDonPawVip {
+  font-size: 14px;
+  border-top: 1px dashed #eee;
+  border-bottom: 1px dashed #eee;
+  padding: 14px 0;
+}
+.DongSoSanh { display: flex; justify-content: space-between; padding: 5px 0; color: #555; }
+.DongTongSoSanh { font-weight: 800; color: var(--MauDoDam); border-top: 1px dashed #eee; margin-top: 8px; padding-top: 10px; }
+
+.ChonPhuongThucPawVip {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.TuyChonPhuongThuc {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+}
+.TuyChonPhuongThuc.DangChon { border-color: var(--MauDoDam); background: #fdf1f1; }
+
+.NutKichHoatPawVip {
+  background: var(--MauDoDam);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 13px 26px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.NutKichHoatPawVip:hover { opacity: 0.85; }
+.NutKichHoatPawVip:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.ThongBaoPawVip {
+  margin: 0;
+  font-size: 13px;
+  text-align: center;
+}
+.ThongBaoPawVip.Loi { color: var(--MauDoDam); }

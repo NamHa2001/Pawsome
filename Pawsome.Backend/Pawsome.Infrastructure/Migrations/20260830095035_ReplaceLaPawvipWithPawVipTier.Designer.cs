@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Pawsome.Infrastructure;
 
@@ -11,9 +12,11 @@ using Pawsome.Infrastructure;
 namespace Pawsome.Infrastructure.Migrations
 {
     [DbContext(typeof(PawsomeDbContext))]
-    partial class PawsomeDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260830095035_ReplaceLaPawvipWithPawVipTier")]
+    partial class ReplaceLaPawvipWithPawVipTier
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -627,75 +630,6 @@ namespace Pawsome.Infrastructure.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Pawsome.Domain.Entities.GioHang.PawVipPayment", b =>
-                {
-                    b.Property<int>("PawVipPaymentId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("pawvip_payment_id");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PawVipPaymentId"));
-
-                    b.Property<string>("MaGiaoDich")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasColumnName("ma_giao_dich");
-
-                    b.Property<DateTime>("NgayTao")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasColumnName("ngay_tao")
-                        .HasDefaultValueSql("GETDATE()");
-
-                    b.Property<DateTime?>("NgayThanhToan")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("ngay_thanh_toan");
-
-                    b.Property<string>("PhuongThuc")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)")
-                        .HasColumnName("phuong_thuc");
-
-                    b.Property<decimal>("SoTien")
-                        .HasPrecision(12, 2)
-                        .HasColumnType("decimal(12,2)")
-                        .HasColumnName("so_tien");
-
-                    b.Property<string>("Tier")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)")
-                        .HasColumnName("tier");
-
-                    b.Property<string>("TrangThai")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)")
-                        .HasDefaultValue("cho_thanh_toan")
-                        .HasColumnName("trang_thai");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int")
-                        .HasColumnName("user_id");
-
-                    b.HasKey("PawVipPaymentId");
-
-                    b.HasIndex("MaGiaoDich")
-                        .IsUnique()
-                        .HasDatabaseName("UQ_pawvip_payments_magiaodich")
-                        .HasFilter("[ma_giao_dich] IS NOT NULL");
-
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("IX_pawvip_payments_user");
-
-                    b.ToTable("pawvip_payments", null, t =>
-                        {
-                            t.HasCheckConstraint("CK_pawvip_payments_tier", "tier IN (N'thuong', N'nang-cao', N'vip')");
-                        });
-                });
-
             modelBuilder.Entity("Pawsome.Domain.Entities.SanPham.Brand", b =>
                 {
                     b.Property<int>("BrandId")
@@ -1224,10 +1158,6 @@ namespace Pawsome.Infrastructure.Migrations
                         .HasColumnType("nvarchar(255)")
                         .HasColumnName("password_hash");
 
-                    b.Property<DateOnly?>("PawVipHetHan")
-                        .HasColumnType("date")
-                        .HasColumnName("pawvip_het_han");
-
                     b.Property<string>("PawVipTier")
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)")
@@ -1471,18 +1401,6 @@ namespace Pawsome.Infrastructure.Migrations
                     b.Navigation("Cart");
 
                     b.Navigation("Variant");
-                });
-
-            modelBuilder.Entity("Pawsome.Domain.Entities.GioHang.PawVipPayment", b =>
-                {
-                    b.HasOne("Pawsome.Domain.Entities.TaiKhoan.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired()
-                        .HasConstraintName("FK_pawvip_payments_users");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Pawsome.Domain.Entities.SanPham.Category", b =>

@@ -28,9 +28,16 @@
 
           <div class="CuoiTheGoi">
             <span class="GiaGoi">{{ goi.giaNam | number:'1.0-0' }} đ<small>/year</small></span>
-            <button type="button" class="NutChonGoi" (click)="chonGoiPawVip(goi.id)">
-              {{ goiPawVipDangChon() === goi.id ? 'Selected' : 'Select Plan' }}
-            </button>
+            @if (tierDangKichHoat() === goi.id) {
+              <span class="NhanDangKichHoat">
+                ✓ Current Plan
+                @if (hetHanHienTai()) { <small>(expires {{ hetHanHienTai() }})</small> }
+              </span>
+            } @else {
+              <button type="button" class="NutChonGoi" (click)="chonGoiPawVip(goi.id)">
+                {{ goiPawVipDangChon() === goi.id ? 'Selected' : 'Select Plan' }}
+              </button>
+            }
           </div>
         </div>
       }
@@ -38,18 +45,19 @@
 
     <div class="KhuTomTatPawVip">
       <div class="ChanKhuPawVip">
-        <div class="BangSoSanhPawVip">
-          @if (dangTai()) {
-            <p class="DangTaiPawVip">Loading your cart total...</p>
-          } @else {
-            <div class="DongSoSanh"><span>Item ({{ soLuongSanPham() }})</span><span>{{ tienHangHienTai() | number:'1.0-0' }} đ</span></div>
-            <div class="DongSoSanh"><span>You Save ({{ goiPawVipHienTai().phanTramGiam * 100 | number:'1.0-0' }}%)</span><span>−{{ tietKiemPawVip() | number:'1.0-0' }} đ</span></div>
-            <div class="DongSoSanh DongTongSoSanh"><span>Total with {{ goiPawVipHienTai().ten }}</span><span>{{ tongTienPawVip() | number:'1.0-0' }} đ</span></div>
-          }
+        <div class="TomTatGoiDangChon">
+          <span class="TenGoiTomTat">{{ goiPawVipHienTai().ten }}</span>
+          <span class="GiaGoiTomTat">{{ goiPawVipHienTai().giaNam | number:'1.0-0' }} đ<small>/year</small></span>
         </div>
-        <button type="button" class="NutKichHoatPawVip" [disabled]="dangTai()" (click)="kichHoatPawVip()">
-          Activate {{ goiPawVipHienTai().ten }}
-        </button>
+        @if (tierDangKichHoat() === goiPawVipDangChon()) {
+          <button type="button" class="NutKichHoatPawVip" disabled>
+            Current Plan
+          </button>
+        } @else {
+          <button type="button" class="NutKichHoatPawVip" (click)="tiepTucThanhToan()">
+            Continue to Payment
+          </button>
+        }
       </div>
     </div>
   </div>

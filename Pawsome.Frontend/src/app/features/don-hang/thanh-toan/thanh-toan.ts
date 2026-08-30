@@ -19,6 +19,15 @@ import { OrderService } from './services/order.service';
 import { PaymentService } from './services/payment.service';
 import { PawPointsService } from '../pawpoints/services/pawpoints.service';
 import { VND_PER_PAWPOINT } from '../pawpoints/models/pawpoints.model';
+import { UserService } from '../../tai-khoan/user.service';
+
+// Khớp đúng PawVipTiers.PhanTramGiam ở backend (Services/GioHang/PawVipTiers.cs) - chỉ dùng để
+// ước tính hiển thị trước, số thật vẫn do OrderService tính khi tạo đơn.
+const PAWVIP_PHAN_TRAM_GIAM: Record<string, number> = {
+  'thuong': 0.05,
+  'nang-cao': 0.10,
+  'vip': 0.20
+};
 
 @Component({
   selector: 'app-thanh-toan',
@@ -33,6 +42,7 @@ export class ThanhToanComponent {
   private readonly orderService = inject(OrderService);
   private readonly paymentService = inject(PaymentService);
   private readonly pawPointsService = inject(PawPointsService);
+  private readonly userService = inject(UserService);
   private readonly router = inject(Router);
 
   readonly cart = signal<Cart | null>(null);
@@ -66,24 +76,36 @@ export class ThanhToanComponent {
   readonly pawPointsToUse = signal(0);
   readonly vndPerPoint = VND_PER_PAWPOINT;
 
-  /* Không cho dùng nhiều điểm hơn số dư, và không cho dùng nhiều hơn mức backend
-   thực sự áp dụng được: OrderService.cs giới hạn (giamGiaCoupon + giamGiaDiem) <= tienHang,
-   nên phần điểm tối đa còn hữu ích = (tienHang - giamGiaCoupon) / 10.000 */
+  /* Không cho dùng nhiều điểm hơn số dư, và không cho dùng nhiều hơn mức backend thực sự áp
+   dụng được: OrderService.cs giới hạn (giamGiaCoupon + giamGiaDiem + giamGiaPawVip) <= tienHang,
+   nên phần điểm tối đa còn hữu ích = (tienHang - giamGiaCoupon - giamGiaPawVip) / 10.000 - thiếu
+   giamGiaPawVip ở đây thì khách PawVip có thể chọn dùng điểm nhiều hơn mức thực sự có ích, điểm
+   vẫn bị trừ khỏi số dư nhưng không giảm thêm được đồng nào vì đã bị Math.Min chặn ở tienHang. */
   readonly maxUsablePoints = computed(() => {
     const cart = this.cart();
     if (!cart) return 0;
-    const conLaiSauCoupon = Math.max(0, cart.tienHang - cart.giamGia);
-    const gioiHanTheoDonHang = Math.floor(conLaiSauCoupon / this.vndPerPoint);
+    const conLaiSauGiamGiaKhac = Math.max(0, cart.tienHang - cart.giamGia - this.pawVipDiscount());
+    const gioiHanTheoDonHang = Math.floor(conLaiSauGiamGiaKhac / this.vndPerPoint);
     return Math.min(this.pawPointsBalance(), gioiHanTheoDonHang);
   });
 
   readonly pawPointsDiscount = computed(() =>
     this.usePawPoints() ? this.pawPointsToUse() * this.vndPerPoint : 0);
 
+  // PawVip là quyền lợi thường trực của tài khoản, không cần khách bật/tắt như PawPoints -
+  // chỉ hiển thị ước tính, số thật do OrderService tự áp theo user.PawVipTier lúc tạo đơn.
+  readonly pawVipTier = signal<string | null>(null);
+  readonly pawVipDiscount = computed(() => {
+    const cart = this.cart();
+    const tier = this.pawVipTier();
+    if (!cart || !tier) return 0;
+    return Math.round(cart.tienHang * (PAWVIP_PHAN_TRAM_GIAM[tier] ?? 0));
+  });
+
   readonly finalTotal = computed(() => {
     const cart = this.cart();
     if (!cart) return 0;
-    return Math.max(0, cart.tongTien - this.pawPointsDiscount());
+    return Math.max(0, cart.tongTien - this.pawPointsDiscount() - this.pawVipDiscount());
   });
 
   readonly isCartEmpty = computed(() => !this.cart() || this.cart()!.items.length === 0);
@@ -92,6 +114,14 @@ export class ThanhToanComponent {
     this.loadCart();
     this.loadAddresses();
     this.loadPawPointsBalance();
+    this.loadPawVipTier();
+  }
+
+  private loadPawVipTier(): void {
+    this.userService.getProfile().subscribe({
+      next: res => this.pawVipTier.set(res.data?.pawVipTier ?? null),
+      error: () => {} // Không chặn checkout nếu chỉ lỗi lấy trạng thái PawVip
+    });
   }
 
   private loadCart(): void {

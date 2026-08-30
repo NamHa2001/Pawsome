@@ -35,6 +35,7 @@ public class PawsomeDbContext : DbContext
     public DbSet<CartItem> CartItems => Set<CartItem>();
     public DbSet<Coupon> Coupons => Set<Coupon>();
     public DbSet<AutoOrder> AutoOrders => Set<AutoOrder>();
+    public DbSet<PawVipPayment> PawVipPayments => Set<PawVipPayment>();
 
     // DonHang
     public DbSet<Order> Orders => Set<Order>();

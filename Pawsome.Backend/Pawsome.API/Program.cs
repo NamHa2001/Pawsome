@@ -135,6 +135,8 @@ builder.Services.AddScoped<IRecaptchaService, RecaptchaService>();
 builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<ICouponService, CouponService>();
 builder.Services.AddScoped<IAutoOrderService, AutoOrderService>();
+builder.Services.AddScoped<IPawVipService, PawVipService>();
+builder.Services.AddScoped<IPawVipPaymentService, PawVipPaymentService>();
 // Phần 4 - Đơn hàng:       
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IPawPointsService, PawPointsService>();
