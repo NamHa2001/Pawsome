@@ -1,4 +1,3 @@
-import { Observable, map, of } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -7,7 +6,6 @@ import { ChatAi } from '../../../shared/components/chat-ai/chat-ai';
 import { Footer } from '../../../shared/components/footer/footer';
 import { Header } from '../../../shared/components/header/header';
 import { CartService } from '../../gio-hang/gio-hang/services/cart.service';
-import { CouponService } from '../../gio-hang/gio-hang/services/coupon.service';
 import { Cart } from '../../gio-hang/gio-hang/models/gio-hang.model';
 import { Address, CreateAddressRequest } from './models/address.model';
 import {
@@ -31,7 +29,6 @@ import { VND_PER_PAWPOINT } from '../pawpoints/models/pawpoints.model';
 })
 export class ThanhToanComponent {
   private readonly cartService = inject(CartService);
-  private readonly couponService = inject(CouponService);
   private readonly addressService = inject(AddressService);
   private readonly orderService = inject(OrderService);
   private readonly paymentService = inject(PaymentService);
@@ -208,32 +205,21 @@ export class ThanhToanComponent {
     this.placingOrder.set(true);
     this.errorMessage.set(null);
 
-    this.resolveCouponId().subscribe(couponId => {
-      const dto: CreateOrderRequest = {
-        addressId: this.selectedAddressId()!,
-        couponId,
-        donViVanChuyen: this.selectedCarrier(),
-        soDiemMuonDoi: this.usePawPoints() && this.pawPointsToUse() > 0 ? this.pawPointsToUse() : null
-      };
+    const dto: CreateOrderRequest = {
+      addressId: this.selectedAddressId()!,
+      couponId: this.cart()?.couponId ?? null,
+      donViVanChuyen: this.selectedCarrier(),
+      soDiemMuonDoi: this.usePawPoints() && this.pawPointsToUse() > 0 ? this.pawPointsToUse() : null
+    };
 
-      this.orderService.create(dto).subscribe({
-        next: order => this.startPayment(order.orderId),
-        error: err => {
-          this.placingOrder.set(false);
-          this.errorMessage.set(err?.error?.message ?? 'Could not place the order. Please try again.');
-        }
-      });
+    this.orderService.create(dto).subscribe({
+      next: order => this.startPayment(order.orderId),
+      error: err => {
+        this.placingOrder.set(false);
+        this.errorMessage.set(err?.error?.message ?? 'Could not place the order. Please try again.');
+      }
     });
   }
-
-  private resolveCouponId(): Observable<number | null> {
-  const appliedCode = this.cart()?.maCouponDangApDung;
-  if (!appliedCode) return of(null);
-
-  return this.couponService.layDangHieuLuc().pipe(
-    map(list => list.find(c => c.maCode === appliedCode)?.couponId ?? null)
-  );
-}
 
   private startPayment(orderId: number): void {
     const create = this.selectedPaymentMethod() === 'momo'

@@ -13,13 +13,20 @@ public class DashboardService : IDashboardService
     // không tự thêm hằng số dùng chung vào Services/SanPham (thuộc Phần 2).
     private const string TrangThaiChoDuyet = "cho_duyet";
 
-    // Đơn "không hợp lệ" cho thống kê = đã hủy hoặc đã hoàn trả. Dùng HashSet.Contains
-    // (EF Core dịch được sang SQL "NOT IN (...)", giống cách OrderStatus.TatCa đang được
-    // dùng ở nơi khác) thay vì gọi 1 local function trong Where - local function không
-    // dịch được sang SQL, Where sẽ ném lỗi runtime "could not be translated".
+    // Đơn "không hợp lệ" cho thống kê = đã hủy, đã hoàn trả, hoặc chưa xử lý (cho_xu_ly).
+    // ChoXuLy là đơn vừa đặt, còn đang chờ thanh toán online (VNPay/MoMo) hoặc chờ xác nhận
+    // COD - PaymentService.XuLyKetQuaThanhToanAsync chỉ chuyển đơn sang DangXuLy SAU KHI
+    // thanh toán thành công, nên đơn đứng ở ChoXuLy nghĩa là CHƯA CÓ TIỀN THẬT (khách có thể
+    // bỏ ngang lúc thanh toán). Trước đây chỉ loại DaHuy/DaTraHang nên "Doanh thu tháng này"
+    // cộng luôn cả tiền của đơn chưa hề thanh toán xong - kiểm tra thực tế thấy payments
+    // tương ứng vẫn ở trạng thái cho_thanh_toan (chưa thanh_cong) mà đơn đã bị tính vào
+    // doanh thu, gây lệch với bảng payments thật. Dùng HashSet.Contains (EF Core dịch được
+    // sang SQL "NOT IN (...)", giống cách OrderStatus.TatCa đang được dùng ở nơi khác) thay
+    // vì gọi 1 local function trong Where - local function không dịch được sang SQL, Where
+    // sẽ ném lỗi runtime "could not be translated".
     private static readonly HashSet<string> TrangThaiKhongTinh = new()
     {
-        OrderStatus.DaHuy, OrderStatus.DaTraHang
+        OrderStatus.ChoXuLy, OrderStatus.DaHuy, OrderStatus.DaTraHang
     };
 
     private readonly PawsomeDbContext _dbContext;

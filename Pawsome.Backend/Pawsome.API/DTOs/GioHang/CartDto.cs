@@ -4,6 +4,7 @@
     {
         public int CartId { get; set; }
         public List<CartItemDto> Items { get; set; } = new();
+        public int? CouponId { get; set; }
         public string? MaCouponDangApDung { get; set; }
         public decimal GiamGia { get; set; }
         public decimal PhiVanChuyenTamTinh { get; set; }

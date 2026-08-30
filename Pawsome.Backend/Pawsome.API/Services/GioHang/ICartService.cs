@@ -10,5 +10,6 @@ namespace Pawsome.API.Services.GioHang
         Task XoaSanPhamAsync(int userId, int cartItemId);
         Task XoaSachGioHangAsync(int userId);
         Task<ApplyCouponResultDto> ApDungMaGiamGiaAsync(int userId, ApplyCouponDto dto);
+        Task<CartDto> XoaMaGiamGiaAsync(int userId);
     }
 }

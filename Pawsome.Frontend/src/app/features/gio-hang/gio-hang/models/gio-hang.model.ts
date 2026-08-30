@@ -15,6 +15,7 @@ export interface CartItem {
 export interface Cart {
   cartId: number;
   items: CartItem[];
+  couponId: number | null;
   maCouponDangApDung: string | null;
   giamGia: number;
   phiVanChuyenTamTinh: number;
