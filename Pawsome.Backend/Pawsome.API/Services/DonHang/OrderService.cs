@@ -451,4 +451,11 @@ public class OrderService : IOrderService
             .SelectMany(o => o.OrderItems)
             .AnyAsync(oi => oi.Variant.ProductId == productId);
     }
+
+    public async Task<decimal> TongTietKiemAsync(int userId)
+    {
+        return await _dbContext.Orders
+            .Where(o => o.UserId == userId && o.TrangThai != OrderStatus.DaHuy)
+            .SumAsync(o => (decimal?)o.GiamGia) ?? 0m;
+    }
 }

@@ -1,13 +1,15 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { Header } from '../../../shared/components/header/header';
 import { Footer } from '../../../shared/components/footer/footer';
 import { ChatAi } from '../../../shared/components/chat-ai/chat-ai';
 import { AuthService } from '../auth.service';
 import { UserProfile, UserService } from '../user.service';
 import { Address, AddressService } from '../address.service';
+import { DANH_SACH_GOI_PAWVIP } from '../../gio-hang/pawvip/models/pawvip-goi.model';
+import { TaiKhoanSidebarComponent } from '../tai-khoan-sidebar/tai-khoan-sidebar';
 
 
 function matKhauKhopValidator(): ValidatorFn {
@@ -21,7 +23,7 @@ function matKhauKhopValidator(): ValidatorFn {
 @Component({
   selector: 'app-ho-so',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, Header, Footer, ChatAi],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, Header, Footer, ChatAi, TaiKhoanSidebarComponent],
   templateUrl: './ho-so.html',
   styleUrl: './ho-so.scss'
 })
@@ -30,7 +32,6 @@ export class HoSoComponent implements OnInit {
   private readonly userService = inject(UserService);
   private readonly addressService = inject(AddressService);
   private readonly authService = inject(AuthService);
-  private readonly router = inject(Router);
 
   hoSo = signal<UserProfile | null>(null);
   diaChiList = signal<Address[]>([]);
@@ -57,8 +58,6 @@ export class HoSoComponent implements OnInit {
     xacNhanMatKhauMoi: ['', [Validators.required]]
   }, { validators: matKhauKhopValidator() });
 
-  private readonly nguongDoiThuong = 500;
-
   ngOnInit(): void {
     this.taiHoSo();
     this.addressService.getAll().subscribe({
@@ -66,11 +65,13 @@ export class HoSoComponent implements OnInit {
     });
   }
 
-  get diemConThieu(): number {
-    const hs = this.hoSo();
-    if (!hs) return this.nguongDoiThuong;
-    return Math.max(this.nguongDoiThuong - hs.diemPawpoints, 0);
-  }
+  // Trước đây khối "PawVip Membership" ở trang này chỉ là hàng trang trí tĩnh (nút JOIN NOW
+  // không có (click), không link đi đâu) - giờ đọc đúng trạng thái PawVip thật của khách, khớp
+  // đúng danh sách gói đang hiển thị ở trang PawVip (gio-hang/pawvip).
+  readonly goiPawVipHienTai = computed(() => {
+    const tier = this.hoSo()?.pawVipTier;
+    return tier ? DANH_SACH_GOI_PAWVIP.find(g => g.id === tier) : undefined;
+  });
 
   taiHoSo(): void {
     this.dangTai = true;
@@ -165,10 +166,5 @@ export class HoSoComponent implements OnInit {
         this.loiMatKhau = err?.error?.message ?? 'Đổi mật khẩu thất bại. Vui lòng thử lại.';
       }
     });
-  }
-
-  dangXuat(): void {
-    this.authService.logout();
-    this.router.navigate(['/']);
   }
 }

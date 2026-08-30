@@ -1,0 +1,161 @@
+:host {
+  --clr-red-dark: #A51F1F;
+  --clr-cta: #D32F2F;
+  --clr-page-bg: #FFF9F5;
+  --clr-panel-gray: #F0EEEE;
+  --clr-white: #FFFFFF;
+  --clr-text: #2F2D2E;
+  --clr-text-muted: #4D4D4E;
+  --clr-border: #AA9D9D;
+  --header-height: 195px;
+
+  display: contents;
+  font-family: 'Sora', sans-serif;
+}
+
+.dashboard-page {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  background-color: var(--clr-page-bg);
+  min-height: calc(100vh - var(--header-height));
+  margin-top: var(--header-height);
+  padding: 40px 0 60px;
+  box-sizing: border-box;
+}
+
+.page-shell {
+  width: 1200px;
+  max-width: calc(100% - 40px);
+  margin: 0;
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 28px;
+  align-items: start;
+}
+
+.content { min-width: 0; }
+
+.page-title {
+  font-weight: 700;
+  font-size: 22px;
+  color: var(--clr-text);
+  margin: 0 0 20px;
+}
+
+.empty-text { color: var(--clr-text-muted); font-size: 14px; }
+
+// ── Stat cards ───────────────────────────────────────
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 900px) {
+  .stat-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+.stat-card {
+  background: var(--clr-white);
+  border: 1px solid #EEE;
+  border-radius: 12px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stat-icon { color: var(--clr-cta); font-size: 18px; margin-bottom: 4px; }
+.stat-value { font-weight: 800; font-size: 20px; color: var(--clr-text); margin: 0; }
+.stat-label { font-size: 12px; color: var(--clr-text-muted); margin: 0; }
+.stat-link {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--clr-cta);
+  text-decoration: none;
+  // Đẩy xuống sát đáy card - trước đây bám ngay sau label nên card nào label ngắn/dài khác
+  // nhau (vd "PawPoints" 1 dòng vs "Active until 30/08/2027" dài hơn) làm nút "View →" mỗi
+  // card lệch hàng nhau, dù .stat-grid đã stretch các card cao bằng nhau.
+  margin-top: auto;
+  padding-top: 6px;
+}
+.stat-link:hover { opacity: 0.85; }
+
+// ── Savings banner ───────────────────────────────────
+.savings-banner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--clr-cta);
+  color: var(--clr-white);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+
+  i { font-size: 22px; }
+  p { margin: 0; font-size: 14px; }
+  strong { font-size: 16px; }
+}
+
+// ── Recent orders ────────────────────────────────────
+.recent-orders {
+  background: var(--clr-white);
+  border: 1px solid #EEE;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.recent-orders-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+
+  h3 { font-size: 15px; font-weight: 700; color: var(--clr-text); margin: 0; }
+}
+
+.link-view-all { font-size: 13px; font-weight: 700; color: var(--clr-cta); text-decoration: none; }
+.link-view-all:hover { opacity: 0.85; }
+
+.order-list { display: flex; flex-direction: column; }
+
+.order-row {
+  // Grid với cột badge/tổng tiền CỐ ĐỊNH độ rộng - trước đây dùng flex (order-row-left: flex:1,
+  // order-total: chỉ min-width) nên độ rộng cột tổng tiền co giãn theo số chữ số ("600,000" ngắn
+  // hơn "2,520,000"), làm khoảng trống còn lại cho order-row-left thay đổi theo từng dòng, kéo
+  // theo badge trạng thái lệch vị trí ngang giữa các dòng dù mắt nhìn tưởng là "xiên".
+  display: grid;
+  grid-template-columns: 1fr 110px 130px;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid #F0EEEE;
+
+  &:last-child { border-bottom: none; }
+}
+
+.order-row-left { display: flex; flex-direction: column; gap: 2px; }
+.order-code { font-weight: 600; font-size: 14px; color: var(--clr-text); }
+.order-date { font-size: 12px; color: var(--clr-text-muted); }
+.order-total { font-weight: 700; color: var(--clr-cta); font-size: 14px; text-align: right; }
+.StatusBadge { justify-self: start; }
+
+.StatusBadge {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.StatusPending       { background-color: #F0EEEE; color: #AA9D9D; border: 1px solid #AA9D9D; }
+.StatusProcessing    { background-color: #F0EEEE; color: var(--clr-cta); }
+.StatusShipped       { background-color: #F0EEEE; color: #8A191C; }
+.StatusDelivered     { background-color: #2F2D2E; color: var(--clr-white); }
+.StatusCancelled     { background-color: #6D2121; color: var(--clr-white); }
+.StatusReturnPending { background-color: var(--clr-white); color: #4D4D4E; border: 1px dashed #4D4D4E; }
+.StatusReturned      { background-color: #4D4D4E; color: var(--clr-white); }

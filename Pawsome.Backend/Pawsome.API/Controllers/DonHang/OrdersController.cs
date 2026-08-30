@@ -44,6 +44,13 @@ public class OrdersController : ControllerBase
         return Ok(ApiResponse<PagedResult<OrderDto>>.Ok(result));
     }
 
+    [HttpGet("tong-tiet-kiem")]
+    public async Task<IActionResult> TongTietKiem()
+    {
+        var result = await _orderService.TongTietKiemAsync(CurrentUserId);
+        return Ok(ApiResponse<decimal>.Ok(result));
+    }
+
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {

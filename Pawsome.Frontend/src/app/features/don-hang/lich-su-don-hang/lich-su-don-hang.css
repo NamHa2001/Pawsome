@@ -132,7 +132,11 @@
 }
 
 .OrderCardHeaderRight {
-  display: flex;
+  /* Grid với cột badge/tổng tiền cố định độ rộng - trước đây flex nên độ rộng mỗi phần tử co
+     giãn theo nội dung (số tiền nhiều/ít chữ số, tên trạng thái dài/ngắn), làm badge lệch vị
+     trí ngang giữa các đơn dù mắt nhìn tưởng "xiên vẹo". */
+  display: grid;
+  grid-template-columns: 150px 140px 16px;
   align-items: center;
   gap: 18px;
 }
@@ -141,6 +145,7 @@
   font-weight: 700;
   color: var(--MauDoDam);
   font-size: 15px;
+  text-align: right;
 }
 
 .OrderCardHeaderRight i {
@@ -157,6 +162,9 @@
   padding: 5px 12px;
   border-radius: 20px;
   white-space: nowrap;
+  /* Grid item mặc định bị kéo giãn hết chiều rộng cột (150px) - ép về đúng kích thước chữ, ghim
+     bên trái ô, không cho viên "pill" bị dãn thành hình chữ nhật to. */
+  justify-self: start;
 }
 
 .StatusPending       { background-color: var(--MauHongNhat); color: #AA9D9D; border: 1px solid #AA9D9D; }

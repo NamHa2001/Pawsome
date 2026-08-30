@@ -28,6 +28,11 @@ export class OrderService {
       .pipe(map(res => res.data ?? { items: [], totalCount: 0, pageNumber: 1, pageSize: 5, totalPages: 0 }));
   }
 
+  tongTietKiem(): Observable<number> {
+    return this.http.get<ApiResponse<number>>(`${this.baseUrl}/tong-tiet-kiem`)
+      .pipe(map(res => res.data ?? 0));
+  }
+
   getById(orderId: number): Observable<Order> {
     return this.http.get<ApiResponse<Order>>(`${this.baseUrl}/${orderId}`)
       .pipe(map(res => res.data!));

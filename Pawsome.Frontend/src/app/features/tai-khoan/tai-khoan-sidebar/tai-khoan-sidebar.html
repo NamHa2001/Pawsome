@@ -1,0 +1,45 @@
+<aside class="sidebar">
+  <div class="loyalty-box">
+    <p class="loyalty-title">Loyalty Credit</p>
+    <div class="loyalty-body">
+      <div class="loyalty-ring">
+        <span>{{ diemPawpoints() }}</span>
+      </div>
+      <p class="loyalty-text">
+        You're only <strong>{{ diemConThieu }}</strong> PawPoints away from
+        <strong>{{ soTienThuong | number:'1.0-0' }} VND off</strong> on your order
+      </p>
+    </div>
+    <p class="loyalty-note">*Terms & Conditions Apply</p>
+  </div>
+
+  <nav class="sidebar-menu">
+    <a routerLink="/tai-khoan/dashboard" routerLinkActive="is-active" class="menu-item">
+      <i class="fa-solid fa-table-cells"></i> Dashboard
+    </a>
+    <a routerLink="/tai-khoan/ho-so" routerLinkActive="is-active" class="menu-item">
+      <i class="fa-solid fa-user"></i> Manage Account
+    </a>
+    <a routerLink="/don-hang/lich-su" routerLinkActive="is-active" class="menu-item">
+      <i class="fa-solid fa-clock-rotate-left"></i> Order History
+    </a>
+    <span class="menu-item is-disabled" title="Coming soon">
+      <i class="fa-solid fa-clock-rotate-left"></i> Payment Pending
+    </span>
+    <a routerLink="/gio-hang/dat-hang-tu-dong" routerLinkActive="is-active" class="menu-item">
+      <i class="fa-solid fa-rotate"></i> Auto Orders
+    </a>
+    <a routerLink="/don-hang/pawpoints" routerLinkActive="is-active" class="menu-item">
+      <i class="fa-solid fa-medal"></i> PawPoints
+    </a>
+    <span class="menu-item is-disabled" title="Coming soon">
+      <i class="fa-solid fa-paw"></i> My Pets
+    </span>
+    <span class="menu-item is-disabled" title="Coming soon">
+      <i class="fa-solid fa-id-card"></i> PetCare+ Membership
+    </span>
+    <button type="button" class="menu-item menu-signout" (click)="dangXuat()">
+      <i class="fa-solid fa-power-off"></i> Sign Out
+    </button>
+  </nav>
+</aside>
