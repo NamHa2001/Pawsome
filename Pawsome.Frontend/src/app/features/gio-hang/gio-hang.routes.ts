@@ -14,7 +14,7 @@ export const routes: Routes = [
     loadComponent: () => import('./pawvip/pawvip').then(m => m.PawVipComponent)
   },
   {
-    path: 'quan-tri-ma-giam-gia',
-    loadComponent: () => import('./quan-tri-ma-giam-gia/quan-tri-ma-giam-gia').then(m => m.QuanTriMaGiamGiaComponent)
+    path: 'coupon',
+    loadComponent: () => import('./coupon/coupon').then(m => m.CouponComponent)
   }
 ];

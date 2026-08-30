@@ -1,0 +1,53 @@
+<app-header></app-header>
+
+<main class="NoiDungChinh">
+<div class="TrangCoupon">
+  <div class="KhungTieuDeCoupon">
+    <h1 class="TieuDeCoupon">🎟 My Coupons</h1>
+    <p class="MoTaCoupon">Grab a code below and use it right in your cart.</p>
+  </div>
+
+  @if (dangTai()) {
+    <p class="TrangThaiCoupon">Loading coupons...</p>
+  } @else if (loi()) {
+    <p class="TrangThaiCoupon TrangThaiLoi">{{ loi() }}</p>
+  } @else if (danhSach().length === 0) {
+    <p class="TrangThaiCoupon">No active coupons right now. Check back later!</p>
+  } @else {
+    <div class="DanhSachCoupon">
+      @for (cp of danhSach(); track cp.couponId) {
+        <div class="TheCoupon">
+          <div class="CanhRangCoupon"></div>
+          <div class="NoiDungTheCoupon">
+            <div class="HangTrenThe">
+              <span class="GiaTriUuDai">{{ hienThiUuDai(cp) }}</span>
+              <span class="MaCodeThe">{{ cp.maCode }}</span>
+            </div>
+            <p class="DieuKienThe">
+              @if (cp.ngayKetThuc) {
+                Valid until {{ cp.ngayKetThuc }}
+              } @else {
+                No expiry
+              }
+              @if (cp.soLuong !== null) {
+                · {{ cp.soLuong }} left
+              } @else {
+                · Unlimited uses
+              }
+            </p>
+          </div>
+          <div class="CotNutThe">
+            <button type="button" class="NutSaoChepThe" (click)="saoChepMa(cp.maCode)">
+              {{ maVuaSaoChep() === cp.maCode ? 'Copied!' : 'Copy Code' }}
+            </button>
+            <button type="button" class="NutDungNgayThe" (click)="dungNgay(cp.maCode)">Use Now</button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>
+</main>
+
+<app-footer></app-footer>
+<app-chat-ai></app-chat-ai>

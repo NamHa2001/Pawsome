@@ -2,9 +2,9 @@ import { CommonModule } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 
-import { ApplyCouponResult, Cart, CartItem, Coupon, TanSuatDonTuDong } from './models/gio-hang.model';
+import { Cart, CartItem, Coupon, TanSuatDonTuDong } from './models/gio-hang.model';
 import { CartService } from './services/cart.service';
 import { CouponService } from './services/coupon.service';
 import { AutoOrderService } from '../dat-hang-tu-dong/services/auto-order.services';
@@ -47,6 +47,7 @@ export class GioHangComponent {
   private readonly autoOrderService = inject(AutoOrderService);
   private readonly tokenService = inject(TokenService);
   private readonly productService = inject(ProductService);
+  private readonly activatedRoute = inject(ActivatedRoute);
 
   private readonly nguoiDungHienTai = toSignal(this.tokenService.currentUser$, {
     initialValue: this.tokenService.getUser()
@@ -110,6 +111,14 @@ export class GioHangComponent {
   constructor() {
     this.taiGioHang();
     this.taiMaGiamGiaGoiY();
+    this.apDungMaTuQueryParam();
+  }
+
+  // Đến từ trang "My Coupons" (nút Use Now) - URL có ?ma=CODE, tự điền + áp mã ngay khi vào
+  // giỏ hàng, không bắt người dùng phải gõ lại mã đã chọn ở trang trước.
+  private apDungMaTuQueryParam(): void {
+    const ma = this.activatedRoute.snapshot.queryParamMap.get('ma');
+    if (ma) this.chonMa(ma);
   }
 
   taiGioHang(): void {
@@ -120,6 +129,16 @@ export class GioHangComponent {
         this.gioHang.set(res.data ?? null);
         this.dangTai.set(false);
         this.taiSanPhamGoiY();
+
+        // Đồng bộ lại maCoupon/thongBaoCoupon từ coupon đã lưu bền ở server - 2 signal này
+        // trước đây chỉ được set lúc vừa bấm Apply/Remove trong phiên hiện tại, nên sau khi
+        // F5 (hoặc mới vào trang) dù tổng tiền đã tính đúng giảm giá, nút "✕ Remove" và ô
+        // radio highlight mã đang áp vẫn không hiện vì 2 signal đó vẫn ở giá trị mặc định.
+        const maDangApDung = res.data?.maCouponDangApDung;
+        if (maDangApDung) {
+          this.maCoupon.set(maDangApDung);
+          this.thongBaoCoupon.set({ loai: 'thanh-cong', noiDung: `Coupon "${maDangApDung}" applied.` });
+        }
       },
       error: () => {
         this.loi.set('Could not load your cart. Please try again.');
@@ -285,7 +304,7 @@ xoaSachGioHang(): void {
 
   this.cartService.xoaSachGioHang().subscribe({
     next: () => {
-      this.gioHang.update(gh => gh ? { ...gh, items: [], tienHang: 0, giamGia: 0, tongTien: 0, maCouponDangApDung: null } : gh);
+      this.gioHang.update(gh => gh ? { ...gh, items: [], tienHang: 0, giamGia: 0, tongTien: 0, couponId: null, maCouponDangApDung: null } : gh);
       this.maCoupon.set('');
       this.thongBaoCoupon.set(null);
     },
@@ -311,7 +330,7 @@ apDungMaGiamGia(): void {
         this.thongBaoCoupon.set({ loai: 'loi', noiDung: ketQua?.thongBao ?? 'Invalid coupon code.' });
         return;
       }
-      this.apDungKetQuaCoupon(ma, ketQua);
+      this.capNhatGioHangTuServer();
       this.thongBaoCoupon.set({ loai: 'thanh-cong', noiDung: ketQua.thongBao ?? `Coupon "${ma}" applied.` });
     },
     error: err => {
@@ -339,17 +358,13 @@ chonMa(maCode: string): void {
   this.apDungMaGiamGia();
 }
 
-private apDungKetQuaCoupon(maCode: string, ketQua: ApplyCouponResult): void {
-  this.gioHang.update(gh => {
-    if (!gh) return gh;
-    return {
-      ...gh,
-      maCouponDangApDung: maCode,
-      tienHang: ketQua.tienHang,
-      giamGia: ketQua.giamGia,
-      phiVanChuyenTamTinh: ketQua.phiVanChuyenTamTinh,
-      tongTien: ketQua.tongTien
-    };
+// Sau khi áp mã, load lại giỏ hàng thật từ server (đã lưu bền cart.CouponId) thay vì tự vá
+// state ở client - trước đây tự tính lại các field từ ApplyCouponResultDto khiến state chỉ
+// tồn tại trong signal của component này, mất ngay khi sang trang thanh toán hoặc reload.
+private capNhatGioHangTuServer(): void {
+  this.cartService.layGioHang().subscribe({
+    next: res => this.gioHang.set(res.data ?? this.gioHang()),
+    error: () => this.thongBaoCoupon.set({ loai: 'loi', noiDung: 'Applied, but failed to refresh cart totals. Please reload the page.' })
   });
 }
 

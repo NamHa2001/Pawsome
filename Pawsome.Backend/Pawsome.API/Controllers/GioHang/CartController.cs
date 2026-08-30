@@ -59,5 +59,11 @@ namespace Pawsome.API.Controllers.GioHang
                 Message = data.ThongBao
             });
         }
+        [HttpDelete("ma-giam-gia")]
+        public async Task<IActionResult> XoaMaGiamGia()
+        {
+            var data = await _cartService.XoaMaGiamGiaAsync(UserId);
+            return Ok(new ApiResponse<CartDto> { Success = true, Data = data, Message = "Đã gỡ mã giảm giá" });
+        }
     }
 }
