@@ -15,6 +15,11 @@ export const routes: Routes = [
     loadComponent: () => import('./quen-mat-khau/quen-mat-khau').then(m => m.QuenMatKhauComponent)
   },
   {
+    path: 'dashboard',
+    loadComponent: () => import('./dashboard/dashboard').then(m => m.DashboardComponent),
+    canActivate: [authGuard]
+  },
+  {
     path: 'ho-so',
     loadComponent: () => import('./ho-so/ho-so').then(m => m.HoSoComponent)
   },

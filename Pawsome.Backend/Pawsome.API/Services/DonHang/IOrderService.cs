@@ -23,4 +23,8 @@ public interface IOrderService
     // hàng (trạng thái da_giao) mới được đánh giá sản phẩm đó, xem Pawsome_KhungDuAn.md mục 2:
     // Phần 2 không tự query bảng orders, phải gọi qua IOrderService của Phần 4.
     Task<bool> DaMuaVaNhanHangAsync(int userId, int productId);
+
+    // Tổng tiền đã tiết kiệm được (coupon + PawPoints + PawVip cộng gộp - Order.GiamGia đã là
+    // tổng của cả 3 nguồn giảm giá đó tính lúc tạo đơn) - dùng cho dashboard khách hàng.
+    Task<decimal> TongTietKiemAsync(int userId);
 }

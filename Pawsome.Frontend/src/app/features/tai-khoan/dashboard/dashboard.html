@@ -1,0 +1,90 @@
+<app-header />
+
+<div class="dashboard-page">
+  <div class="page-shell">
+
+    <app-tai-khoan-sidebar />
+
+    <main class="content">
+      @if (hoSo(); as hs) {
+        <h2 class="page-title">Welcome back, {{ hs.hoTen }}!</h2>
+
+        <div class="stat-grid">
+          <div class="stat-card">
+            <i class="fa-solid fa-medal stat-icon"></i>
+            <p class="stat-value">{{ hs.diemPawpoints | number:'1.0-0' }}</p>
+            <p class="stat-label">PawPoints</p>
+            <a routerLink="/don-hang/pawpoints" class="stat-link">View →</a>
+          </div>
+
+          <div class="stat-card">
+            <i class="fa-solid fa-paw stat-icon"></i>
+            @if (goiPawVipHienTai(); as goi) {
+              <p class="stat-value">{{ goi.ten }}</p>
+              <p class="stat-label">Active until {{ hs.pawVipHetHan | date:'dd/MM/yyyy' }}</p>
+            } @else {
+              <p class="stat-value">—</p>
+              <p class="stat-label">Not a PawVip member</p>
+            }
+            <a routerLink="/gio-hang/pawvip" class="stat-link">{{ goiPawVipHienTai() ? 'Manage' : 'Join Now' }} →</a>
+          </div>
+
+          <div class="stat-card">
+            <i class="fa-solid fa-box stat-icon"></i>
+            <p class="stat-value">{{ tongSoDon() }}</p>
+            <p class="stat-label">Total Orders</p>
+            <a routerLink="/don-hang/lich-su" class="stat-link">View All →</a>
+          </div>
+
+          <div class="stat-card">
+            <i class="fa-solid fa-heart stat-icon"></i>
+            <p class="stat-value">{{ soLuongWishlist() }}</p>
+            <p class="stat-label">Wishlist Items</p>
+            <a routerLink="/wishlist" class="stat-link">View →</a>
+          </div>
+        </div>
+
+        <div class="savings-banner">
+          <i class="fa-solid fa-piggy-bank"></i>
+          <p>
+            You've saved <strong>{{ tongTietKiem() | number:'1.0-0' }} VND</strong>
+            with PawPoints, coupons & PawVip so far!
+          </p>
+        </div>
+
+        <div class="recent-orders">
+          <div class="recent-orders-head">
+            <h3>Recent Orders</h3>
+            <a routerLink="/don-hang/lich-su" class="link-view-all">View All Orders →</a>
+          </div>
+
+          @if (dangTai()) {
+            <p class="empty-text">Loading...</p>
+          } @else if (donHangGanDay().length === 0) {
+            <p class="empty-text">You haven't placed any orders yet.</p>
+          } @else {
+            <div class="order-list">
+              @for (order of donHangGanDay(); track order.orderId) {
+                <div class="order-row">
+                  <div class="order-row-left">
+                    <span class="order-code">Order #{{ order.orderId }}</span>
+                    <span class="order-date">{{ order.ngayDat | date:'MMM d, y' }}</span>
+                  </div>
+                  <span class="StatusBadge" [ngClass]="orderStatusCssClass(order.trangThai)">
+                    {{ orderStatusLabel(order.trangThai) }}
+                  </span>
+                  <span class="order-total">{{ order.thanhTien | number:'1.0-0' }} VND</span>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      } @else {
+        <p class="empty-text">Loading your dashboard...</p>
+      }
+    </main>
+  </div>
+</div>
+
+<app-footer />
+<app-chat-ai />

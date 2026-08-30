@@ -3,51 +3,7 @@
 <div class="ho-so-page">
   <div class="page-shell">
 
-    <aside class="sidebar">
-      <div class="loyalty-box">
-        <p class="loyalty-title">Loyalty Credit</p>
-        <div class="loyalty-body">
-          <div class="loyalty-ring">
-            <span>{{ hoSo()?.diemPawpoints ?? 0 }}</span>
-          </div>
-          <p class="loyalty-text">
-            You're only <strong>{{ diemConThieu }}</strong> PawPoints away from
-            <strong>1,200,000 VND off</strong> on your order
-          </p>
-        </div>
-        <p class="loyalty-note">*Terms & Conditions Apply</p>
-      </div>
-
-      <nav class="sidebar-menu">
-        <span class="menu-item is-disabled" title="Coming soon">
-          <i class="fa-solid fa-table-cells"></i> Dashboard
-        </span>
-        <a routerLink="/tai-khoan/ho-so" class="menu-item is-active">
-          <i class="fa-solid fa-user"></i> Manage Account
-        </a>
-        <a routerLink="/don-hang/lich-su" class="menu-item">
-          <i class="fa-solid fa-clock-rotate-left"></i> Order History
-        </a>
-        <span class="menu-item is-disabled" title="Coming soon">
-          <i class="fa-solid fa-clock-rotate-left"></i> Payment Pending
-        </span>
-        <a routerLink="/gio-hang/dat-hang-tu-dong" class="menu-item">
-          <i class="fa-solid fa-rotate"></i> Auto Orders
-        </a>
-        <a routerLink="/don-hang/pawpoints" class="menu-item" routerLinkActive="is-active">
-          <i class="fa-solid fa-medal"></i> PawPoints
-        </a>
-        <span class="menu-item is-disabled" title="Coming soon">
-          <i class="fa-solid fa-paw"></i> My Pets
-        </span>
-        <span class="menu-item is-disabled" title="Coming soon">
-          <i class="fa-solid fa-id-card"></i> PetCare+ Membership
-        </span>
-        <button type="button" class="menu-item menu-signout" (click)="dangXuat()">
-          <i class="fa-solid fa-power-off"></i> Sign Out
-        </button>
-      </nav>
-    </aside>
+    <app-tai-khoan-sidebar />
 
     <main class="content">
       <h2 class="page-title">Manage Account</h2>
@@ -71,13 +27,19 @@
 
         <div class="pawvip-block">
           <p class="pawvip-logo"><span class="clr-green">Paw</span><span class="clr-orange">Vip</span></p>
-          <p class="pawvip-caption">Membership</p>
+          <p class="pawvip-caption">{{ goiPawVipHienTai() ? goiPawVipHienTai()!.ten + ' Member' : 'Membership' }}</p>
         </div>
 
         <div class="discount-block">
-          <p class="discount-title">Get 20% Discount!</p>
-          <p class="discount-caption">Enjoy Exclusive Perks & Priority Service</p>
-          <button type="button" class="btn-join" title="Coming soon">JOIN NOW</button>
+          @if (goiPawVipHienTai(); as goi) {
+            <p class="discount-title">{{ goi.phanTramGiam * 100 | number:'1.0-0' }}% Off Every Order</p>
+            <p class="discount-caption">Active until {{ hs.pawVipHetHan | date:'dd/MM/yyyy' }}</p>
+            <a routerLink="/gio-hang/pawvip" class="btn-join">Manage Plan</a>
+          } @else {
+            <p class="discount-title">Get Up To 20% Discount!</p>
+            <p class="discount-caption">Enjoy Exclusive Perks & Priority Service</p>
+            <a routerLink="/gio-hang/pawvip" class="btn-join">JOIN NOW</a>
+          }
         </div>
         } @else {
         <form [formGroup]="form" (ngSubmit)="luuHoSo()" class="edit-form">
