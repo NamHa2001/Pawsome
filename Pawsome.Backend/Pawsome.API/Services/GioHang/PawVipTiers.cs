@@ -25,5 +25,11 @@ namespace Pawsome.API.Services.GioHang
         // để tránh mỗi nơi tự viết lại điều kiện kiểm tra hạn.
         public static bool ConHieuLuc(string? tier, DateOnly? hetHan, DateOnly homNay)
             => tier != null && hetHan.HasValue && hetHan.Value >= homNay;
+
+        // Advanced và VIP có đặc quyền miễn phí ship (khớp đúng quyenLoi hiển thị ở
+        // pawvip-goi.model.ts phía frontend: "Free standard shipping" / "Free shipping on
+        // every order") - Basic (thuong) không có. Dùng chung ở CartService (giỏ hàng) và
+        // OrderService (tạo đơn) để 2 nơi luôn tính ra cùng 1 kết quả cho cùng 1 khách.
+        public static readonly IReadOnlySet<string> TierMienPhiShip = new HashSet<string> { "nang-cao", "vip" };
     }
 }

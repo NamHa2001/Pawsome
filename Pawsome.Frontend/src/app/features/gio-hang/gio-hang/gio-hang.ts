@@ -14,6 +14,7 @@ import { Header } from '../../../shared/components/header/header';
 import { TokenService } from '../../../core/models/token.service';
 import { ProductService } from '../../san-pham/services/product.service';
 import { SanPham } from '../../san-pham/models/san-pham.model';
+import { VND_PER_PAWPOINT } from '../../don-hang/pawpoints/models/pawpoints.model';
 
 type TabGoiY = 'thuong-mua' | 'lien-quan';
 
@@ -31,8 +32,7 @@ interface ThongBaoCoupon {
   noiDung: string;
 }
 
-const PHI_VAN_CHUYEN_CO_THEO_DOI = 30000;
-const PHAN_TRAM_GIAM_AUTO_ORDER = 0.1; 
+const PHAN_TRAM_GIAM_AUTO_ORDER = 0.1;
 
 @Component({
   selector: 'app-gio-hang',
@@ -93,20 +93,19 @@ export class GioHangComponent {
   readonly thongBaoCoupon = signal<ThongBaoCoupon | null>(null);
   readonly danhSachMaGiamGia = signal<Coupon[]>([]);
 
-  readonly loaiVanChuyen = signal<'free' | 'tracked'>('free');
-  readonly phiVanChuyenCoTheoDoi = PHI_VAN_CHUYEN_CO_THEO_DOI;
-
-  readonly phiVanChuyenHienThi = computed(() =>
-    this.loaiVanChuyen() === 'free' ? 0 : this.phiVanChuyenCoTheoDoi
-  );
-
+  // Phí ship là số backend trả về (CartService.TinhPhiVanChuyenTamTinhAsync) - đã tự động = 0
+  // cho khách PawVip Advanced/VIP còn hạn, không cần (và không nên) cho khách tự chọn free/trả
+  // phí như trước đây, vì lựa chọn đó chưa từng được gửi lên backend hay áp dụng thật lúc tạo đơn.
   readonly tongTienHienThi = computed(() => {
     const gh = this.gioHang();
     if (!gh) return 0;
-    return Math.max(0, gh.tienHang - gh.giamGia - this.giamGiaAutoOrder() + this.phiVanChuyenHienThi());
+    return Math.max(0, gh.tienHang - gh.giamGia - this.giamGiaAutoOrder() + gh.phiVanChuyenTamTinh);
   });
 
-  readonly diemThuongDuKien = computed(() => Math.floor(this.tongTienHienThi() / 10000));
+  // Trước đây chia cố định 10.000 - lệch với tỉ lệ tích điểm thật đã đổi ở PawPointsService/
+  // OrderService (1 điểm/1.000đ), khiến số dự kiến hiện ở giỏ hàng thấp hơn 10 lần số thật sự
+  // được cộng sau khi đặt hàng xong.
+  readonly diemThuongDuKien = computed(() => Math.floor(this.tongTienHienThi() / VND_PER_PAWPOINT));
 
   constructor() {
     this.taiGioHang();

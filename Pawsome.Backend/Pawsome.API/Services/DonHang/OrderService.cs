@@ -94,10 +94,18 @@ public class OrderService : IOrderService
 
         var giamGia = Math.Min(giamGiaCoupon + giamGiaDiem + giamGiaPawVip, tienHang);
 
+        // Advanced/VIP được miễn phí ship hoàn toàn - đặc quyền đã quảng cáo ở pawvip-goi.model.ts
+        // (frontend) nhưng trước đây chưa áp dụng thật, khách vẫn bị tính phí như bình thường.
+        var mienPhiShipPawVip = pawVipInfo != null
+            && PawVipTiers.ConHieuLuc(pawVipInfo.PawVipTier, pawVipInfo.PawVipHetHan, homNay)
+            && PawVipTiers.TierMienPhiShip.Contains(pawVipInfo.PawVipTier!);
+
         // Phí vận chuyển: tạm tính cố định theo tỉnh/thành nơi giao
-        var phiVanChuyen = address.TinhThanh.Trim().Equals("Hồ Chí Minh", StringComparison.OrdinalIgnoreCase)
-            || address.TinhThanh.Trim().Equals("Hà Nội", StringComparison.OrdinalIgnoreCase)
-            ? 20000m : 35000m;
+        var phiVanChuyen = mienPhiShipPawVip
+            ? 0m
+            : address.TinhThanh.Trim().Equals("Hồ Chí Minh", StringComparison.OrdinalIgnoreCase)
+                || address.TinhThanh.Trim().Equals("Hà Nội", StringComparison.OrdinalIgnoreCase)
+                ? 20000m : 35000m;
 
         var thanhTien = Math.Max(0, tienHang + phiVanChuyen - giamGia);
 

@@ -78,9 +78,9 @@ export class ThanhToanComponent {
 
   /* Không cho dùng nhiều điểm hơn số dư, và không cho dùng nhiều hơn mức backend thực sự áp
    dụng được: OrderService.cs giới hạn (giamGiaCoupon + giamGiaDiem + giamGiaPawVip) <= tienHang,
-   nên phần điểm tối đa còn hữu ích = (tienHang - giamGiaCoupon - giamGiaPawVip) / 10.000 - thiếu
-   giamGiaPawVip ở đây thì khách PawVip có thể chọn dùng điểm nhiều hơn mức thực sự có ích, điểm
-   vẫn bị trừ khỏi số dư nhưng không giảm thêm được đồng nào vì đã bị Math.Min chặn ở tienHang. */
+   nên phần điểm tối đa còn hữu ích = (tienHang - giamGiaCoupon - giamGiaPawVip) / vndPerPoint -
+   thiếu giamGiaPawVip ở đây thì khách PawVip có thể chọn dùng điểm nhiều hơn mức thực sự có ích,
+   điểm vẫn bị trừ khỏi số dư nhưng không giảm thêm được đồng nào vì đã bị Math.Min chặn ở tienHang. */
   readonly maxUsablePoints = computed(() => {
     const cart = this.cart();
     if (!cart) return 0;
