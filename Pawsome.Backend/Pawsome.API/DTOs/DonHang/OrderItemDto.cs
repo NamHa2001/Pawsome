@@ -4,6 +4,7 @@ public class OrderItemDto
 {
     public int OrderItemId { get; set; }
     public int VariantId { get; set; }
+    public int ProductId { get; set; }
     public string TenSanPham { get; set; } = null!;
     public string TenBienThe { get; set; } = null!;
     public int SoLuong { get; set; }

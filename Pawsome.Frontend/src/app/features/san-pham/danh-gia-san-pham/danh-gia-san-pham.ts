@@ -54,12 +54,36 @@ export class DanhGiaSanPham implements OnInit {
 
   soSaoMoi = 5;
   binhLuanMoi = '';
+  diemChatLuongMoi = 5;
+  diemGiaTriMoi = 5;
+  diemHaiLongMoi = 5;
   readonly dangGuiDanhGia = signal(false);
   readonly loiGuiDanhGia = signal<string | null>(null);
   readonly guiThanhCong = signal(false);
 
+  readonly coTheDanhGia = signal(false);
+  readonly dangKiemTraDieuKien = signal(true);
+
+  // Khoá riêng từng review đang vote (không khoá cả trang) - vote review A không có lý do gì
+  // chặn vote review B, đó là 2 dòng độc lập trong DB. Cùng pattern Set<id> đã dùng ở
+  // quan-tri/nguoi-dung (dangCapNhat) cho các nút thao tác theo dòng.
+  readonly dangVoteReviewIds = signal<ReadonlySet<number>>(new Set());
+  readonly loiVote = signal<string | null>(null);
+
   ngOnInit(): void {
     this.taiDanhGia(1);
+
+    if (this.tokenService.isLoggedIn()) {
+      this.reviewService.coTheDanhGia(this.productId()).subscribe({
+        next: ok => {
+          this.coTheDanhGia.set(ok);
+          this.dangKiemTraDieuKien.set(false);
+        },
+        error: () => this.dangKiemTraDieuKien.set(false)
+      });
+    } else {
+      this.dangKiemTraDieuKien.set(false);
+    }
   }
 
   private taiDanhGia(page: number): void {
@@ -88,21 +112,67 @@ export class DanhGiaSanPham implements OnInit {
   }
 
   guiDanhGia(): void {
+    if (!confirm('Are you sure you want to submit this review?')) return;
+
     this.dangGuiDanhGia.set(true);
     this.loiGuiDanhGia.set(null);
 
-    this.reviewService.create({ productId: this.productId(), soSao: this.soSaoMoi, binhLuan: this.binhLuanMoi || undefined })
-      .subscribe({
-        next: () => {
-          this.dangGuiDanhGia.set(false);
-          this.guiThanhCong.set(true);
-          this.binhLuanMoi = '';
-          this.soSaoMoi = 5;
-        },
-        error: () => {
-          this.dangGuiDanhGia.set(false);
-          this.loiGuiDanhGia.set('Failed to submit review. Please try again.');
-        }
-      });
+    this.reviewService.create({
+      productId: this.productId(),
+      soSao: this.soSaoMoi,
+      binhLuan: this.binhLuanMoi || undefined,
+      diemChatLuong: this.diemChatLuongMoi,
+      diemGiaTri: this.diemGiaTriMoi,
+      diemHaiLongThuCung: this.diemHaiLongMoi
+    }).subscribe({
+      next: () => {
+        this.dangGuiDanhGia.set(false);
+        this.guiThanhCong.set(true);
+        this.binhLuanMoi = '';
+        this.soSaoMoi = 5;
+        this.diemChatLuongMoi = 5;
+        this.diemGiaTriMoi = 5;
+        this.diemHaiLongMoi = 5;
+      },
+      error: err => {
+        this.dangGuiDanhGia.set(false);
+        this.loiGuiDanhGia.set(err?.error?.message ?? 'Failed to submit review. Please try again.');
+      }
+    });
+  }
+
+  // Không cho tự vote đánh giá của chính mình - khớp đúng chặn ở backend (ReviewService.VoteAsync),
+  // ẩn nút đi luôn cho rõ thay vì để khách bấm rồi mới báo lỗi.
+  laDanhGiaCuaToi(r: DanhGia): boolean {
+    return this.tokenService.getUser()?.userId === r.userId;
+  }
+
+  dangVoteReview(reviewId: number): boolean {
+    return this.dangVoteReviewIds().has(reviewId);
+  }
+
+  vote(r: DanhGia, huuIch: boolean): void {
+    if (!this.tokenService.isLoggedIn() || this.dangVoteReview(r.reviewId)) return;
+
+    this.dangVoteReviewIds.update(ds => new Set(ds).add(r.reviewId));
+    this.loiVote.set(null);
+    this.reviewService.vote(r.reviewId, huuIch).subscribe({
+      next: ketQua => {
+        this.reviews.update(ds => ds.map(x => x.reviewId === ketQua.reviewId ? ketQua : x));
+        this.ketThucVote(r.reviewId);
+      },
+      error: err => {
+        this.ketThucVote(r.reviewId);
+        this.loiVote.set(err?.error?.message ?? 'Failed to vote. Please try again.');
+      }
+    });
+  }
+
+  private ketThucVote(reviewId: number): void {
+    this.dangVoteReviewIds.update(ds => {
+      const moi = new Set(ds);
+      moi.delete(reviewId);
+      return moi;
+    });
   }
 }
