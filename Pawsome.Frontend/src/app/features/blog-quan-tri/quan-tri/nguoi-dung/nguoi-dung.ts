@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { AdminUser, PAWVIP_TIER_LABELS, ROLE_OPTIONS } from './models/nguoi-dung.model';
+import { AdminUser, PAWVIP_TIER_LABELS, ROLE_OPTIONS, daHetHan } from './models/nguoi-dung.model';
 import { AdminUserService } from './services/admin-user.service';
 
 const PAGE_SIZE = 10;
@@ -36,13 +36,7 @@ export class QuanTriNguoiDung {
     this.taiDanhSach();
   }
 
-  // pawvip_het_han lưu ngày hết hạn theo NĂM (xem PawVipTiers.ConHieuLuc ở backend) - admin
-  // vẫn cần thấy các gói đã hết hạn để tra soát, nên so sánh ngay ở đây thay vì lọc từ backend
-  // như hồ sơ khách tự xem, chỉ để đánh dấu "Expired" cho rõ chứ không ẩn đi.
-  daHetHan(hetHan: string | null): boolean {
-    if (!hetHan) return false;
-    return new Date(hetHan) < new Date(new Date().toDateString());
-  }
+  readonly daHetHan = daHetHan;
 
   taiDanhSach(): void {
     this.dangTai.set(true);

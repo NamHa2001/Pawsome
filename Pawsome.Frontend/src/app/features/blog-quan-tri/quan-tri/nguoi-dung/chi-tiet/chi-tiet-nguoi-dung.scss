@@ -169,6 +169,13 @@
   color: var(--MauDoDam);
 }
 
+.TieuDeTheBoLoc {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
 .ThanThe { padding: 0; }
 
 .BangCuon { overflow-x: auto; }
@@ -199,6 +206,7 @@
 .OHanhDong { display: flex; align-items: center; gap: 8px; }
 
 .NutXemChiTiet {
+  display: inline-block;
   border: 1px solid #E0D0D0;
   background: transparent;
   color: var(--MauDen);
@@ -207,6 +215,7 @@
   cursor: pointer;
   font-weight: 600;
   font-size: 13px;
+  text-decoration: none;
 
   &:hover { background: var(--MauHongNhat); }
 }

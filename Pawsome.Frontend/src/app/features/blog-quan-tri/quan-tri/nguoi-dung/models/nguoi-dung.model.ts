@@ -37,3 +37,13 @@ export const PAWVIP_TIER_LABELS: Partial<Record<string, string>> = {
   'nang-cao': 'Advanced',
   'vip': 'VIP'
 };
+
+// pawvip_het_han lưu ngày hết hạn theo NĂM (xem PawVipTiers.ConHieuLuc ở backend) - admin
+// vẫn cần thấy các gói đã hết hạn để tra soát, nên so sánh ngay ở đây thay vì lọc từ backend
+// như hồ sơ khách tự xem, chỉ để đánh dấu "Expired" cho rõ chứ không ẩn đi. Dùng chung giữa
+// trang danh sách (nguoi-dung.ts) và trang chi tiết (chi-tiet-nguoi-dung.ts) để tránh lệch
+// logic khi sửa sau này.
+export function daHetHan(hetHan: string | null): boolean {
+  if (!hetHan) return false;
+  return new Date(hetHan) < new Date(new Date().toDateString());
+}
