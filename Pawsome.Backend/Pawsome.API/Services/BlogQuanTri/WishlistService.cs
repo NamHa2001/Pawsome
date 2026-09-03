@@ -70,7 +70,20 @@ public class WishlistService : IWishlistService
         };
 
         _dbContext.Wishlists.Add(wishlist);
-        await _dbContext.SaveChangesAsync();
+
+        try
+        {
+            await _dbContext.SaveChangesAsync();
+        }
+        catch (DbUpdateException)
+        {
+            // AnyAsync ở trên chỉ là pre-check (đọc trước khi ghi) nên vẫn có race: 2 request thêm
+            // cùng sản phẩm gửi gần như đồng thời (double-click, mở 2 tab) có thể cùng vượt qua
+            // pre-check trước khi request nào SaveChanges, request lưu sau sẽ vi phạm
+            // UQ_wishlists_user_product thật của DB - bắt lỗi đó ở đây để trả về đúng thông báo
+            // nghiệp vụ thay vì để lộ ra thành lỗi 500, giống cách ReviewService.BoPhieuAsync đã làm.
+            throw new InvalidOperationException("Sản phẩm đã có trong danh sách yêu thích.");
+        }
 
         return MapToDto(wishlist, product);
     }
