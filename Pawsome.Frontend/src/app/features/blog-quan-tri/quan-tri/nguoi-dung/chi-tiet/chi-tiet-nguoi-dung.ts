@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { AdminUser, PAWVIP_TIER_LABELS, ROLE_OPTIONS } from '../models/nguoi-dung.model';
+import { AdminUser, PAWVIP_TIER_LABELS, ROLE_OPTIONS, daHetHan } from '../models/nguoi-dung.model';
 import { AdminUserService } from '../services/admin-user.service';
 import { AdminOrder } from '../../don-hang/models/don-hang.model';
 import { AdminOrderService } from '../../don-hang/services/admin-order.service';
@@ -22,8 +23,13 @@ export class ChiTietNguoiDung {
   private readonly route = inject(ActivatedRoute);
   private readonly adminUserService = inject(AdminUserService);
   private readonly adminOrderService = inject(AdminOrderService);
+  private readonly destroyRef = inject(DestroyRef);
 
-  private readonly userId = Number(this.route.snapshot.paramMap.get('id'));
+  // Signal (không phải snapshot) - route này có thể bị Angular tái sử dụng cùng 1 instance
+  // component khi điều hướng thẳng từ /quan-tri/nguoi-dung/5 sang /quan-tri/nguoi-dung/7
+  // (cùng khớp 1 route config), nên phải subscribe route.paramMap để cập nhật lại, giống
+  // cách blog-chi-tiet.ts/chi-tiet-san-pham.ts đã làm - không đọc 1 lần từ snapshot.
+  readonly userId = signal(0);
 
   readonly user = signal<AdminUser | null>(null);
   readonly dangTai = signal(true);
@@ -54,22 +60,21 @@ export class ChiTietNguoiDung {
   });
 
   constructor() {
-    this.taiNguoiDung();
-    this.taiDonHang();
+    this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {
+      this.userId.set(Number(params.get('id')));
+      this.trangDon.set(1);
+      this.taiNguoiDung();
+      this.taiDonHang();
+    });
   }
 
-  // pawvip_het_han lưu ngày hết hạn theo NĂM (xem PawVipTiers.ConHieuLuc ở backend) - so sánh
-  // ngay ở đây để đánh dấu "Expired" cho rõ, không ẩn đi như hồ sơ khách tự xem.
-  daHetHan(hetHan: string | null): boolean {
-    if (!hetHan) return false;
-    return new Date(hetHan) < new Date(new Date().toDateString());
-  }
+  readonly daHetHan = daHetHan;
 
   private taiNguoiDung(): void {
     this.dangTai.set(true);
     this.loiTai.set(null);
 
-    this.adminUserService.layChiTiet(this.userId).subscribe({
+    this.adminUserService.layChiTiet(this.userId()).subscribe({
       next: u => {
         this.user.set(u);
         this.dangTai.set(false);
@@ -86,7 +91,7 @@ export class ChiTietNguoiDung {
     this.loiTaiDon.set(null);
 
     this.adminOrderService.layDanhSach({
-      userId: this.userId,
+      userId: this.userId(),
       page: this.trangDon(),
       pageSize: PAGE_SIZE
     }).subscribe({

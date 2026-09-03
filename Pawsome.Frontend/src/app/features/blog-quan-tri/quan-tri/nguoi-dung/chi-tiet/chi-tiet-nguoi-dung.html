@@ -85,8 +85,9 @@
   </div>
 
   <div class="TheQuanTri KhuDonHang">
-    <div class="TieuDeThe">
+    <div class="TieuDeThe TieuDeTheBoLoc">
       <span>Order History ({{ tongSoDon() }})</span>
+      <a class="NutXemChiTiet" [routerLink]="['/quan-tri/don-hang']" [queryParams]="{ userId: userId() }">View all orders</a>
     </div>
 
     <div class="ThanThe">
