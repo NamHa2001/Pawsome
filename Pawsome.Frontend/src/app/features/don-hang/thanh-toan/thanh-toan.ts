@@ -21,13 +21,18 @@ import { PawPointsService } from '../pawpoints/services/pawpoints.service';
 import { VND_PER_PAWPOINT } from '../pawpoints/models/pawpoints.model';
 import { UserService } from '../../tai-khoan/user.service';
 
-// Khớp đúng PawVipTiers.PhanTramGiam ở backend (Services/GioHang/PawVipTiers.cs) - chỉ dùng để
-// ước tính hiển thị trước, số thật vẫn do OrderService tính khi tạo đơn.
 const PAWVIP_PHAN_TRAM_GIAM: Record<string, number> = {
   'thuong': 0.05,
   'nang-cao': 0.10,
   'vip': 0.20
 };
+
+const PAWVIP_TIER_MIEN_PHI_SHIP = new Set(['nang-cao', 'vip']);
+
+const PHI_CO_BAN_NOI_THANH = 20000;
+const PHI_CO_BAN_TINH_KHAC = 35000;
+const PHU_PHI_GIAO_NHANH = 15000;
+const TINH_THANH_PHI_THAP: ReadonlySet<string> = new Set(['hồ chí minh', 'hà nội']);
 
 @Component({
   selector: 'app-thanh-toan',
@@ -64,8 +69,8 @@ export class ThanhToanComponent {
   newSetAsDefault = false;
 
   readonly shippingCarrierLabels = SHIPPING_CARRIER_LABELS;
-  readonly shippingCarriers: ShippingCarrier[] = ['GHN', 'GHTK', 'ViettelPost'];
-  readonly selectedCarrier = signal<ShippingCarrier>('GHN');
+  readonly shippingCarriers: ShippingCarrier[] = ['Free', 'GHTK', 'GHN'];
+  readonly selectedCarrier = signal<ShippingCarrier>('Free');
 
   readonly selectedPaymentMethod = signal<PaymentMethod>('momo');
   readonly placingOrder = signal(false);
@@ -76,11 +81,6 @@ export class ThanhToanComponent {
   readonly pawPointsToUse = signal(0);
   readonly vndPerPoint = VND_PER_PAWPOINT;
 
-  /* Không cho dùng nhiều điểm hơn số dư, và không cho dùng nhiều hơn mức backend thực sự áp
-   dụng được: OrderService.cs giới hạn (giamGiaCoupon + giamGiaDiem + giamGiaPawVip) <= tienHang,
-   nên phần điểm tối đa còn hữu ích = (tienHang - giamGiaCoupon - giamGiaPawVip) / vndPerPoint -
-   thiếu giamGiaPawVip ở đây thì khách PawVip có thể chọn dùng điểm nhiều hơn mức thực sự có ích,
-   điểm vẫn bị trừ khỏi số dư nhưng không giảm thêm được đồng nào vì đã bị Math.Min chặn ở tienHang. */
   readonly maxUsablePoints = computed(() => {
     const cart = this.cart();
     if (!cart) return 0;
@@ -92,8 +92,6 @@ export class ThanhToanComponent {
   readonly pawPointsDiscount = computed(() =>
     this.usePawPoints() ? this.pawPointsToUse() * this.vndPerPoint : 0);
 
-  // PawVip là quyền lợi thường trực của tài khoản, không cần khách bật/tắt như PawPoints -
-  // chỉ hiển thị ước tính, số thật do OrderService tự áp theo user.PawVipTier lúc tạo đơn.
   readonly pawVipTier = signal<string | null>(null);
   readonly pawVipDiscount = computed(() => {
     const cart = this.cart();
@@ -102,10 +100,27 @@ export class ThanhToanComponent {
     return Math.round(cart.tienHang * (PAWVIP_PHAN_TRAM_GIAM[tier] ?? 0));
   });
 
+  readonly selectedAddress = computed(() =>
+    this.addresses().find(a => a.addressId === this.selectedAddressId()) ?? null);
+
+  carrierFee(carrier: ShippingCarrier): number {
+    const tier = this.pawVipTier();
+    if (tier && PAWVIP_TIER_MIEN_PHI_SHIP.has(tier)) return 0; // Advanced/VIP luôn miễn phí ship
+    if (carrier === 'Free') return 0;
+
+    const tinhThanh = this.selectedAddress()?.tinhThanh?.trim().toLowerCase() ?? '';
+    const phiCoBan = TINH_THANH_PHI_THAP.has(tinhThanh) ? PHI_CO_BAN_NOI_THANH : PHI_CO_BAN_TINH_KHAC;
+
+    return carrier === 'GHN' ? phiCoBan + PHU_PHI_GIAO_NHANH : phiCoBan;
+  }
+
+  readonly estimatedShippingFee = computed(() => this.carrierFee(this.selectedCarrier()));
+
   readonly finalTotal = computed(() => {
     const cart = this.cart();
     if (!cart) return 0;
-    return Math.max(0, cart.tongTien - this.pawPointsDiscount() - this.pawVipDiscount());
+    const conLaiSauGiamGia = cart.tienHang - cart.giamGia - this.pawPointsDiscount() - this.pawVipDiscount();
+    return Math.max(0, conLaiSauGiamGia + this.estimatedShippingFee());
   });
 
   readonly isCartEmpty = computed(() => !this.cart() || this.cart()!.items.length === 0);

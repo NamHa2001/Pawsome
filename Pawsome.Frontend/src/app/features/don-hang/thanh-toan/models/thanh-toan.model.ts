@@ -37,12 +37,12 @@ export interface CreatePaymentResult {
   payUrl: string;
 }
 
-export type ShippingCarrier = 'GHN' | 'GHTK' | 'ViettelPost';
+export type ShippingCarrier = 'Free' | 'GHTK' | 'GHN';
 
 export const SHIPPING_CARRIER_LABELS: Record<ShippingCarrier, string> = {
-  GHN: 'Giao Hang Nhanh (GHN)',
+  Free: 'Free Shipping',
   GHTK: 'Giao Hang Tiet Kiem (GHTK)',
-  ViettelPost: 'Viettel Post'
+  GHN: 'Giao Hang Nhanh (GHN)'
 };
 
 export type PaymentMethod = 'momo' | 'vnpay';
