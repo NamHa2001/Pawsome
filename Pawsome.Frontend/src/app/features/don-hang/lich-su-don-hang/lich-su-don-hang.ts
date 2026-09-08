@@ -2,9 +2,6 @@ import { CommonModule } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { ChatAi } from '../../../shared/components/chat-ai/chat-ai';
-import { Footer } from '../../../shared/components/footer/footer';
-import { Header } from '../../../shared/components/header/header';
 import { Order } from '../thanh-toan/models/thanh-toan.model';
 import { OrderService } from '../thanh-toan/services/order.service';
 import {
@@ -17,7 +14,7 @@ type ActionType = 'cancel' | 'return';
 @Component({
   selector: 'app-lich-su-don-hang',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, Header, Footer, ChatAi],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './lich-su-don-hang.html',
   styleUrl: './lich-su-don-hang.css'
 })

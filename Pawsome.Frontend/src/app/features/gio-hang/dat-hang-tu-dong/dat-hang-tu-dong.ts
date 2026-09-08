@@ -4,14 +4,11 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { AutoOrder, NHAN_TAN_SUAT, NHAN_TRANG_THAI_AUTO_ORDER, TanSuatDonTuDong } from '../gio-hang/models/gio-hang.model';
 import { AutoOrderService } from '../dat-hang-tu-dong/services/auto-order.services';
-import { ChatAi } from '../../../shared/components/chat-ai/chat-ai';
-import { Footer } from '../../../shared/components/footer/footer';
-import { Header } from '../../../shared/components/header/header';
 
 @Component({
   selector: 'app-dat-hang-tu-dong',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, Header, Footer, ChatAi],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './dat-hang-tu-dong.html',
   styleUrl: './dat-hang-tu-dong.css'
 })

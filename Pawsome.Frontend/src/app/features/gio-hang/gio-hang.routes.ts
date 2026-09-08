@@ -3,11 +3,18 @@ import { Routes } from '@angular/router';
 export const routes: Routes = [
   {
     path: '',
+    pathMatch: 'full',
     loadComponent: () => import('./gio-hang/gio-hang').then(m => m.GioHangComponent)
   },
   {
-    path: 'dat-hang-tu-dong',
-    loadComponent: () => import('./dat-hang-tu-dong/dat-hang-tu-dong').then(m => m.DatHangTuDongComponent)
+    path: '',
+    loadComponent: () => import('../tai-khoan/tai-khoan-layout/tai-khoan-layout').then(m => m.TaiKhoanLayoutComponent),
+    children: [
+      {
+        path: 'dat-hang-tu-dong',
+        loadComponent: () => import('./dat-hang-tu-dong/dat-hang-tu-dong').then(m => m.DatHangTuDongComponent)
+      }
+    ]
   },
   {
     path: 'pawvip',

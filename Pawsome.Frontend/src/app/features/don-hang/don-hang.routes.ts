@@ -8,11 +8,6 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
   {
-    path: 'lich-su',
-    loadComponent: () => import('./lich-su-don-hang/lich-su-don-hang').then(m => m.LichSuDonHangComponent),
-    canActivate: [authGuard]
-  },
-  {
     path: 'theo-doi',
     loadComponent: () => import('./theo-doi-don-hang/theo-doi-don-hang').then(m => m.TheoDoiDonHangComponent),
     canActivate: [authGuard]
@@ -23,8 +18,19 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
   {
-    path: 'pawpoints',
-    loadComponent: () => import('./pawpoints/pawpoints').then(m => m.PawPointsComponent),
-    canActivate: [authGuard]
+    path: '',
+    loadComponent: () => import('../tai-khoan/tai-khoan-layout/tai-khoan-layout').then(m => m.TaiKhoanLayoutComponent),
+    children: [
+      {
+        path: 'lich-su',
+        loadComponent: () => import('./lich-su-don-hang/lich-su-don-hang').then(m => m.LichSuDonHangComponent),
+        canActivate: [authGuard]
+      },
+      {
+        path: 'pawpoints',
+        loadComponent: () => import('./pawpoints/pawpoints').then(m => m.PawPointsComponent),
+        canActivate: [authGuard]
+      }
+    ]
   }
 ];

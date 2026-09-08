@@ -1,12 +1,4 @@
-<app-header />
-
-<div class="dashboard-page">
-  <div class="page-shell">
-
-    <app-tai-khoan-sidebar />
-
-    <main class="content">
-      @if (hoSo(); as hs) {
+@if (hoSo(); as hs) {
         <h2 class="page-title">Welcome back, {{ hs.hoTen }}!</h2>
 
         <div class="stat-grid">
@@ -79,12 +71,6 @@
             </div>
           }
         </div>
-      } @else {
-        <p class="empty-text">Loading your dashboard...</p>
-      }
-    </main>
-  </div>
-</div>
-
-<app-footer />
-<app-chat-ai />
+} @else {
+  <p class="empty-text">Loading your dashboard...</p>
+}

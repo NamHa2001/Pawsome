@@ -14,30 +14,6 @@
   font-family: 'Sora', sans-serif;
 }
 
-.ho-so-page {
-  width: 100%;
-  display: flex;
-  justify-content: center; 
-  background-color: var(--clr-page-page);
-  min-height: calc(100vh - var(--header-height));
-  margin-top: var(--header-height);
-  padding: 40px 0 60px;
-  box-sizing: border-box;
-}
-
-.page-shell {
-  width: 1200px;
-  max-width: calc(100% - 40px);   
-  margin: 0;
-  display: grid;
-  grid-template-columns: 260px 1fr;
-  gap: 28px;
-  align-items: start;
-}
-
-// ── Content ─────────────────────────────────────────
-.content { min-width: 0; }
-
 .page-title {
   font-weight: 700;
   font-size: 22px;
@@ -172,6 +148,5 @@ app-footer { display: block; width: 100%; }
 app-chat-ai { position: relative; z-index: 2000; }
 
 @media (max-width: 900px) {
-  .page-shell { grid-template-columns: 1fr; }
   .account-card { grid-template-columns: 1fr; text-align: left; }
 }

@@ -1,10 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { Header } from '../../../shared/components/header/header';
-import { Footer } from '../../../shared/components/footer/footer';
-import { ChatAi } from '../../../shared/components/chat-ai/chat-ai';
-import { TaiKhoanSidebarComponent } from '../tai-khoan-sidebar/tai-khoan-sidebar';
 import { UserProfile, UserService } from '../user.service';
 import { OrderService } from '../../don-hang/thanh-toan/services/order.service';
 import { Order } from '../../don-hang/thanh-toan/models/thanh-toan.model';
@@ -20,7 +16,7 @@ const SO_DON_GAN_DAY = 3;
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, Header, Footer, ChatAi, TaiKhoanSidebarComponent],
+  imports: [CommonModule, RouterLink],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss'
 })
