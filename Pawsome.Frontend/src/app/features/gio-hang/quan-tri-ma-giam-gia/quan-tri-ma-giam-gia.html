@@ -1,14 +1,23 @@
+<app-header />
+
+<main class="NoiDungChinh">
 <div class="TrangQuanTriCoupon">
+  <a routerLink="/gio-hang" class="LienKetQuayLai">← Back to Cart</a>
+
   <div class="KhungTieuDeQuanTri">
     <div>
-      <h1 class="TieuDeQuanTri">Manage Coupons</h1>
-      <p class="MoTaQuanTri">Create, edit and delete coupon codes applicable in the cart.</p>
+      <h1 class="TieuDeQuanTri">Discount Codes</h1>
+      <p class="MoTaQuanTri">Pick a code to apply to your cart, or create, edit and delete coupon codes.</p>
     </div>
     <button type="button" class="NutChinhQT" (click)="moFormThem()">+ Add Coupon</button>
   </div>
 
   @if (thongBao()) {
     <p class="ThongBaoThanhCong">{{ thongBao() }}</p>
+  }
+
+  @if (loiApDungVaoGioHang()) {
+    <p class="ThongBaoLoiForm">{{ loiApDungVaoGioHang() }}</p>
   }
 
   @if (dangMoFormThem()) {
@@ -121,6 +130,11 @@
               </td>
               <td>
                 <div class="NutFormCoupon">
+                  @if (c.dangHieuLuc) {
+                    <button type="button" class="NutChinhQT NutNhoQT" [disabled]="dangApDungVaoGioHang() === c.couponId" (click)="apDungVaoGioHang(c)">
+                      {{ dangApDungVaoGioHang() === c.couponId ? 'Applying...' : 'Apply to Cart' }}
+                    </button>
+                  }
                   <button type="button" class="NutPhuQT NutNhoQT" (click)="moFormSua(c)">Edit</button>
                   <button type="button" class="NutNguyHiemQT NutNhoQT" [disabled]="dangXoa() === c.couponId" (click)="xoa(c)">
                     {{ dangXoa() === c.couponId ? 'Deleting...' : 'Delete' }}
@@ -134,3 +148,7 @@
     </table>
   }
 </div>
+</main>
+
+<app-footer />
+<app-chat-ai />

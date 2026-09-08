@@ -158,7 +158,7 @@
                     [checked]="!!autoOrderIdTheoDong()[item.cartItemId]"
                     [disabled]="dangXuLyAutoOrderDong() === item.cartItemId"
                     (change)="toggleAutoOrderDong(item)" />
-                  <span>Select Auto Order & Save Extra 10% on Your Order!</span>
+                  <span>Set up Auto Order for this item (monthly)</span>
                 </label>
               </div>
             </div>
@@ -177,19 +177,6 @@
             <h3>Order Summary</h3>
             <div class="DongTienTom"><span>Sub Total</span><span>{{ gioHang()!.tienHang | number:'1.0-0' }} đ</span></div>
             <div class="DongTienTom"><span>Discount</span><span>−{{ gioHang()!.giamGia | number:'1.0-0' }} đ</span></div>
-            @if (giamGiaAutoOrder() > 0) {
-              <div class="DongTienTom"><span>Auto Order Discount (10%)</span><span>−{{ giamGiaAutoOrder() | number:'1.0-0' }} đ</span></div>
-            }
-            <div class="DongTienTom">
-              <span>Shipping</span>
-              <span>
-                @if (gioHang()!.phiVanChuyenTamTinh === 0) {
-                  <span class="MienPhiShip">FREE</span>
-                } @else {
-                  {{ gioHang()!.phiVanChuyenTamTinh | number:'1.0-0' }} đ
-                }
-              </span>
-            </div>
             <div class="OTongCongTom">
               <span>Total</span>
               <span>{{ tongTienHienThi() | number:'1.0-0' }} đ</span>
@@ -199,44 +186,23 @@
 
           <!-- Khối mã giảm giá (Đã dọn dẹp mã trùng lặp) -->
           <div class="TheMaGiamGia">
-            <h4>Promo Code</h4>
-            @if (danhSachMaGiamGia().length > 0) {
-              <div class="DanhSachMaGiamGia">
-                @for (m of danhSachMaGiamGia(); track m.couponId) {
-                  <label class="ItemMa">
-                    <input 
-                      type="radio" 
-                      name="chonMa" 
-                      [value]="m.maCode"
-                      [checked]="maCoupon() === m.maCode"
-                      (change)="chonMa(m.maCode)" />
-                    <span class="NoiDungMa">
-                      <strong>{{ m.maCode }}</strong> — {{ m.loaiGiam === 'percent' ? (m.giaTri + '% OFF') : (m.giaTri | number:'1.0-0') + 'đ OFF' }}
-                    </span>
-                  </label>
-                }
-              </div>
-              <button 
-                type="button" 
-                class="NutApDungMa" 
-                [disabled]="!maCoupon()" 
-                (click)="apDungMaGiamGia()">
-                Apply Selected
-              </button>
-            } @else {
-              <p class="GhiChuDoiDiem">No promo codes available.</p>
-            }
+        <h4>Promo Code</h4>
 
-            @if (thongBaoCoupon()) {
-              <p class="ThongBaoMa" [class.ThanhCong]="thongBaoCoupon()!.loai === 'thanh-cong'" [class.Loi]="thongBaoCoupon()!.loai === 'loi'">
-                {{ thongBaoCoupon()!.noiDung }}
-                @if (thongBaoCoupon()!.loai === 'thanh-cong') {
-                  <button type="button" class="NutGoMa" (click)="xoaMaGiamGia()">✕ Remove</button>
-                }
-              </p>
-            }
-          </div>
+      @if (!thongBaoCoupon() || thongBaoCoupon()!.loai !== 'thanh-cong') {
+        <a routerLink="/gio-hang/coupon" class="NutXemMaGiamGia">
+        View Available Coupons →
+        </a>
+        }
 
+      @if (thongBaoCoupon()) {
+        <p class="ThongBaoMa" [class.ThanhCong]="thongBaoCoupon()!.loai === 'thanh-cong'" [class.Loi]="thongBaoCoupon()!.loai === 'loi'">
+        {{ thongBaoCoupon()!.noiDung }}
+        @if (thongBaoCoupon()!.loai === 'thanh-cong') {
+        <button type="button" class="NutGoMa" (click)="xoaMaGiamGia()">Remove</button>
+        }
+        </p>
+        }
+        </div>
           <!-- Khối điểm thưởng PawPoints -->
           <div class="TheDoiDiem">
             <h4>Redeem PawPoints</h4>
