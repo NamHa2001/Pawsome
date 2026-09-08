@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using Pawsome.API.Common;
 using Pawsome.API.DTOs.BlogQuanTri;
 
@@ -13,4 +14,8 @@ public interface IBlogService
     Task<BlogPostDto> CreateAsync(int tacGiaId, BlogPostRequestDto dto);
     Task<BlogPostDto> UpdateAsync(int id, BlogPostRequestDto dto);
     Task DeleteAsync(int id);
+
+    // Lưu file ảnh bìa vào wwwroot/uploads/blog, trả về đường dẫn tương đối
+    // (VD "/uploads/blog/xxx.jpg") để Controller ghép thành URL đầy đủ trả về Frontend.
+    Task<string> LuuAnhAsync(IFormFile file);
 }

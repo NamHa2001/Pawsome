@@ -44,6 +44,7 @@ export class QuanTriBlog {
   readonly loiForm = signal<string | null>(null);
   readonly dangLuu = signal(false);
   readonly dangXoa = signal<number | null>(null);
+  readonly dangUpload = signal(false);
 
   constructor() {
     this.blogService.layChuDeList().subscribe(ds => this.chuDeList.set(ds));
@@ -107,6 +108,34 @@ export class QuanTriBlog {
   dongForm(): void {
     this.formMode.set(null);
     this.loiForm.set(null);
+  }
+
+  chonAnh(sk: Event): void {
+    const input = sk.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+
+    this.dangUpload.set(true);
+    this.loiForm.set(null);
+
+    this.blogService.uploadAnh(file).subscribe({
+      next: url => {
+        this.form.update(f => ({ ...f, anhDaiDien: url }));
+        this.dangUpload.set(false);
+      },
+      error: err => {
+        this.loiForm.set(err?.error?.message ?? 'Tải ảnh lên thất bại.');
+        this.dangUpload.set(false);
+      }
+    });
+
+    // Cho phép chọn lại đúng file cũ lần nữa (VD upload lỗi rồi thử lại) - nếu không
+    // reset, input giữ nguyên giá trị nên (change) sẽ không bắn lại khi chọn lại y hệt file đó.
+    input.value = '';
+  }
+
+  xoaAnh(): void {
+    this.form.update(f => ({ ...f, anhDaiDien: '' }));
   }
 
   luu(): void {

@@ -164,7 +164,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-//app.UseStaticFiles(); // cho phép truy cập file trong wwwroot, ví dụ trang test Google Login
+app.UseStaticFiles(); // phục vụ file tĩnh trong wwwroot (VD ảnh bìa blog upload lên - IBlogService.LuuAnhAsync)
 
 app.UseCors(AngularDevCorsPolicy);
 

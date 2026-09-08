@@ -39,9 +39,18 @@
             }
           </datalist>
         </label>
-        <label>
-          Cover image URL
-          <input type="text" [ngModel]="form().anhDaiDien" (ngModelChange)="form.update(f => ({ ...f, anhDaiDien: $event }))" />
+        <label class="OFull">
+          Cover image
+          <div class="OAnhTaiLen">
+            @if (form().anhDaiDien) {
+              <img [src]="form().anhDaiDien" class="AnhXemTruoc" alt="Cover preview">
+              <button type="button" class="NutNho NutNguyHiem" (click)="xoaAnh()">Remove</button>
+            }
+            <input type="file" accept="image/png,image/jpeg,image/webp,image/gif" [disabled]="dangUpload()" (change)="chonAnh($event)" />
+            @if (dangUpload()) {
+              <span class="ThongBaoUpload">Uploading...</span>
+            }
+          </div>
         </label>
         <label class="OFull">
           Content
