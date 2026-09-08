@@ -48,4 +48,13 @@ export class BlogService {
   xoaBaiViet(postId: number): Observable<ApiResponse<object>> {
     return this.http.delete<ApiResponse<object>>(`${this.baseUrl}/${postId}`);
   }
+
+  uploadAnh(file: File): Observable<string> {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    return this.http
+      .post<ApiResponse<string>>(`${this.baseUrl}/upload-anh`, formData)
+      .pipe(map(res => res.data!));
+  }
 }

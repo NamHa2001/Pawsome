@@ -15,18 +15,23 @@ export const routes: Routes = [
     loadComponent: () => import('./quen-mat-khau/quen-mat-khau').then(m => m.QuenMatKhauComponent)
   },
   {
-    path: 'dashboard',
-    loadComponent: () => import('./dashboard/dashboard').then(m => m.DashboardComponent),
-    canActivate: [authGuard]
-  },
-  {
-    path: 'ho-so',
-    loadComponent: () => import('./ho-so/ho-so').then(m => m.HoSoComponent)
-  },
-  {
-    path: 'dia-chi',
-    loadComponent: () => import('./dia-chi/dia-chi').then(m => m.DiaChiComponent),
-    canActivate: [authGuard]
+    path: '',
+    loadComponent: () => import('./tai-khoan-layout/tai-khoan-layout').then(m => m.TaiKhoanLayoutComponent),
+    children: [
+      {
+        path: 'dashboard',
+        loadComponent: () => import('./dashboard/dashboard').then(m => m.DashboardComponent),
+        canActivate: [authGuard]
+      },
+      {
+        path: 'ho-so',
+        loadComponent: () => import('./ho-so/ho-so').then(m => m.HoSoComponent)
+      },
+      {
+        path: 'dia-chi',
+        loadComponent: () => import('./dia-chi/dia-chi').then(m => m.DiaChiComponent),
+        canActivate: [authGuard]
+      }
+    ]
   }
-  // 'quen-mat-khau', 'dia-chi' sẽ thêm ở bước sau
 ];

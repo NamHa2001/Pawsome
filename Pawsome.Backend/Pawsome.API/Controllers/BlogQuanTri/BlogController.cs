@@ -90,4 +90,24 @@ public class BlogController : ControllerBase
             return NotFound(ApiResponse<object>.Fail(ex.Message));
         }
     }
+
+    [HttpPost("upload-anh")]
+    [Authorize(Roles = "Admin")]
+    [RequestSizeLimit(5_000_000)]
+    public async Task<IActionResult> UploadAnh(IFormFile file)
+    {
+        try
+        {
+            var duongDan = await _blogService.LuuAnhAsync(file);
+            // Ghép thành URL đầy đủ (VD https://localhost:7243/uploads/blog/xxx.jpg) để lưu thẳng
+            // vào cột blog_posts.anh_dai_dien - Frontend chỉ dùng anhDaiDien y hệt cách dùng URL
+            // dán tay trước đây (blog.html/blog-chi-tiet.html không cần đổi gì thêm).
+            var urlDayDu = $"{Request.Scheme}://{Request.Host}{duongDan}";
+            return Ok(ApiResponse<string>.Ok(urlDayDu, "Tải ảnh lên thành công."));
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ApiResponse<string>.Fail(ex.Message));
+        }
+    }
 }

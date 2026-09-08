@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Pawsome.API.Common;
 using Pawsome.API.DTOs.BlogQuanTri;
@@ -9,10 +11,17 @@ namespace Pawsome.API.Services.BlogQuanTri;
 public class BlogService : IBlogService
 {
     private readonly PawsomeDbContext _dbContext;
+    private readonly IWebHostEnvironment _webHostEnvironment;
 
-    public BlogService(PawsomeDbContext dbContext)
+    // blog_posts.anh_dai_dien là NVARCHAR(255) (Database.sql) - đường dẫn tương đối
+    // "/uploads/blog/xxx.jpg" luôn ngắn hơn nhiều so với mốc này, không cần validate độ dài.
+    private static readonly string[] DUOI_ANH_HOP_LE = { ".jpg", ".jpeg", ".png", ".webp", ".gif" };
+    private const long DUNG_LUONG_TOI_DA = 5 * 1024 * 1024; // 5MB
+
+    public BlogService(PawsomeDbContext dbContext, IWebHostEnvironment webHostEnvironment)
     {
         _dbContext = dbContext;
+        _webHostEnvironment = webHostEnvironment;
     }
 
     public async Task<PagedResult<BlogPostDto>> SearchAsync(BlogFilterRequestDto filter)
@@ -132,6 +141,32 @@ public class BlogService : IBlogService
 
         _dbContext.BlogPosts.Remove(post);
         await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task<string> LuuAnhAsync(IFormFile file)
+    {
+        if (file == null || file.Length == 0)
+            throw new InvalidOperationException("Vui lòng chọn file ảnh.");
+
+        if (file.Length > DUNG_LUONG_TOI_DA)
+            throw new InvalidOperationException("Ảnh không được vượt quá 5MB.");
+
+        var duoi = Path.GetExtension(file.FileName).ToLowerInvariant();
+        if (!DUOI_ANH_HOP_LE.Contains(duoi))
+            throw new InvalidOperationException("Chỉ chấp nhận file ảnh (jpg, jpeg, png, webp, gif).");
+
+        var thuMucLuu = Path.Combine(_webHostEnvironment.WebRootPath, "uploads", "blog");
+        Directory.CreateDirectory(thuMucLuu);
+
+        var tenFile = $"{Guid.NewGuid()}{duoi}";
+        var duongDanDay = Path.Combine(thuMucLuu, tenFile);
+
+        await using (var stream = new FileStream(duongDanDay, FileMode.Create))
+        {
+            await file.CopyToAsync(stream);
+        }
+
+        return $"/uploads/blog/{tenFile}";
     }
 
     // Chuẩn hóa lúc ghi để khớp với Trim() lúc lọc ở SearchAsync - nếu không, chu_de dư khoảng trắng

@@ -2,14 +2,10 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { Header } from '../../../shared/components/header/header';
-import { Footer } from '../../../shared/components/footer/footer';
-import { ChatAi } from '../../../shared/components/chat-ai/chat-ai';
 import { AuthService } from '../auth.service';
 import { UserProfile, UserService } from '../user.service';
 import { Address, AddressService } from '../address.service';
 import { DANH_SACH_GOI_PAWVIP } from '../../gio-hang/pawvip/models/pawvip-goi.model';
-import { TaiKhoanSidebarComponent } from '../tai-khoan-sidebar/tai-khoan-sidebar';
 
 
 function matKhauKhopValidator(): ValidatorFn {
@@ -23,7 +19,7 @@ function matKhauKhopValidator(): ValidatorFn {
 @Component({
   selector: 'app-ho-so',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, Header, Footer, ChatAi, TaiKhoanSidebarComponent],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './ho-so.html',
   styleUrl: './ho-so.scss'
 })

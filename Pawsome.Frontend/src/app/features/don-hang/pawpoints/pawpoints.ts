@@ -1,9 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { ChatAi } from '../../../shared/components/chat-ai/chat-ai';
-import { Footer } from '../../../shared/components/footer/footer';
-import { Header } from '../../../shared/components/header/header';
 import {
   PAWPOINTS_TYPE_FILTERS,
   PawPointsTransaction,
@@ -15,7 +12,7 @@ import { PawPointsService } from './services/pawpoints.service';
 @Component({
   selector: 'app-pawpoints',
   standalone: true,
-  imports: [CommonModule, RouterLink, Header, Footer, ChatAi],
+  imports: [CommonModule, RouterLink],
   templateUrl: './pawpoints.html',
   styleUrl: './pawpoints.css'
 })

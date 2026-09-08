@@ -13,29 +13,6 @@
   font-family: 'Sora', sans-serif;
 }
 
-.dashboard-page {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  background-color: var(--clr-page-bg);
-  min-height: calc(100vh - var(--header-height));
-  margin-top: var(--header-height);
-  padding: 40px 0 60px;
-  box-sizing: border-box;
-}
-
-.page-shell {
-  width: 1200px;
-  max-width: calc(100% - 40px);
-  margin: 0;
-  display: grid;
-  grid-template-columns: 260px 1fr;
-  gap: 28px;
-  align-items: start;
-}
-
-.content { min-width: 0; }
-
 .page-title {
   font-weight: 700;
   font-size: 22px;

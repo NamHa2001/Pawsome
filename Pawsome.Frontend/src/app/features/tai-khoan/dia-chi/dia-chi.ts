@@ -1,15 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Header } from '../../../shared/components/header/header';
-import { Footer } from '../../../shared/components/footer/footer';
-import { ChatAi } from '../../../shared/components/chat-ai/chat-ai';
 import { Address, AddressFormValue, AddressService } from '../address.service';
 
 @Component({
   selector: 'app-dia-chi',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, Header, Footer, ChatAi],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './dia-chi.html',
   styleUrl: './dia-chi.scss'
 })
