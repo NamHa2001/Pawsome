@@ -13,6 +13,11 @@ export const routes: Routes = [
         loadComponent: () => import('./quan-tri/dashboard/dashboard').then(m => m.Dashboard)
       },
       {
+        path: 'bao-cao',
+        canActivate: [roleGuard('Admin')],
+        loadComponent: () => import('./quan-tri/bao-cao/bao-cao').then(m => m.QuanTriBaoCao)
+      },
+      {
         path: 'san-pham',
         canActivate: [roleGuard('Admin')],
         loadComponent: () => import('./quan-tri/san-pham/san-pham').then(m => m.QuanTriSanPham)

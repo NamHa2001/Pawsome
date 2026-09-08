@@ -1,0 +1,243 @@
+<div class="TieuDeTrang">
+  <h1>Reports</h1>
+  <p class="MoTaTrang">Detailed revenue, order and product statistics for a custom date range.</p>
+</div>
+
+<div class="TheQuanTri BoLocChung">
+  <div class="ThanThe KhungBoLoc">
+    <label class="ONgay">
+      <span>From</span>
+      <input type="date" [ngModel]="tuNgay()" (ngModelChange)="tuNgay.set($event)">
+    </label>
+    <label class="ONgay">
+      <span>To</span>
+      <input type="date" [ngModel]="denNgay()" (ngModelChange)="denNgay.set($event)">
+    </label>
+    <button type="button" class="NutApDung" (click)="apDungBoLoc()">Apply</button>
+  </div>
+</div>
+
+<div class="TheQuanTri">
+  <div class="TieuDeThe TieuDeTheBoLoc">
+    <span>Revenue Over Time</span>
+    <div class="NhomHanhDongThe">
+      <select class="ChonBoLoc" [ngModel]="nhom()" (ngModelChange)="doiNhom($event)">
+        <option value="Ngay">By Day</option>
+        <option value="Thang">By Month</option>
+      </select>
+      <button type="button" class="NutXuatCsv" (click)="xuatCsv('doanh-thu')">
+        <i class="fa-solid fa-file-csv"></i> Export CSV
+      </button>
+    </div>
+  </div>
+
+  <div class="ThanThe">
+    @if (dangTaiDoanhThu()) {
+      <p class="ThongBaoRong">Loading...</p>
+    } @else if (loiDoanhThu()) {
+      <p class="ThongBaoLoi">{{ loiDoanhThu() }}</p>
+    } @else if (doanhThu().length === 0) {
+      <p class="ThongBaoRong">No orders in this date range.</p>
+    } @else {
+      <div class="TongHopThe">
+        <span>Total Revenue: <strong>{{ tongDoanhThu() | number:'1.0-0' }} VND</strong></span>
+        <span>Total Orders: <strong>{{ tongSoDon() }}</strong></span>
+      </div>
+
+      <div class="BieuDoCot">
+        @for (d of doanhThu(); track d.tuNgayKy) {
+          <div class="CotBieuDoKhung" [title]="d.ky + ': ' + (d.doanhThu | number:'1.0-0') + ' VND'">
+            <div class="CotBieuDo" [style.height.%]="(d.doanhThu / maxDoanhThu()) * 100"></div>
+            <span class="NhanCot">{{ d.ky }}</span>
+          </div>
+        }
+      </div>
+
+      <div class="BangCuon">
+        <table class="BangBaoCao">
+          <thead>
+            <tr><th>Period</th><th>Orders</th><th>Revenue</th></tr>
+          </thead>
+          <tbody>
+            @for (d of doanhThu(); track d.tuNgayKy) {
+              <tr>
+                <td>{{ d.ky }}</td>
+                <td>{{ d.soDon }}</td>
+                <td>{{ d.doanhThu | number:'1.0-0' }} VND</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</div>
+
+<div class="TheQuanTri">
+  <div class="TieuDeThe TieuDeTheBoLoc">
+    <span>Orders by Status</span>
+    <button type="button" class="NutXuatCsv" (click)="xuatCsv('don-hang')">
+      <i class="fa-solid fa-file-csv"></i> Export CSV
+    </button>
+  </div>
+
+  <div class="ThanThe ThanTheBang">
+    @if (dangTaiDonHang()) {
+      <p class="ThongBaoRong">Loading...</p>
+    } @else if (loiDonHang()) {
+      <p class="ThongBaoLoi">{{ loiDonHang() }}</p>
+    } @else {
+      <div class="BangCuon">
+        <table class="BangBaoCao">
+          <thead>
+            <tr><th>Status</th><th>Orders</th></tr>
+          </thead>
+          <tbody>
+            @for (d of donHangTheoTrangThai(); track d.trangThai) {
+              <tr>
+                <td><span class="StatusBadge" [ngClass]="orderStatusCssClass(d.trangThai)">{{ orderStatusLabel(d.trangThai) }}</span></td>
+                <td>{{ d.soLuong }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</div>
+
+<div class="TheQuanTri">
+  <div class="TieuDeThe TieuDeTheBoLoc">
+    <span>Best-Selling Products</span>
+    <div class="NhomHanhDongThe">
+      <select class="ChonBoLoc" [ngModel]="categoryIdLoc()" (ngModelChange)="doiLocDanhMucSP($event)">
+        <option [ngValue]="null">All Categories</option>
+        @for (c of categories(); track c.categoryId) {
+          <option [value]="c.categoryId">{{ dichTen(c.tenDanhMuc) }}</option>
+        }
+      </select>
+      <select class="ChonBoLoc" [ngModel]="brandIdLoc()" (ngModelChange)="doiLocThuongHieuSP($event)">
+        <option [ngValue]="null">All Brands</option>
+        @for (b of brands(); track b.brandId) {
+          <option [value]="b.brandId">{{ b.tenThuongHieu }}</option>
+        }
+      </select>
+      <select class="ChonBoLoc" [ngModel]="sapXepTheo()" (ngModelChange)="doiSapXepSP($event)">
+        <option value="SoLuongBan">Sort by Units Sold</option>
+        <option value="DoanhThu">Sort by Revenue</option>
+      </select>
+      <button type="button" class="NutXuatCsv" (click)="xuatCsv('san-pham')">
+        <i class="fa-solid fa-file-csv"></i> Export CSV
+      </button>
+    </div>
+  </div>
+
+  <div class="ThanThe ThanTheBang">
+    @if (dangTaiSP()) {
+      <p class="ThongBaoRong">Loading...</p>
+    } @else if (loiSP()) {
+      <p class="ThongBaoLoi">{{ loiSP() }}</p>
+    } @else if (sanPham().length === 0) {
+      <p class="ThongBaoRong">No products sold in this date range.</p>
+    } @else {
+      <div class="BangCuon">
+        <table class="BangBaoCao">
+          <thead>
+            <tr><th>Product</th><th>Units Sold</th><th>Revenue</th></tr>
+          </thead>
+          <tbody>
+            @for (sp of sanPham(); track sp.productId) {
+              <tr>
+                <td>{{ sp.ten }}</td>
+                <td>{{ sp.soLuongBan }}</td>
+                <td>{{ sp.doanhThu | number:'1.0-0' }} VND</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      @if (tongTrangSP() > 1) {
+        <div class="PhanTrang">
+          <button type="button" [disabled]="trangSP() === 1" (click)="doiTrangSP(trangSP() - 1)">Prev</button>
+          @for (t of cacTrangSP(); track t) {
+            <button type="button" [class.active]="trangSP() === t" (click)="doiTrangSP(t)">{{ t }}</button>
+          }
+          <button type="button" [disabled]="trangSP() === tongTrangSP()" (click)="doiTrangSP(trangSP() + 1)">Next</button>
+        </div>
+      }
+    }
+  </div>
+</div>
+
+<div class="LuoiBaoCao">
+  <div class="TheQuanTri">
+    <div class="TieuDeThe TieuDeTheBoLoc">
+      <span>Revenue by Category</span>
+      <button type="button" class="NutXuatCsv" (click)="xuatCsv('danh-muc')">
+        <i class="fa-solid fa-file-csv"></i> Export CSV
+      </button>
+    </div>
+    <div class="ThanThe ThanTheBang">
+      @if (dangTaiDanhMuc()) {
+        <p class="ThongBaoRong">Loading...</p>
+      } @else if (loiDanhMuc()) {
+        <p class="ThongBaoLoi">{{ loiDanhMuc() }}</p>
+      } @else if (danhMuc().length === 0) {
+        <p class="ThongBaoRong">No data in this date range.</p>
+      } @else {
+        <div class="BangCuon">
+          <table class="BangBaoCao">
+            <thead>
+              <tr><th>Category</th><th>Units Sold</th><th>Revenue</th></tr>
+            </thead>
+            <tbody>
+              @for (d of danhMuc(); track d.categoryId) {
+                <tr>
+                  <td>{{ dichTen(d.tenDanhMuc) }}</td>
+                  <td>{{ d.soLuongBan }}</td>
+                  <td>{{ d.doanhThu | number:'1.0-0' }} VND</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="TheQuanTri">
+    <div class="TieuDeThe TieuDeTheBoLoc">
+      <span>Revenue by Brand</span>
+      <button type="button" class="NutXuatCsv" (click)="xuatCsv('thuong-hieu')">
+        <i class="fa-solid fa-file-csv"></i> Export CSV
+      </button>
+    </div>
+    <div class="ThanThe ThanTheBang">
+      @if (dangTaiThuongHieu()) {
+        <p class="ThongBaoRong">Loading...</p>
+      } @else if (loiThuongHieu()) {
+        <p class="ThongBaoLoi">{{ loiThuongHieu() }}</p>
+      } @else if (thuongHieu().length === 0) {
+        <p class="ThongBaoRong">No data in this date range.</p>
+      } @else {
+        <div class="BangCuon">
+          <table class="BangBaoCao">
+            <thead>
+              <tr><th>Brand</th><th>Units Sold</th><th>Revenue</th></tr>
+            </thead>
+            <tbody>
+              @for (d of thuongHieu(); track d.brandId) {
+                <tr>
+                  <td>{{ d.tenThuongHieu }}</td>
+                  <td>{{ d.soLuongBan }}</td>
+                  <td>{{ d.doanhThu | number:'1.0-0' }} VND</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  </div>
+</div>
