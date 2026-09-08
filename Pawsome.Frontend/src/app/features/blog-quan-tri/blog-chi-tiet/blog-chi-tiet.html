@@ -26,9 +26,13 @@
         <span>{{ bv.ngayDang | date:'dd/MM/yyyy' }}</span>
       </div>
 
-      @if (bv.anhDaiDien) {
-        <img class="AnhDaiDien" [src]="bv.anhDaiDien" [alt]="bv.tieuDe">
-      }
+      <div class="AnhDaiDien">
+        @if (bv.anhDaiDien) {
+          <img [src]="bv.anhDaiDien" [alt]="bv.tieuDe">
+        } @else {
+          <div class="AnhMacDinh"><i class="fa-solid fa-paw"></i></div>
+        }
+      </div>
 
       <div class="NoiDungBaiViet">{{ bv.noiDung }}</div>
 
