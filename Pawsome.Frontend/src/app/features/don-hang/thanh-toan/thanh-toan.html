@@ -67,7 +67,14 @@
               <label class="CarrierOption" [class.Selected]="selectedCarrier() === carrier">
                 <input type="radio" name="carrier" [checked]="selectedCarrier() === carrier"
                        (change)="selectCarrier(carrier)" />
-                {{ shippingCarrierLabels[carrier] }}
+                <span class="CarrierLabel">{{ shippingCarrierLabels[carrier] }}</span>
+                <span class="CarrierFee">
+                  @if (carrierFee(carrier) === 0) {
+                    FREE
+                  } @else {
+                    +{{ carrierFee(carrier) | number:'1.0-0' }} VND
+                  }
+                </span>
               </label>
             }
           </div>
@@ -121,7 +128,7 @@
 
           <div class="SummaryLine">
             <span>Estimated Shipping</span>
-            <span>{{ cart()!.phiVanChuyenTamTinh | number:'1.0-0' }} VND</span>
+            <span>{{ estimatedShippingFee() | number:'1.0-0' }} VND</span>
           </div>
 
           <div class="SummaryLine Total">

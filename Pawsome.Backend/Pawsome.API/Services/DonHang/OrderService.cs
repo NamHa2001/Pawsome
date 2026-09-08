@@ -75,11 +75,6 @@ public class OrderService : IOrderService
         {
             giamGiaDiem = await _pawPointsService.KiemTraVaTinhQuyDoiAsync(userId, dto.SoDiemMuonDoi.Value);
         }
-
-        // PawVip là quyền lợi thường trực của tài khoản (không phải khách chọn từng đơn như
-        // coupon/điểm) - backend tự đọc user.PawVipTier đang lưu và áp giảm giá, không cần
-        // CreateOrderRequestDto có field riêng. Gói theo NĂM nên phải kiểm tra còn hạn
-        // (PawVipHetHan) trước khi áp - không phải cứ có pawvip_tier là giảm giá vĩnh viễn.
         decimal giamGiaPawVip = 0;
         var pawVipInfo = await _dbContext.Users
             .Where(u => u.UserId == userId)
@@ -94,18 +89,24 @@ public class OrderService : IOrderService
 
         var giamGia = Math.Min(giamGiaCoupon + giamGiaDiem + giamGiaPawVip, tienHang);
 
-        // Advanced/VIP được miễn phí ship hoàn toàn - đặc quyền đã quảng cáo ở pawvip-goi.model.ts
-        // (frontend) nhưng trước đây chưa áp dụng thật, khách vẫn bị tính phí như bình thường.
         var mienPhiShipPawVip = pawVipInfo != null
             && PawVipTiers.ConHieuLuc(pawVipInfo.PawVipTier, pawVipInfo.PawVipHetHan, homNay)
             && PawVipTiers.TierMienPhiShip.Contains(pawVipInfo.PawVipTier!);
 
-        // Phí vận chuyển: tạm tính cố định theo tỉnh/thành nơi giao
+        // - "GHN" (Nhanh): phí cơ bản + phụ phí giao nhanh, giao nhanh hơn.
+        var phiCoBanTheoTinh = address.TinhThanh.Trim().Equals("Hồ Chí Minh", StringComparison.OrdinalIgnoreCase)
+            || address.TinhThanh.Trim().Equals("Hà Nội", StringComparison.OrdinalIgnoreCase)
+            ? 20000m : 35000m;
+
         var phiVanChuyen = mienPhiShipPawVip
             ? 0m
-            : address.TinhThanh.Trim().Equals("Hồ Chí Minh", StringComparison.OrdinalIgnoreCase)
-                || address.TinhThanh.Trim().Equals("Hà Nội", StringComparison.OrdinalIgnoreCase)
-                ? 20000m : 35000m;
+            : dto.DonViVanChuyen switch
+            {
+                "Free" => 0m,
+                "GHN" => phiCoBanTheoTinh + 15000m,
+                "GHTK" => phiCoBanTheoTinh,
+                _ => phiCoBanTheoTinh
+            };
 
         var thanhTien = Math.Max(0, tienHang + phiVanChuyen - giamGia);
 
@@ -136,7 +137,7 @@ public class OrderService : IOrderService
             };
 
             _dbContext.Orders.Add(order);
-            await _dbContext.SaveChangesAsync(); 
+            await _dbContext.SaveChangesAsync();
 
             foreach (var item in cart.CartItems)
                 await _productService.TruTonKhoAsync(item.VariantId, item.SoLuong);

@@ -94,6 +94,23 @@
   &.Selected { border-color: var(--MauDoDam); background-color: var(--MauHongNhat); }
 }
 
+.CarrierOption {
+  justify-content: space-between;
+}
+
+.CarrierLabel {
+  flex: 1;
+  font-size: 14px;
+  color: var(--MauDen);
+}
+
+.CarrierFee {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--MauDoDam);
+  white-space: nowrap;
+}
+
 .AddressDetails { display: flex; flex-direction: column; gap: 2px; }
 .AddressName { font-weight: 600; color: var(--MauDen); }
 .AddressLine { font-size: 13px; color: #888; }
