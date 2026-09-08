@@ -1,6 +1,21 @@
+:host {
+  display: contents;
+}
+
 .TrangQuanTriCoupon {
   width: 100%;
+  padding: 24px 0 60px;
 }
+
+.LienKetQuayLai {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 700;
+  color: #A51F1F;
+  text-decoration: none;
+  margin-bottom: 14px;
+}
+.LienKetQuayLai:hover { opacity: 0.85; }
 
 .KhungTieuDeQuanTri {
   display: flex;
