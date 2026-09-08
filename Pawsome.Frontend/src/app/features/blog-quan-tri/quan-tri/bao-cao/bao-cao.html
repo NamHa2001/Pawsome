@@ -3,6 +3,14 @@
   <p class="MoTaTrang">Detailed revenue, order and product statistics for a custom date range.</p>
 </div>
 
+<div class="ThanhTab">
+  @for (t of TABS; track t.id) {
+    <button type="button" class="NutTab" [class.active]="tab() === t.id" (click)="tab.set(t.id)">
+      {{ t.nhan }}
+    </button>
+  }
+</div>
+
 <div class="TheQuanTri BoLocChung">
   <div class="ThanThe KhungBoLoc">
     <label class="ONgay">
@@ -17,6 +25,7 @@
   </div>
 </div>
 
+@if (tab() === 'doanh-thu') {
 <div class="TheQuanTri">
   <div class="TieuDeThe TieuDeTheBoLoc">
     <span>Revenue Over Time</span>
@@ -72,7 +81,9 @@
     }
   </div>
 </div>
+}
 
+@if (tab() === 'don-hang') {
 <div class="TheQuanTri">
   <div class="TieuDeThe TieuDeTheBoLoc">
     <span>Orders by Status</span>
@@ -105,7 +116,9 @@
     }
   </div>
 </div>
+}
 
+@if (tab() === 'san-pham') {
 <div class="TheQuanTri">
   <div class="TieuDeThe TieuDeTheBoLoc">
     <span>Best-Selling Products</span>
@@ -169,7 +182,9 @@
     }
   </div>
 </div>
+}
 
+@if (tab() === 'danh-muc-thuong-hieu') {
 <div class="LuoiBaoCao">
   <div class="TheQuanTri">
     <div class="TieuDeThe TieuDeTheBoLoc">
@@ -241,3 +256,4 @@
     </div>
   </div>
 </div>
+}

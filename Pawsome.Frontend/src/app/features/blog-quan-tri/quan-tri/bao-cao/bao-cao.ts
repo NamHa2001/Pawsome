@@ -21,6 +21,8 @@ import { ReportService } from './services/report.service';
 
 const PAGE_SIZE_SP = 10;
 
+type TabBaoCao = 'doanh-thu' | 'don-hang' | 'san-pham' | 'danh-muc-thuong-hieu';
+
 function dinhDangNgay(d: Date): string {
   const nam = d.getFullYear();
   const thang = String(d.getMonth() + 1).padStart(2, '0');
@@ -43,6 +45,15 @@ export class QuanTriBaoCao {
   readonly dichTen = dichTenDanhMuc;
   readonly orderStatusLabel = orderStatusLabel;
   readonly orderStatusCssClass = orderStatusCssClass;
+
+  // ── Tab hiển thị (mỗi lần chỉ hiện 1 mục thay vì dồn hết vào 1 trang cuộn dài) ──
+  readonly TABS: { id: TabBaoCao; nhan: string }[] = [
+    { id: 'doanh-thu', nhan: 'Revenue' },
+    { id: 'don-hang', nhan: 'Orders' },
+    { id: 'san-pham', nhan: 'Products' },
+    { id: 'danh-muc-thuong-hieu', nhan: 'Categories & Brands' }
+  ];
+  readonly tab = signal<TabBaoCao>('doanh-thu');
 
   // ── Bộ lọc chung (ngày) ──────────────────────────────────────────────
   readonly tuNgay = signal('');
