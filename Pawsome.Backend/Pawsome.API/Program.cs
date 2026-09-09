@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
@@ -89,6 +90,12 @@ builder.Services.AddHttpClient();
 // script) có thể spam request thật nhanh và phát sinh chi phí Gemini không kiểm soát được.
 // Giới hạn theo IP (không theo user vì endpoint không cần đăng nhập), 15 request/phút - đủ rộng
 // rãi cho người dùng thật chat qua lại, nhưng chặn được vòng lặp gọi tự động.
+// MVC (AddControllers) mặc định serialize JSON theo camelCase - nhưng OnRejected bên dưới ghi thẳng
+// vào response, không đi qua pipeline MVC nên phải tự chỉ định camelCase, nếu không
+// JsonSerializer.Serialize mặc định giữ nguyên tên property PascalCase ("Success"/"Message"...),
+// lệch với mọi response khác của API và với ApiResponse<T> phía Angular (chờ "success"/"message").
+var tuyChonJsonCamelCase = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+
 builder.Services.AddRateLimiter(options =>
 {
     options.OnRejected = async (context, token) =>
@@ -96,7 +103,7 @@ builder.Services.AddRateLimiter(options =>
         context.HttpContext.Response.ContentType = "application/json";
         context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
         var body = ApiResponse<object>.Fail("Bạn đang gửi quá nhiều yêu cầu, vui lòng thử lại sau ít phút.");
-        await context.HttpContext.Response.WriteAsync(JsonSerializer.Serialize(body), token);
+        await context.HttpContext.Response.WriteAsync(JsonSerializer.Serialize(body, tuyChonJsonCamelCase), token);
     };
 
     options.AddPolicy("ChatAi", httpContext => RateLimitPartition.GetFixedWindowLimiter(
@@ -107,6 +114,19 @@ builder.Services.AddRateLimiter(options =>
             Window = TimeSpan.FromMinutes(1),
             QueueLimit = 0
         }));
+});
+
+// ── Forwarded headers: đọc đúng IP thật của khách khi chạy sau proxy/tunnel ─
+// Dự án đã dùng ngrok để nhận IPN của MoMo/VNPay (xem appsettings.Development.json) - nếu chạy sau
+// ngrok/reverse proxy mà không bật cái này, RemoteIpAddress rate limiter đọc ở trên luôn là IP nội bộ
+// của proxy, gộp toàn bộ khách truy cập vào chung 1 hạn mức 15 request/phút thay vì tính riêng từng
+// người. Bỏ trống KnownNetworks/KnownProxies vì IP của ngrok không cố định trước được (đồ án học
+// thuật, chấp nhận đánh đổi bảo mật này thay vì tự dò danh sách proxy).
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
 });
 
 // ── Auth (Custom Authentication + JWT, KHÔNG dùng ASP.NET Core Identity -
@@ -185,6 +205,10 @@ builder.Services.AddScoped<IChatAiService, ChatAiService>();
 var app = builder.Build();
 
 // ── Middleware pipeline ────────────────────────────────────────────────────
+// Phải đứng đầu tiên - các middleware phía sau (rate limiter theo IP, HTTPS redirection...) cần đọc
+// đúng IP/scheme thật của khách do middleware này ghi đè, không phải IP/scheme của proxy đứng trước.
+app.UseForwardedHeaders();
+
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 if (app.Environment.IsDevelopment())

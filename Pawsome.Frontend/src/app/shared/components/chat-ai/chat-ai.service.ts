@@ -10,6 +10,11 @@ import { ChatRequest, ChatResponse, TinNhanChat } from './chat-ai.model';
 // thân component sẽ bị hủy/tạo lại mỗi lần chuyển route, nếu giữ state trong component sẽ mất
 // hội thoại ngay khi chuyển trang. Không lưu xuống CSDL/localStorage (theo đúng lựa chọn "không
 // lưu lịch sử" đã chốt) - chỉ sống trong bộ nhớ JS của tab hiện tại, refresh trang là mất.
+// Phải khớp ChatAiService.SoTinNhanLichSuToiDa ở backend - cắt bớt ngay tại đây trước khi gửi lên,
+// không để backend nhận full lịch sử rồi mới cắt: cuộc trò chuyện càng dài, mỗi câu hỏi mới càng
+// upload lại toàn bộ lịch sử cũ trong vô ích vì backend sẽ vứt bỏ phần vượt quá ngay khi nhận.
+const SO_TIN_NHAN_LICH_SU_TOI_DA = 16;
+
 @Injectable({ providedIn: 'root' })
 export class ChatAiService {
   private readonly http = inject(HttpClient);
@@ -26,7 +31,9 @@ export class ChatAiService {
 
     // Snapshot lịch sử TRƯỚC khi thêm câu hỏi mới - đúng dữ liệu backend cần trong
     // ChatRequestDto.LichSu (các lượt hội thoại trước đó, chưa tính câu hỏi lần này).
-    const lichSuGuiLen = this.lichSu().map(t => ({ vai: t.vai, noiDung: t.noiDung }));
+    const lichSuGuiLen = this.lichSu()
+      .slice(-SO_TIN_NHAN_LICH_SU_TOI_DA)
+      .map(t => ({ vai: t.vai, noiDung: t.noiDung }));
 
     this.lichSu.update(ds => [...ds, { vai: 'nguoi_dung', noiDung: noiDungSach }]);
     this.dangGui.set(true);
