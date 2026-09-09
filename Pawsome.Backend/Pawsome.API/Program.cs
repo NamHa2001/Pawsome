@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
@@ -116,19 +115,6 @@ builder.Services.AddRateLimiter(options =>
         }));
 });
 
-// ── Forwarded headers: đọc đúng IP thật của khách khi chạy sau proxy/tunnel ─
-// Dự án đã dùng ngrok để nhận IPN của MoMo/VNPay (xem appsettings.Development.json) - nếu chạy sau
-// ngrok/reverse proxy mà không bật cái này, RemoteIpAddress rate limiter đọc ở trên luôn là IP nội bộ
-// của proxy, gộp toàn bộ khách truy cập vào chung 1 hạn mức 15 request/phút thay vì tính riêng từng
-// người. Bỏ trống KnownNetworks/KnownProxies vì IP của ngrok không cố định trước được (đồ án học
-// thuật, chấp nhận đánh đổi bảo mật này thay vì tự dò danh sách proxy).
-builder.Services.Configure<ForwardedHeadersOptions>(options =>
-{
-    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
-    options.KnownNetworks.Clear();
-    options.KnownProxies.Clear();
-});
-
 // ── Auth (Custom Authentication + JWT, KHÔNG dùng ASP.NET Core Identity -
 // schema mặc định của Identity không khớp bảng users/roles đã thiết kế) ──
 var jwtSection = builder.Configuration.GetSection("Jwt");
@@ -205,10 +191,6 @@ builder.Services.AddScoped<IChatAiService, ChatAiService>();
 var app = builder.Build();
 
 // ── Middleware pipeline ────────────────────────────────────────────────────
-// Phải đứng đầu tiên - các middleware phía sau (rate limiter theo IP, HTTPS redirection...) cần đọc
-// đúng IP/scheme thật của khách do middleware này ghi đè, không phải IP/scheme của proxy đứng trước.
-app.UseForwardedHeaders();
-
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 if (app.Environment.IsDevelopment())
