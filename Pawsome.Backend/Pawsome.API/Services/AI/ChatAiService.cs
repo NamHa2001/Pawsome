@@ -123,7 +123,9 @@ public class ChatAiService : IChatAiService
             catch (HttpRequestException ex)
             {
                 _logger.LogError(ex, "Không gọi được Gemini API");
-                return TraLoiKhiLoi("Không kết nối được tới dịch vụ AI. Vui lòng thử lại sau.");
+                // Vẫn kèm sanPhamGoiY - nếu lỗi xảy ra ở vòng lặp gọi hàm thứ 2 trở đi, vòng lặp trước
+                // đó có thể đã tra được sản phẩm thật rồi, không có lý do gì bỏ phí.
+                return TraLoiKhiLoi("Không kết nối được tới dịch vụ AI. Vui lòng thử lại sau.", sanPhamGoiY);
             }
 
             if (!httpResponse.IsSuccessStatusCode)
@@ -135,19 +137,21 @@ public class ChatAiService : IChatAiService
                 var thongBao = httpResponse.StatusCode == System.Net.HttpStatusCode.TooManyRequests
                     ? "Trợ lý AI đang quá tải, vui lòng thử lại sau ít phút."
                     : "Trợ lý AI hiện không phản hồi được. Vui lòng thử lại sau.";
-                return TraLoiKhiLoi(thongBao);
+                return TraLoiKhiLoi(thongBao, sanPhamGoiY);
             }
 
             var geminiResponse = await httpResponse.Content.ReadFromJsonAsync<GeminiResponse>();
 
             if (!string.IsNullOrWhiteSpace(geminiResponse?.PromptFeedback?.BlockReason))
             {
-                return TraLoiKhiLoi("Xin lỗi, mình không thể trả lời câu hỏi này. Bạn hỏi mình về sản phẩm hoặc tình trạng sức khỏe của thú cưng nhé!");
+                return TraLoiKhiLoi(
+                    "Xin lỗi, mình không thể trả lời câu hỏi này. Bạn hỏi mình về sản phẩm hoặc tình trạng sức khỏe của thú cưng nhé!",
+                    sanPhamGoiY);
             }
 
             var candidate = geminiResponse?.Candidates?.FirstOrDefault();
             if (candidate?.Content == null)
-                return TraLoiKhiLoi("Trợ lý AI hiện không phản hồi được. Vui lòng thử lại sau.");
+                return TraLoiKhiLoi("Trợ lý AI hiện không phản hồi được. Vui lòng thử lại sau.", sanPhamGoiY);
 
             var functionCallPart = candidate.Content.Parts.FirstOrDefault(p => p.FunctionCall != null);
             if (functionCallPart?.FunctionCall != null)
