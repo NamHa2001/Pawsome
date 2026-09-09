@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -7,6 +8,7 @@ using Pawsome.API.Common;
 using Pawsome.API.Common.AuditLog;
 using Pawsome.API.Common.Auth;
 using Pawsome.API.Common.Middleware;
+using Pawsome.API.Services.AI;
 using Pawsome.API.Services.BlogQuanTri;
 using Pawsome.API.Services.DonHang;
 using Pawsome.API.Services.GioHang;
@@ -17,6 +19,8 @@ using System.Text;
 using Pawsome.API.Common.Email;
 using Microsoft.IdentityModel.JsonWebTokens;
 using System.Security.Claims;
+using System.Text.Json;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -78,6 +82,32 @@ builder.Services.AddCors(options =>
 
 //HttpClient: dùng chung để gọi API bên thứ 3 (MoMo, VNPay, GHN...) ────
 builder.Services.AddHttpClient();
+
+// ── Rate limiting: chặn spam endpoint AI chat (api/ai/chat) ───────────────
+// Endpoint này công khai (không [Authorize]) nhưng mỗi request có thể gọi tới paid API Gemini
+// tối đa 4 lần (xem ChatAiService.SoVongLapGoiHamToiDa) - nếu không giới hạn, 1 client (hoặc
+// script) có thể spam request thật nhanh và phát sinh chi phí Gemini không kiểm soát được.
+// Giới hạn theo IP (không theo user vì endpoint không cần đăng nhập), 15 request/phút - đủ rộng
+// rãi cho người dùng thật chat qua lại, nhưng chặn được vòng lặp gọi tự động.
+builder.Services.AddRateLimiter(options =>
+{
+    options.OnRejected = async (context, token) =>
+    {
+        context.HttpContext.Response.ContentType = "application/json";
+        context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
+        var body = ApiResponse<object>.Fail("Bạn đang gửi quá nhiều yêu cầu, vui lòng thử lại sau ít phút.");
+        await context.HttpContext.Response.WriteAsync(JsonSerializer.Serialize(body), token);
+    };
+
+    options.AddPolicy("ChatAi", httpContext => RateLimitPartition.GetFixedWindowLimiter(
+        partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? "khong-ro-ip",
+        factory: _ => new FixedWindowRateLimiterOptions
+        {
+            PermitLimit = 15,
+            Window = TimeSpan.FromMinutes(1),
+            QueueLimit = 0
+        }));
+});
 
 // ── Auth (Custom Authentication + JWT, KHÔNG dùng ASP.NET Core Identity -
 // schema mặc định của Identity không khớp bảng users/roles đã thiết kế) ──
@@ -147,6 +177,10 @@ builder.Services.AddScoped<IWishlistService, WishlistService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<IAdminOrderService, AdminOrderService>();
 builder.Services.AddScoped<IReportService, ReportService>();
+// AI Assistant (trợ lý chat tư vấn sản phẩm) - không thuộc riêng Phần nào trong 5 Phần, giống
+// Common/AuditLog, do trưởng nhóm phụ trách. Chỉ đọc dữ liệu qua IProductService/ICategoryService/
+// IConditionService (Phần 2) đã đăng ký ở trên, không tự ghi DB.
+builder.Services.AddScoped<IChatAiService, ChatAiService>();
 
 var app = builder.Build();
 
@@ -170,6 +204,7 @@ app.UseCors(AngularDevCorsPolicy);
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseRateLimiter();
 
 app.MapControllers();
 
