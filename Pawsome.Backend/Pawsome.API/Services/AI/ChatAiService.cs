@@ -97,14 +97,19 @@ public class ChatAiService : IChatAiService
         var client = _httpClientFactory.CreateClient();
         var url = $"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={apiKey}";
 
+        // Dựng 1 lần trước vòng lặp - danhMuc/tinhTrang không đổi giữa các lượt gọi hàm trong CÙNG 1
+        // request, dựng lại mỗi vòng lặp chỉ tốn CPU vô ích (string.Join + string interpolation lặp
+        // lại y hệt tối đa 4 lần cho mỗi tin nhắn của khách).
+        var systemInstruction = new GeminiContent
+        {
+            Parts = new List<GeminiPart> { new() { Text = XayDungSystemPrompt(danhMuc, tinhTrang) } }
+        };
+
         for (var vongLap = 0; vongLap < SoVongLapGoiHamToiDa; vongLap++)
         {
             var geminiRequest = new GeminiRequest
             {
-                SystemInstruction = new GeminiContent
-                {
-                    Parts = new List<GeminiPart> { new() { Text = XayDungSystemPrompt(danhMuc, tinhTrang) } }
-                },
+                SystemInstruction = systemInstruction,
                 Contents = contents,
                 Tools = tools,
                 GenerationConfig = new GeminiGenerationConfig()
@@ -182,10 +187,16 @@ public class ChatAiService : IChatAiService
             };
         }
 
-        return TraLoiKhiLoi("Câu hỏi này cần tra cứu quá nhiều bước, bạn hỏi cụ thể hơn giúp mình nhé (ví dụ: tên sản phẩm, loài thú cưng, hoặc triệu chứng cụ thể).");
+        // Vẫn trả kèm sanPhamGoiY đã tra được (nếu có) - model gọi hàm tra cứu đủ 4 lượt liên tiếp mà
+        // chưa kịp tổng hợp câu trả lời cuối không có nghĩa là những sản phẩm thật đã tìm được trước đó
+        // trở thành vô giá trị, không có lý do gì bỏ phí kết quả đã tra cứu được.
+        return TraLoiKhiLoi(
+            "Câu hỏi này cần tra cứu quá nhiều bước, bạn hỏi cụ thể hơn giúp mình nhé (ví dụ: tên sản phẩm, loài thú cưng, hoặc triệu chứng cụ thể).",
+            sanPhamGoiY);
     }
 
-    private static ChatResponseDto TraLoiKhiLoi(string thongBao) => new() { TraLoi = thongBao };
+    private static ChatResponseDto TraLoiKhiLoi(string thongBao, List<SanPhamGoiYDto>? sanPham = null) =>
+        new() { TraLoi = thongBao, SanPham = sanPham ?? new List<SanPhamGoiYDto>() };
 
     // Duy nhất 1 tool: tra cứu sản phẩm THẬT trong CSDL qua ProductService.SearchAsync (Phần 2) -
     // bắt buộc AI phải gọi hàm này trước khi nêu tên/giá sản phẩm cụ thể, không tự bịa (xem system
@@ -254,6 +265,14 @@ public class ChatAiService : IChatAiService
             .Where(sp => sanPhamGoiYTichLuy.Any(x => x.ProductId == sp.ProductId))
             .ToList();
 
+        // Nếu tìm kiếm này thật sự có kết quả nhưng accumulator đã đầy từ lượt gọi hàm trước nên
+        // không còn sản phẩm nào lọt vào sanPhamSeMoTa, phải nói rõ cho Gemini biết lý do - nếu không
+        // nó có thể hiểu lầm "san_pham rỗng" nghĩa là Pawsome không có sản phẩm phù hợp (dữ liệu sai)
+        // trong khi thực ra là do đã đạt giới hạn hiển thị của cuộc trò chuyện này.
+        string? ghiChu = sanPhamSeMoTa.Count == 0 && ketQua.Items.Count > 0
+            ? "Đã đạt giới hạn số sản phẩm gợi ý hiển thị cho cuộc trò chuyện này (có kết quả nhưng không hiển thị thêm được) - hãy trả lời dựa trên các sản phẩm đã nêu ở lượt trước, không nói là không có sản phẩm phù hợp."
+            : null;
+
         return new
         {
             tong_so_ket_qua = ketQua.TotalCount,
@@ -263,8 +282,13 @@ public class ChatAiService : IChatAiService
                 mo_ta = sp.MoTa,
                 gia_tu_vnd = sp.GiaTu,
                 diem_danh_gia_trung_binh = sp.DiemDanhGiaTb,
-                tinh_trang_suc_khoe = sp.Conditions.Select(c => c.TenTinhTrang)
-            })
+                tinh_trang_suc_khoe = sp.Conditions.Select(c => c.TenTinhTrang),
+                // Product.DangKinhDoanh (đã lọc ở SearchAsync) chỉ nghĩa là sản phẩm còn được bày bán,
+                // KHÔNG đảm bảo còn hàng - phải kiểm thêm tồn kho từng biến thể để không tư vấn chắc
+                // nịch một sản phẩm thực chất đã hết hàng.
+                con_hang = sp.Variants.Any(v => v.DangKinhDoanh && v.SoLuongTon > 0)
+            }),
+            ghi_chu = ghiChu
         };
     }
 
@@ -290,6 +314,8 @@ public class ChatAiService : IChatAiService
               sản phẩm nào. TUYỆT ĐỐI không tự bịa ra tên sản phẩm, giá, hoặc công dụng không có trong kết quả hàm trả về.
             - Nếu hàm trả về danh sách rỗng, thành thật nói với khách là hiện Pawsome chưa có sản phẩm phù hợp,
               không cố gợi ý sản phẩm không tồn tại.
+            - Mỗi sản phẩm hàm trả về có trường con_hang. Nếu con_hang=false, vẫn có thể nhắc tên sản phẩm
+              nhưng phải nói rõ hiện đang hết hàng/tạm hết, không mời khách mua ngay như hàng còn sẵn.
             - Khi khách mô tả triệu chứng (ví dụ: ngứa gãi nhiều, có bọ chét, đau khớp, giun sán, hành vi lo lắng...),
               hãy đối chiếu với danh sách tình trạng sức khỏe dưới đây để chọn đúng condition_id gần nghĩa nhất rồi
               mới gọi hàm tra cứu - không đoán tên sản phẩm khi chưa xác định được tình trạng.

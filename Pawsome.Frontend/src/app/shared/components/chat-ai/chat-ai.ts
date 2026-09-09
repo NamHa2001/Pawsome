@@ -1,5 +1,5 @@
 import { DecimalPipe } from '@angular/common';
-import { Component, ElementRef, ViewChild, effect, inject, signal } from '@angular/core';
+import { Component, ElementRef, ViewChild, afterRenderEffect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { ChatAiService } from './chat-ai.service';
@@ -23,11 +23,11 @@ export class ChatAi {
 
   constructor() {
     // Tự cuộn xuống tin nhắn mới nhất mỗi khi lịch sử thay đổi (câu hỏi mới hoặc AI vừa trả lời).
-    // setTimeout(0) để đợi Angular render xong *ngFor mới rồi mới đọc scrollHeight, đọc ngay trong
-    // effect sẽ lấy phải chiều cao CŨ (trước khi DOM cập nhật tin nhắn vừa thêm).
-    effect(() => {
+    // afterRenderEffect (không phải effect thường) vì cần đọc scrollHeight SAU khi Angular render
+    // xong *ngFor mới - effect thường chạy trước khi DOM kịp cập nhật tin nhắn vừa thêm.
+    afterRenderEffect(() => {
       this.lichSu();
-      setTimeout(() => this.cuonXuongCuoi());
+      this.cuonXuongCuoi();
     });
   }
 
