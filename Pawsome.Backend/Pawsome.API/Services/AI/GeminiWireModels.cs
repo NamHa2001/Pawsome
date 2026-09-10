@@ -51,10 +51,25 @@ public class GeminiPart
 
     [JsonPropertyName("functionResponse")]
     public GeminiFunctionResponse? FunctionResponse { get; set; }
+
+    // Gemini 3.x bắt buộc: functionCall part đầu tiên của mỗi lượt (candidate.Content) phải mang lại
+    // đúng thoughtSignature Gemini đã trả về khi lượt đó được gửi lại ở request kế tiếp (ChatAiService
+    // gửi lại nguyên candidate.Content qua contents.Add) - thiếu field này ở model C# khiến giá trị bị
+    // bỏ qua âm thầm lúc deserialize, rồi lượt gửi lại thiếu hẳn field, Gemini trả lỗi 400
+    // "missing a thought_signature". Sibling với functionCall (không lồng bên trong) - đúng vị trí
+    // theo tài liệu chính thức: https://ai.google.dev/gemini-api/docs/generate-content/thought-signatures
+    [JsonPropertyName("thoughtSignature")]
+    public string? ThoughtSignature { get; set; }
 }
 
 public class GeminiFunctionCall
 {
+    // Gemini 3.x gắn id cho mỗi lệnh gọi hàm khi có thể có NHIỀU lệnh gọi trong cùng 1 lượt - phải
+    // echo lại đúng id này trong GeminiFunctionResponse tương ứng để model ghép đúng cặp gọi/kết quả
+    // (model cũ hơn không gửi id, khi đó field này null và không cần echo lại).
+    [JsonPropertyName("id")]
+    public string? Id { get; set; }
+
     [JsonPropertyName("name")]
     public string Name { get; set; } = "";
 
@@ -64,6 +79,9 @@ public class GeminiFunctionCall
 
 public class GeminiFunctionResponse
 {
+    [JsonPropertyName("id")]
+    public string? Id { get; set; }
+
     [JsonPropertyName("name")]
     public string Name { get; set; } = "";
 

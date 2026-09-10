@@ -8,8 +8,12 @@ export interface SanPhamGoiY {
 export interface TinNhanChat {
   vai: 'nguoi_dung' | 'bot';
   noiDung: string;
-  // Chỉ tin nhắn "bot" mới có thể kèm sản phẩm gợi ý (AI đã tra cứu được khi trả lời câu hỏi này).
+  // Chỉ tin nhắn "bot" mới có thể kèm sản phẩm gợi ý. Có thể có sanPham dù loi=true (VD: đã tra
+  // được vài sản phẩm ở lượt gọi hàm trước rồi mới gặp lỗi) - không suy luận sanPham khác rỗng là
+  // tin nhắn chắc chắn thành công, luôn dựa vào cờ loi.
   sanPham?: SanPhamGoiY[];
+  // true nếu đây là thông báo lỗi/từ chối, không phải câu trả lời AI tổng hợp thật.
+  loi?: boolean;
 }
 
 // Payload gửi lên backend chỉ cần vai/nội dung - không gửi kèm sanPham vì đó là dữ liệu
@@ -22,4 +26,5 @@ export interface ChatRequest {
 export interface ChatResponse {
   traLoi: string;
   sanPham: SanPhamGoiY[];
+  loi: boolean;
 }

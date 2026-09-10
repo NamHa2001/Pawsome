@@ -50,7 +50,10 @@ export class ChatAiService {
       )
       .subscribe(res => {
         const traLoi = res.data?.traLoi ?? res.message ?? 'Xin lỗi, mình không phản hồi được.';
-        this.lichSu.update(ds => [...ds, { vai: 'bot', noiDung: traLoi, sanPham: res.data?.sanPham ?? [] }]);
+        // res.data null (lỗi mạng ở catchError trên) cũng là 1 dạng lỗi - mặc định loi=true khi
+        // không có data, chỉ false khi backend xác nhận rõ ràng đây là câu trả lời thành công.
+        const loi = res.data?.loi ?? true;
+        this.lichSu.update(ds => [...ds, { vai: 'bot', noiDung: traLoi, sanPham: res.data?.sanPham ?? [], loi }]);
       });
   }
 }
