@@ -104,6 +104,14 @@
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
   white-space: pre-wrap;
   word-break: break-word;
+
+  // Phân biệt bong bóng báo lỗi (VD mất kết nối, quá tải) với câu trả lời AI thật - tránh nhầm khi
+  // tin nhắn lỗi vẫn kèm thẻ sản phẩm đã tra được từ trước lúc lỗi xảy ra.
+  &.TinNhanLoi {
+    background: #fff4f4;
+    border: 1px solid #ffd6d6;
+    color: #a13333;
+  }
 }
 
 .TinNhanNguoiDung {

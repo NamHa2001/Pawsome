@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -15,6 +16,12 @@ public class ChatAiService : IChatAiService
     private const int DoDaiTinNhanToiDa = 1000;
     private const int SoSanPhamMoiLanTraCuu = 5;
     private const int SoSanPhamGoiYToiDa = 8;
+    // Tổng số lần THẬT SỰ gọi ProductService.SearchAsync tối đa cho CẢ 1 request, cộng dồn qua mọi
+    // lượt gọi Gemini (không phải giới hạn riêng từng lượt) - nếu chỉ giới hạn theo lượt, 1 request có
+    // thể đạt tới SoVongLapGoiHamToiDa (4) lượt x giới hạn mỗi lượt = nhiều lần truy vấn DB hơn hẳn mức
+    // cần thiết, trong khi rate limit theo IP ở Program.cs chỉ đếm SỐ REQUEST chứ không đếm việc này.
+    private const int SoLuongTraCuuThatToiDa = 6;
+    private const string ThongBaoLoiChung = "Trợ lý AI hiện không phản hồi được. Vui lòng thử lại sau.";
 
     // GeminiPart là kiểu "oneof" (mỗi Part chỉ có đúng 1 trong text/functionCall/functionResponse) -
     // phải bỏ qua field null khi serialize request, không thì Gemini nhận về "functionCall": null,
@@ -61,13 +68,13 @@ public class ChatAiService : IChatAiService
 
         var model = string.IsNullOrWhiteSpace(_config["Gemini:Model"]) ? "gemini-2.5-flash" : _config["Gemini:Model"]!;
 
-        // Gọi song song vì 2 truy vấn độc lập nhau - không có lý do phải chờ tuần tự trên đường dẫn
-        // nóng của endpoint công khai này.
-        var danhMucTask = _categoryService.GetAllAsync();
-        var tinhTrangTask = _conditionService.GetAllAsync();
-        await Task.WhenAll(danhMucTask, tinhTrangTask);
-        var danhMuc = danhMucTask.Result;
-        var tinhTrang = tinhTrangTask.Result;
+        // PHẢI await tuần tự, KHÔNG Task.WhenAll: ICategoryService/IConditionService cùng dùng chung
+        // 1 PawsomeDbContext (scoped, cùng vòng đời với request) - chạy 2 truy vấn EF Core đồng thời
+        // trên cùng 1 DbContext instance không an toàn, DbContext sẽ ném
+        // "A second operation was started on this context before a previous operation completed"
+        // gần như chắc chắn mỗi lần gọi, vì cả 2 câu SQL cùng khởi động gần như đồng thời.
+        var danhMuc = await _categoryService.GetAllAsync();
+        var tinhTrang = await _conditionService.GetAllAsync();
 
         var contents = new List<GeminiContent>();
         var lichSu = (request.LichSu ?? new List<ChatMessageDto>())
@@ -94,6 +101,12 @@ public class ChatAiService : IChatAiService
 
         var tools = new List<GeminiTool> { XayDungTool() };
         var sanPhamGoiY = new List<SanPhamGoiYDto>();
+        var soLuongDaTraCuuThat = 0; // cộng dồn qua mọi lượt - xem SoLuongTraCuuThatToiDa
+        // Cache dedup PHẢI khai báo NGOÀI vòng lặp gọi Gemini (cộng dồn qua mọi lượt, không phải tạo
+        // mới mỗi lượt) - nếu để trong vòng lặp, lệnh gọi hàm với tham số y hệt lặp lại ở LƯỢT SAU
+        // (khác lượt) sẽ không được nhận diện là trùng, vẫn tốn thêm 1 suất trong
+        // SoLuongTraCuuThatToiDa và truy vấn DB lại dù đã có kết quả từ lượt trước.
+        var ketQuaTheoThamSo = new Dictionary<KhoaThamSo, object>();
         var client = _httpClientFactory.CreateClient();
         var url = $"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={apiKey}";
 
@@ -120,7 +133,11 @@ public class ChatAiService : IChatAiService
             {
                 httpResponse = await client.PostAsJsonAsync(url, geminiRequest, _tuyChonJsonGuiDi);
             }
-            catch (HttpRequestException ex)
+            // HttpRequestException: lỗi mạng/DNS thông thường. TaskCanceledException: HttpClient hết
+            // thời gian chờ (mặc định 100s) - .NET ném TaskCanceledException cho timeout, KHÔNG phải
+            // HttpRequestException (điểm dễ nhầm) - nếu chỉ bắt HttpRequestException, Gemini phản hồi
+            // chậm sẽ lọt thành lỗi 500 chung chung thay vì thông báo thân thiện như các lỗi khác ở đây.
+            catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Không gọi được Gemini API");
                 // Vẫn kèm sanPhamGoiY - nếu lỗi xảy ra ở vòng lặp gọi hàm thứ 2 trở đi, vòng lặp trước
@@ -130,17 +147,49 @@ public class ChatAiService : IChatAiService
 
             if (!httpResponse.IsSuccessStatusCode)
             {
-                var noiDungLoi = await httpResponse.Content.ReadAsStringAsync();
-                _logger.LogError(
-                    "Gemini API trả lỗi {StatusCode}: {NoiDung}", httpResponse.StatusCode, noiDungLoi);
-
                 var thongBao = httpResponse.StatusCode == System.Net.HttpStatusCode.TooManyRequests
                     ? "Trợ lý AI đang quá tải, vui lòng thử lại sau ít phút."
-                    : "Trợ lý AI hiện không phản hồi được. Vui lòng thử lại sau.";
+                    : ThongBaoLoiChung;
+
+                // Đọc body lỗi để log cũng là I/O mạng như đọc body thành công bên dưới - cùng rủi ro
+                // rớt kết nối giữa chừng, nên cũng phải bọc try/catch. thongBao đã tính xong ở trên và
+                // được return ngay sau khối try/catch này bất kể đọc log có thành công hay không - vì
+                // vậy bắt Exception CHUNG (không giới hạn vài loại exception mạng cụ thể) là an toàn
+                // tuyệt đối ở đây: khối try/catch chỉ phục vụ mục đích ghi log, không hề ảnh hưởng gì
+                // tới giá trị trả về. Nếu chỉ bắt vài loại exception cụ thể như trước, 1 exception loại
+                // khác (VD ObjectDisposedException) sẽ văng thẳng ra ngoài ChatAsync và làm mất luôn
+                // sanPhamGoiY đã tra được ở các lượt gọi hàm trước đó trong cùng request - đúng lỗi mà
+                // các catch(Exception) khác trong file này đang cố tránh.
+                try
+                {
+                    var noiDungLoi = await httpResponse.Content.ReadAsStringAsync();
+                    _logger.LogError(
+                        "Gemini API trả lỗi {StatusCode}: {NoiDung}", httpResponse.StatusCode, noiDungLoi);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Gemini API trả lỗi {StatusCode} (không đọc được nội dung lỗi)", httpResponse.StatusCode);
+                }
+
                 return TraLoiKhiLoi(thongBao, sanPhamGoiY);
             }
 
-            var geminiResponse = await httpResponse.Content.ReadFromJsonAsync<GeminiResponse>();
+            GeminiResponse? geminiResponse;
+            try
+            {
+                geminiResponse = await httpResponse.Content.ReadFromJsonAsync<GeminiResponse>();
+            }
+            // JsonException: body 2xx nhưng không đúng dạng GeminiResponse mong đợi. HttpRequestException/
+            // IOException/TaskCanceledException: đọc response body cũng là I/O mạng (dù status đã 2xx) -
+            // kết nối có thể rớt giữa chừng lúc đang stream body, không chỉ lỗi parse JSON. NotSupportedException:
+            // ReadFromJsonAsync có thể ném lỗi này nếu charset khai trong header Content-Type không hợp lệ/không
+            // hỗ trợ. Nếu không bắt đủ, lỗi lọt ra ngoài ChatAsync, qua ExceptionHandlingMiddleware thành lỗi 500
+            // khác hẳn khung ChatResponseDto và làm mất luôn sanPhamGoiY đã tra được.
+            catch (Exception ex) when (ex is JsonException or HttpRequestException or IOException or TaskCanceledException or NotSupportedException)
+            {
+                _logger.LogError(ex, "Không đọc được phản hồi từ Gemini API");
+                return TraLoiKhiLoi(ThongBaoLoiChung, sanPhamGoiY);
+            }
 
             if (!string.IsNullOrWhiteSpace(geminiResponse?.PromptFeedback?.BlockReason))
             {
@@ -151,44 +200,114 @@ public class ChatAiService : IChatAiService
 
             var candidate = geminiResponse?.Candidates?.FirstOrDefault();
             if (candidate?.Content == null)
-                return TraLoiKhiLoi("Trợ lý AI hiện không phản hồi được. Vui lòng thử lại sau.", sanPhamGoiY);
+                return TraLoiKhiLoi(ThongBaoLoiChung, sanPhamGoiY);
 
-            var functionCallPart = candidate.Content.Parts.FirstOrDefault(p => p.FunctionCall != null);
-            if (functionCallPart?.FunctionCall != null)
+            // Gemini có thể gọi hàm NHIỀU lần trong cùng 1 lượt (VD tra 2 triệu chứng khác nhau cùng
+            // lúc) dù chỉ khai báo 1 tool.
+            var functionCallParts = candidate.Content.Parts.Where(p => p.FunctionCall != null).ToList();
+            if (functionCallParts.Count > 0)
             {
-                // Giữ đúng lượt "model" chứa functionCall trong lịch sử gửi lên - Gemini yêu cầu
-                // ngữ cảnh đầy đủ để hiểu functionResponse ở lượt kế tiếp là trả lời cho lệnh gọi nào.
+                // Phải trả lời ĐỦ từng lệnh gọi (Gemini yêu cầu mỗi functionCall phải có đúng 1
+                // functionResponse tương ứng trong lượt kế tiếp, thiếu 1 cái là sai giao thức) - không
+                // phải chỉ xử lý lệnh đầu tiên như code cũ. Nhưng chỉ THẬT SỰ truy vấn DB khi chưa đạt
+                // SoLuongTraCuuThatToiDa (cộng dồn qua mọi lượt, không phải riêng lượt này) - lệnh dư
+                // nhận phản hồi báo đã đạt giới hạn thay vì gọi ProductService.SearchAsync.
                 contents.Add(candidate.Content);
 
-                var ketQuaHam = await ThucThiHamTimSanPhamAsync(functionCallPart.FunctionCall, sanPhamGoiY);
-
-                contents.Add(new GeminiContent
+                var responseParts = new List<GeminiPart>();
+                // ketQuaTheoThamSo khai báo ngoài vòng lặp gọi Gemini (không phải ở đây) - xem chú
+                // thích ở chỗ khai báo: cache theo TÊN HÀM + tham số gốc, cộng dồn qua mọi lượt để bắt
+                // được cả trường hợp Gemini lặp lại cùng 1 lệnh gọi ở lượt SAU, không chỉ trong cùng lượt.
+                foreach (var part in functionCallParts)
                 {
-                    Role = "function",
-                    Parts = new List<GeminiPart>
+                    var fc = part.FunctionCall!;
+
+                    // Khóa dựng từ GIÁ TRỊ ĐÃ PARSE (qua LayString/LayInt/LayDecimal), không phải raw
+                    // JSON text - nếu dùng nguyên văn GetRawText(), 2 lệnh gọi cùng ý nghĩa nhưng khác
+                    // thứ tự property trong JSON (Gemini có thể phát sinh khác nhau giữa các lượt) sẽ bị
+                    // coi là khác nhau, dedup bỏ sót, tốn oan suất trong SoLuongTraCuuThatToiDa.
+                    var khoaThamSo = XayDungKhoaThamSo(fc);
+                    object ketQuaHam;
+
+                    if (ketQuaTheoThamSo.TryGetValue(khoaThamSo, out var ketQuaDaCo))
                     {
-                        new()
+                        ketQuaHam = ketQuaDaCo;
+                    }
+                    else if (fc.Name != TenHamTimSanPham)
+                    {
+                        // Không phải hàm tim_kiem_san_pham (chỉ có thể xảy ra nếu Gemini gọi sai tên -
+                        // hiện chỉ khai báo đúng 1 tool) - không chạm DB nên KHÔNG tính vào
+                        // soLuongDaTraCuuThat, tránh tốn oan 1 suất tra cứu thật cho lệnh gọi không hợp lệ.
+                        ketQuaHam = new { loi = "Không hỗ trợ hàm này." };
+                        ketQuaTheoThamSo[khoaThamSo] = ketQuaHam;
+                    }
+                    else if (soLuongDaTraCuuThat < SoLuongTraCuuThatToiDa)
+                    {
+                        // Tính suất NGAY (trước try) vì sắp thật sự chạm DB bất kể thành hay bại - vẫn
+                        // đúng ý nghĩa "đã tốn 1 lượt truy vấn DB thật" kể cả khi lượt đó thất bại.
+                        soLuongDaTraCuuThat++;
+                        try
                         {
-                            FunctionResponse = new GeminiFunctionResponse
-                            {
-                                Name = functionCallPart.FunctionCall.Name,
-                                Response = ketQuaHam
-                            }
+                            // Dùng lại khoaThamSo.ThamSo (đã parse ở XayDungKhoaThamSo phía trên) thay vì
+                            // parse lại từ fc.Args - tránh parse trùng 2 lần cho cùng 1 lệnh gọi thật.
+                            ketQuaHam = await ThucThiHamTimSanPhamAsync(khoaThamSo.ThamSo, sanPhamGoiY);
+                            // CHỈ cache khi THÀNH CÔNG - nếu cache cả lỗi tạm thời, khi Gemini nghe lời
+                            // khuyên "vui lòng thử lại" trong thongBaoLoi và gọi lại đúng tham số này ở
+                            // lượt sau, cache sẽ phát lại y nguyên lỗi cũ thay vì thực sự thử lại DB,
+                            // biến 1 lỗi thoáng qua thành lỗi vĩnh viễn cho suốt phần còn lại của request.
+                            ketQuaTheoThamSo[khoaThamSo] = ketQuaHam;
+                        }
+                        // Bắt Exception CHUNG (không chỉ riêng DbException) xảy ra GIỮA vòng lặp - nếu để
+                        // văng ra ngoài ChatAsync sẽ mất luôn sanPhamGoiY đã tra được ở các lệnh gọi TRƯỚC
+                        // ĐÓ trong cùng request, trái với đúng mục tiêu "giữ sản phẩm đã tra được" mà mọi
+                        // nhánh lỗi khác trong file này đang cố làm. Trước đây chỉ bắt DbException với lý
+                        // do "không nuốt bug lập trình thật" - nhưng _logger.LogError(ex, ...) bên dưới
+                        // vẫn ghi đầy đủ exception + stack trace, KHÔNG hề giấu bug (vẫn thấy rõ trong
+                        // log), nó chỉ tránh trả 500 kèm mất trắng kết quả cho một chuyện không liên quan
+                        // (VD lỗi hết connection pool là InvalidOperationException, không phải DbException,
+                        // từng lọt qua nhánh catch cũ rồi văng thẳng ra ChatAiController's
+                        // catch (InvalidOperationException) và lộ message nội bộ ra ngoài dưới dạng lỗi 400).
+                        catch (Exception ex)
+                        {
+                            _logger.LogError(ex, "Lỗi khi tra cứu sản phẩm cho trợ lý AI");
+                            ketQuaHam = new { loi = "Có lỗi khi tra cứu sản phẩm, vui lòng thử lại." };
                         }
                     }
-                });
+                    else
+                    {
+                        ketQuaHam = new { loi = "Đã đạt giới hạn số lượt tra cứu cho câu hỏi này, hãy hỏi cụ thể/ngắn gọn hơn." };
+                    }
+
+                    responseParts.Add(new GeminiPart
+                    {
+                        FunctionResponse = new GeminiFunctionResponse
+                        {
+                            Id = fc.Id,
+                            Name = fc.Name,
+                            Response = ketQuaHam
+                        }
+                    });
+                }
+
+                // Role "user" (KHÔNG phải "function") - Gemini 3.x trả lỗi 400 INVALID_ARGUMENT
+                // "Role 'function' is not supported" nếu dùng role cũ, xác nhận qua tài liệu chính
+                // thức: https://ai.google.dev/gemini-api/docs/gemini-3 - lượt chứa functionResponse
+                // giờ phải mang role "user" giống lượt hỏi thường.
+                contents.Add(new GeminiContent { Role = "user", Parts = responseParts });
 
                 continue; // gọi lại Gemini để nó tổng hợp câu trả lời cuối dựa trên kết quả tra cứu thật
             }
 
             var vanBan = string.Concat(candidate.Content.Parts.Where(p => p.Text != null).Select(p => p.Text));
-            return new ChatResponseDto
+            if (string.IsNullOrWhiteSpace(vanBan))
             {
-                TraLoi = string.IsNullOrWhiteSpace(vanBan)
-                    ? "Xin lỗi, mình chưa hiểu câu hỏi. Bạn có thể hỏi lại rõ hơn không?"
-                    : vanBan,
-                SanPham = sanPhamGoiY
-            };
+                // Gemini kết thúc lượt này mà không có cả functionCall lẫn text (VD bị lọc an toàn ở
+                // cấp candidate mà không set PromptFeedback.BlockReason) - đây không phải câu trả lời
+                // AI thật, phải đánh dấu Loi=true như các nhánh dự phòng khác, không lẫn với thành công.
+                return TraLoiKhiLoi("Xin lỗi, mình chưa hiểu câu hỏi. Bạn có thể hỏi lại rõ hơn không?", sanPhamGoiY);
+            }
+
+            return new ChatResponseDto { TraLoi = vanBan, SanPham = sanPhamGoiY };
         }
 
         // Vẫn trả kèm sanPhamGoiY đã tra được (nếu có) - model gọi hàm tra cứu đủ 4 lượt liên tiếp mà
@@ -200,7 +319,7 @@ public class ChatAiService : IChatAiService
     }
 
     private static ChatResponseDto TraLoiKhiLoi(string thongBao, List<SanPhamGoiYDto>? sanPham = null) =>
-        new() { TraLoi = thongBao, SanPham = sanPham ?? new List<SanPhamGoiYDto>() };
+        new() { TraLoi = thongBao, SanPham = sanPham ?? new List<SanPhamGoiYDto>(), Loi = true };
 
     // Duy nhất 1 tool: tra cứu sản phẩm THẬT trong CSDL qua ProductService.SearchAsync (Phần 2) -
     // bắt buộc AI phải gọi hàm này trước khi nêu tên/giá sản phẩm cụ thể, không tự bịa (xem system
@@ -228,18 +347,46 @@ public class ChatAiService : IChatAiService
         }
     };
 
-    private async Task<object> ThucThiHamTimSanPhamAsync(GeminiFunctionCall functionCall, List<SanPhamGoiYDto> sanPhamGoiYTichLuy)
-    {
-        if (functionCall.Name != TenHamTimSanPham)
-            return new { loi = "Không hỗ trợ hàm này." };
+    // Parse 4 tham số của hàm tim_kiem_san_pham DUY NHẤT 1 lần ở đây - dùng chung cho cả khóa dedup
+    // (XayDungKhoaThamSo) lẫn filter truy vấn thật (ThucThiHamTimSanPhamAsync). Trước đây 2 nơi tự
+    // gọi lại LayString/LayInt/LayDecimal riêng, cùng đọc đúng 4 tên tham số - nếu sau này đổi/thêm
+    // tham số cho hàm mà chỉ sửa 1 trong 2 chỗ, khóa dedup và filter thật sẽ lệch nhau (dedup bỏ sót
+    // 1 tham số mới sẽ coi 2 lệnh gọi khác nhau là trùng, trả nhầm kết quả cache).
+    private static ThamSoTimKiem TrichThamSoTimKiem(JsonElement args) => new(
+        LayString(args, "tu_khoa"),
+        LayInt(args, "category_id"),
+        LayInt(args, "condition_id"),
+        LayDecimal(args, "gia_toi_da"));
 
-        var args = functionCall.Args;
+    private readonly record struct ThamSoTimKiem(
+        string? TuKhoa, int? CategoryId, int? ConditionId, decimal? GiaToiDa);
+
+    // Khóa dedup dạng tuple có so sánh cấu trúc (không phải chuỗi ghép bằng string.Join) - nếu ghép
+    // thành 1 chuỗi bằng dấu phân cách (VD "|"), tu_khoa là chuỗi tự do do Gemini/khách nhập nên có
+    // thể tự chứa đúng dấu phân cách đó, khiến 2 lệnh gọi có tham số khác nhau (VD tu_khoa="x|5" so
+    // với tu_khoa="x" + category_id=5) ghép ra CÙNG 1 chuỗi khóa và bị coi là trùng - tuple tránh
+    // hoàn toàn kiểu đụng độ này vì so sánh từng field riêng, không qua bước ghép chuỗi. Bọc luôn
+    // ThamSoTimKiem làm 1 field duy nhất (không lặp lại từng field của nó) - record struct so sánh
+    // cấu trúc lồng nhau tự động, tránh phải sửa 2 chỗ (KhoaThamSo và ThamSoTimKiem) mỗi khi hàm
+    // tim_kiem_san_pham đổi/thêm tham số.
+    private static KhoaThamSo XayDungKhoaThamSo(GeminiFunctionCall functionCall) =>
+        new(functionCall.Name, TrichThamSoTimKiem(functionCall.Args));
+
+    private readonly record struct KhoaThamSo(string TenHam, ThamSoTimKiem ThamSo);
+
+    // Nhận thẳng ThamSoTimKiem đã parse sẵn (từ khoaThamSo.ThamSo ở nơi gọi) thay vì nhận
+    // GeminiFunctionCall rồi tự parse lại - tránh gọi TrichThamSoTimKiem 2 lần cho cùng 1 lệnh gọi
+    // (1 lần dựng khóa dedup, 1 lần dựng filter thật). Đồng thời loại bỏ hẳn khái niệm "tên hàm" khỏi
+    // chữ ký hàm này - không còn cách nào gọi nhầm hàm khác qua đây được nữa, không cần precondition
+    // comment như trước.
+    private async Task<object> ThucThiHamTimSanPhamAsync(ThamSoTimKiem thamSo, List<SanPhamGoiYDto> sanPhamGoiYTichLuy)
+    {
         var filter = new ProductFilterRequestDto
         {
-            TuKhoa = LayString(args, "tu_khoa"),
-            CategoryId = LayInt(args, "category_id"),
-            ConditionId = LayInt(args, "condition_id"),
-            GiaMax = LayDecimal(args, "gia_toi_da"),
+            TuKhoa = thamSo.TuKhoa,
+            CategoryId = thamSo.CategoryId,
+            ConditionId = thamSo.ConditionId,
+            GiaMax = thamSo.GiaToiDa,
             Page = 1,
             PageSize = SoSanPhamMoiLanTraCuu
         };
@@ -353,9 +500,22 @@ public class ChatAiService : IChatAiService
             JsonValueKind.Number when el.TryGetInt32(out var soNguyen) => soNguyen,
             // Gemini function-calling đôi khi trả số nguyên dạng có phần thập phân (VD 5.0) dù tham số
             // khai báo kiểu INTEGER - TryGetInt32 trả false cho "5.0" dù giá trị vẫn là số nguyên, nên
-            // phải thử thêm qua TryGetDouble và chỉ nhận khi không có phần lẻ thật sự.
-            JsonValueKind.Number when el.TryGetDouble(out var soThuc) && soThuc == Math.Floor(soThuc) => (int)soThuc,
-            JsonValueKind.String when int.TryParse(el.GetString(), out var soNguyen) => soNguyen,
+            // phải thử thêm qua TryGetDouble và chỉ nhận khi không có phần lẻ thật sự. Phải kiểm tra
+            // nằm trong khoảng int trước khi ép kiểu - double ngoài phạm vi Int32 (VD 5_000_000_000)
+            // vẫn có thể qua được điều kiện "không có phần lẻ", nhưng (int)soThuc sẽ tràn số âm thầm
+            // (không ném OverflowException vì đây không phải khối checked) ra 1 category_id/condition_id
+            // vô nghĩa thay vì bị coi là không có giá trị.
+            JsonValueKind.Number when el.TryGetDouble(out var soThuc) && soThuc == Math.Floor(soThuc)
+                && soThuc is >= int.MinValue and <= int.MaxValue => (int)soThuc,
+            JsonValueKind.String when int.TryParse(el.GetString(), NumberStyles.Integer, CultureInfo.InvariantCulture, out var soNguyen) => soNguyen,
+            // Cùng lý do với nhánh Number ở trên (VD chuỗi "5.0", và cùng cần chặn tràn số Int32) - phải
+            // xử lý nhất quán giữa 2 kiểu ValueKind, nếu không chuỗi "5.0" sẽ bị âm thầm coi là không có
+            // giá trị trong khi số 5.0 (không phải chuỗi) vẫn được nhận đúng thành 5. BẮT BUỘC
+            // CultureInfo.InvariantCulture - double.TryParse mặc định dùng CurrentCulture, ở culture coi
+            // "." là dấu phân cách hàng nghìn (VD vi-VN) thì "5.0" sẽ bị đọc thành 50 thay vì 5.0, sai
+            // lệch gấp 10 lần mà không hề có exception nào báo.
+            JsonValueKind.String when double.TryParse(el.GetString(), NumberStyles.Float, CultureInfo.InvariantCulture, out var soThuc) && soThuc == Math.Floor(soThuc)
+                && soThuc is >= int.MinValue and <= int.MaxValue => (int)soThuc,
             _ => null
         };
     }
@@ -368,7 +528,15 @@ public class ChatAiService : IChatAiService
         return el.ValueKind switch
         {
             JsonValueKind.Number when el.TryGetDecimal(out var soThap) => soThap,
-            JsonValueKind.String when decimal.TryParse(el.GetString(), out var soThap) => soThap,
+            // CultureInfo.InvariantCulture - cùng lý do với LayInt: decimal.TryParse mặc định dùng
+            // CurrentCulture, có thể đọc sai dấu phân cách thập phân/hàng nghìn tùy server đang chạy
+            // culture nào (gia_toi_da là giá tiền, đọc sai gấp/chia 1000 lần là lỗi nghiêm trọng).
+            // PHẢI dùng NumberStyles.Number (không phải Float) - Number có thêm AllowThousands so với
+            // Float, giữ đúng hành vi decimal.TryParse(string) mặc định trước đây (đã cho qua chuỗi có
+            // dấu phân cách hàng nghìn kiểu "500,000") - nếu chỉ dùng Float, giá dạng "500,000" sẽ bị
+            // parse thất bại, gia_toi_da lặng lẽ thành null (mất hẳn điều kiện lọc giá) thay vì đúng
+            // 500000, dù mục tiêu sửa ban đầu chỉ là cố định culture, không phải bớt định dạng được chấp nhận.
+            JsonValueKind.String when decimal.TryParse(el.GetString(), NumberStyles.Number, CultureInfo.InvariantCulture, out var soThap) => soThap,
             _ => null
         };
     }

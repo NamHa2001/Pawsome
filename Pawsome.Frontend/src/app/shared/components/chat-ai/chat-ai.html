@@ -11,7 +11,7 @@
     <div class="NoiDungChat" #khungNoiDungChat>
       @for (tin of lichSu(); track $index) {
         @if (tin.vai === 'bot') {
-          <div class="TinNhanBot">{{ tin.noiDung }}</div>
+          <div class="TinNhanBot" [class.TinNhanLoi]="tin.loi">{{ tin.noiDung }}</div>
 
           @if (tin.sanPham?.length) {
             <div class="DanhSachSanPhamGoiY">
