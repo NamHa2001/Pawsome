@@ -19,6 +19,7 @@
 .KhungChuaBlog {
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
   justify-content: center;
   align-items: stretch;
   gap: 30px;
@@ -87,4 +88,14 @@
   transition: 0.3s;
 
   &:hover { background-color: #FF7A00; }
+}
+
+// 3 thẻ 380px cố định chỉ vừa đúng 1200px desktop - mobile thu nhỏ + cho xuống dòng (YPCN-4.2).
+@media (max-width: 900px) {
+  .KhungChuaBlog { padding: 0 20px; }
+  .O_Blog { width: 100%; min-height: 0; }
+  .AnhBlog, .NoiDungBlog { width: 100%; }
+  .AnhBlog { height: auto; aspect-ratio: 319 / 247; img { object-fit: contain; } }
+  .MainBlogTitle { font-size: 26px; }
+  .ReadOurText { font-size: 34px; }
 }

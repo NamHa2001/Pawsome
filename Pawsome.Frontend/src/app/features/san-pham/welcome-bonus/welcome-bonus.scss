@@ -3,7 +3,8 @@
 }
 
 .WelcomeBonusSection {
-  width: 1200px;
+  width: 100%;
+  max-width: 1200px;
   background-color: #A51F1F;
   height: 254px;
   display: flex;
@@ -103,4 +104,16 @@
   cursor: pointer;
 
   &:hover { background-color: #FF7A00; }
+}
+
+// Banner đỏ 1200x254px + thẻ Subscribe absolute đè lên góc phải (right:50px;top:-60px) chỉ có ý
+// nghĩa ở màn hình rộng - mobile bỏ absolute, dồn dọc: banner trước, thẻ Subscribe full-width sau,
+// không còn đè chồng lên nhau (YPCN-4.2).
+@media (max-width: 900px) {
+  .WelcomeBonusSection { height: auto; padding: 30px 0; }
+  .BonusFlex { flex-direction: column; height: auto; gap: 30px; padding: 0 20px; }
+  .WelcomeLeft { padding-left: 0; text-align: center; }
+  .BonusHeader { justify-content: center; font-size: 26px; }
+  .NutSignUp { margin: 0 auto; }
+  .KhungSubscribeTrang { position: static; width: 100%; max-width: 480px; top: 0; right: 0; }
 }

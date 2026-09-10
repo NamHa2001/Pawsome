@@ -114,3 +114,15 @@
 
 .LabelCoupon { font-size: 12px; color: #ffffff; display: block; }
 .MaCoupon { font-size: 26px; font-weight: 900; color: #ffffff; }
+
+// 2 banner 686px/361px cạnh nhau chỉ vừa ở desktop - mobile dồn dọc, full width, cao theo nội
+// dung thay vì cắt (YPCN-4.2).
+@media (max-width: 900px) {
+  .KhungBannerVip { flex-wrap: wrap; padding: 0 20px; }
+  .BannerVip { height: auto; min-height: 227px; }
+  .BannerVip.Do, .BannerVip.Cam { width: 100%; }
+  .BannerVip.Do { padding: 20px; }
+  .NoiDungVip { flex-wrap: wrap; gap: 10px; }
+  .CumHanhDong { margin-left: 0; }
+  .TextVip h3 { font-size: 22px; }
+}

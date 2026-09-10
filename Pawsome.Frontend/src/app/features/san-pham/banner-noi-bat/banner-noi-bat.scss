@@ -11,7 +11,7 @@
 }
 
 .SanPhamNoiBat .VungAnToan {
-  width: 1200px;
+  width: 100%;
   max-width: 1200px;
   margin: 0 auto;
   padding: 0;
@@ -23,7 +23,7 @@
 }
 
 .KhungNenDo {
-  width: 1200px;
+  width: 100%;
   height: 433px;
   background-color: var(--MauDoDam);
   border-radius: 15px;
@@ -213,4 +213,10 @@
   align-items: center;
 
   img { width: 90%; height: 90%; object-fit: contain; }
+}
+
+// Layout 1200px cố định + ảnh chó/mèo đè giữa 2 thẻ SP không dồn dọc gọn được - user yêu cầu bỏ
+// hẳn khối "Sản phẩm nổi bật" (cả 2 chỗ dùng: chó, mèo) trên mobile, chỉ giữ ở bản web.
+@media (max-width: 900px) {
+  :host { display: none; }
 }
