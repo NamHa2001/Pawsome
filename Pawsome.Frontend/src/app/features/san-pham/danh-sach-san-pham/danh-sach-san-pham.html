@@ -7,10 +7,14 @@
       <i class="fa-solid fa-chevron-right"></i>
       <span class="active">Products</span>
     </div>
+
+    <button type="button" class="NutMoBoLoc" (click)="toggleBoLoc()">
+      <i class="fa-solid fa-sliders"></i> Filters
+    </button>
   </div>
 
   <div class="KhungTrangDanhSach">
-    <aside class="SidebarLoc">
+    <aside class="SidebarLoc" [class.MoTrenMobile]="hienBoLoc()">
       <div class="KhoiLoc">
         <h3 class="TieuDeLoc">Category</h3>
         <ul class="DanhSachLoc">

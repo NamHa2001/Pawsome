@@ -12,7 +12,8 @@
   padding: 40px 0 20px 0;
 
   .VungAnToan {
-    width: 1200px;
+    width: 100%;
+    max-width: 1200px;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -180,4 +181,18 @@
 .AnhPayment {
   height: 25px;
   width: auto;
+}
+
+// Chiều cao 566px cố định + 2 cột 55/40 chỉ đúng ở desktop - mobile nội dung dồn dọc nên cần
+// height:auto để không bị cắt, cùng lúc bỏ text-align:right vốn chỉ hợp khi đứng cạnh cột trái (YPCN-4.2).
+@media (max-width: 768px) {
+  .ChanTrang { height: auto; padding: 30px 0 20px; }
+  .ChanTrang .VungAnToan { padding: 0 20px; }
+  .KhungNoiDungThayDoi { flex-direction: column; gap: 25px; }
+  .CotTraiFooter, .CotPhaiFooter { width: 100%; }
+  .CotPhaiFooter { text-align: left; }
+  .AnhSecurity { margin-top: 15px; }
+  .ThanhTabFooter { flex-wrap: wrap; justify-content: center; }
+  .NutTab { padding: 10px 18px; font-size: 14px; }
+  .HangCuoiFooter { flex-wrap: wrap; justify-content: center; gap: 12px; text-align: center; }
 }

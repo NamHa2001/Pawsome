@@ -47,6 +47,12 @@ export class DanhSachSanPham implements OnInit {
 
   readonly boLoc = signal<BoLocSanPham>({ page: 1, pageSize: 12 });
 
+  readonly hienBoLoc = signal(false);
+
+  toggleBoLoc(): void {
+    this.hienBoLoc.update(v => !v);
+  }
+
   ngOnInit(): void {
     this.categoryService.getAll().subscribe(ds => this.danhMucList.set(ds));
     this.brandService.getAll().subscribe(ds => this.thuongHieuList.set(ds));

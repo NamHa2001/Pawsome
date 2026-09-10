@@ -29,8 +29,10 @@
   flex-direction: row;
   justify-content: center;
   align-items: flex-end;
+  flex-wrap: wrap;
   gap: 30px;
-  width: 1200px;
+  width: 100%;
+  max-width: 1200px;
   margin: 0 auto;
 }
 
@@ -75,3 +77,15 @@
 
 .TenSPDeal { font-size: 20px; font-weight: 700; color: #000000; }
 .GiaSPDeal { font-size: 22px; font-weight: 700; color: var(--MauDoDam); }
+
+// Thẻ deal 375px cố định chỉ vừa 3 thẻ/hàng ở desktop 1200px - mobile đổi hẳn sang thẻ chữ nhật
+// bo góc thường (bỏ dáng vòm 200px vì ở khổ hẹp bo vòm to làm tên/giá bị đẩy lệch, tràn dòng kỳ
+// cục) thay vì cố ép giữ y hệt bản desktop (YPCN-4.2, đã được user đồng ý cho khác web ở mobile).
+@media (max-width: 900px) {
+  .BannerDealFull { padding: 40px 0; background-image: none; }
+  .DealContent { padding: 0 20px; gap: 20px; }
+  .CuaSoDeal { width: 100%; max-width: 300px; height: auto; border-radius: 16px; }
+  .KhungAnhDeal img { width: 180px; max-height: 180px; }
+  .ThongTinDeal { flex-direction: column; align-items: flex-start; gap: 6px; padding: 16px 0 4px; }
+  .TieuDeDeal { font-size: 24px; }
+}

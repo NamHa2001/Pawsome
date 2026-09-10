@@ -1,5 +1,9 @@
+:host {
+  display: contents;
+}
+
 .KhungBienThe {
-  width: 1200px;
+  width: 100%;
   border: 1px solid #EEE;
   border-radius: 12px;
   overflow: hidden;
@@ -119,5 +123,33 @@
   &:disabled {
     background-color: #CCC;
     cursor: not-allowed;
+  }
+}
+
+// Ảnh xuống trên cùng, grid 4 cột dồn thành 2x2 (Price+Vip / Qty+Add) - vẫn đủ thông tin, không cắt (YPCN-4.2).
+@media (max-width: 768px) {
+  .NoiDungBienThe { flex-direction: column; }
+  .CotAnhBienThe {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #E0E0E0;
+
+    img { width: 40%; }
+  }
+  .CotThongTinBienThe { padding: 16px 20px; }
+  // Bỏ hàng tiêu đề (Price/PawVip/Qty.) trên mobile - nó là 1 grid riêng, tách khỏi hàng giá trị
+  // nên không thẳng cột được với nhau, nhìn rối. Hàng giá trị đổi sang flex-wrap tự chảy, gọn hơn
+  // nhiều so với cố giữ dạng bảng 4 cột của bản desktop.
+  .HangTieuDeGrid { display: none; }
+  // Grid 2 cột auto-place: Price+VipPrice ghép hàng 1, Qty+Add ghép hàng 2 - không còn hàng tiêu
+  // đề để lệch cột nữa nên grid ghép cặp đúng ý, ADD không còn rớt riêng 1 hàng như flex-wrap.
+  .HangDuLieuGrid {
+    display: grid;
+    grid-template-columns: repeat(2, max-content);
+    justify-content: flex-start;
+    align-items: center;
+    column-gap: 30px;
+    row-gap: 14px;
+    padding: 15px 0;
   }
 }

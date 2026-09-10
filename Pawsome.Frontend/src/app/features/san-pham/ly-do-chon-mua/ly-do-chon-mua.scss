@@ -33,6 +33,7 @@
 .VongTronSo {
   width: 45px;
   height: 45px;
+  flex-shrink: 0;
   border-radius: 50%;
   display: flex;
   justify-content: center;
@@ -56,3 +57,11 @@
 .SoXanhDam { background: #3F51B5; color: #FFF; &::after { border-color: #3F51B5; } }
 .SoCam { background: #FF5722; color: #FFF; &::after { border-color: #FF5722; } }
 .SoVangNhat { background: #FFF9C4; color: #000; &::after { border-color: #FFF9C4; } }
+
+@media (max-width: 768px) {
+  .LuoiLyDo { grid-template-columns: repeat(2, 1fr); gap: 25px 16px; padding: 25px; }
+}
+
+@media (max-width: 480px) {
+  .LuoiLyDo { grid-template-columns: 1fr; padding: 20px; }
+}

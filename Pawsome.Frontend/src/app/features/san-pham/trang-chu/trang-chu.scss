@@ -11,8 +11,6 @@
 }
 
 .BannerSlideshow .VungAnToan {
-  width: 1200px;
-  margin: 0 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -21,8 +19,8 @@
 }
 
 .KhungVuaSlide {
-  width: 1200px;
-  height: 319px;
+  width: 100%;
+  aspect-ratio: 1200 / 319;
   position: relative;
   overflow: hidden;
   border-radius: 15px;
@@ -32,13 +30,13 @@
 
 .DanhSachSlide {
   display: flex;
-  width: 300%;
+  width: 100%;
   height: 100%;
   transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .SlideItem {
-  width: 1200px;
+  flex: 0 0 100%;
   height: 100%;
 
   img { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -119,7 +117,8 @@
 }
 
 .HeaderSanPham {
-  width: 1200px;
+  width: 100%;
+  max-width: 1200px;
   position: relative;
   display: flex;
   align-items: center;
@@ -154,11 +153,11 @@
 }
 
 .KhungDanhSachSP {
-  width: 1200px;
+  width: 100%;
+  max-width: 1200px;
   margin: 10px auto 30px auto;
   display: grid;
-  grid-template-columns: repeat(4, 280px);
-  justify-content: center;
+  grid-template-columns: repeat(4, 1fr);
   gap: 20px;
 }
 
@@ -186,6 +185,7 @@
   font-size: 16px;
   color: var(--MauDen);
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .GiaMoiHang {
@@ -199,7 +199,36 @@
   font-size: 16px;
   font-weight: 600;
   color: var(--MauDoDam);
+  white-space: nowrap;
 }
 
-.VipIconGrid { height: 25px; cursor: pointer; }
+.VipIconGrid { height: 25px; cursor: pointer; flex-shrink: 0; }
+
+// 4 khối dịch vụ (24%/hàng) và grid 4 cột 280px cố định chỉ vừa ở desktop 1200px - tràn ngang
+// hoàn toàn trên mobile (YPCN-4.2). Slideshow/aspect-ratio đã tự co giãn ở base rule nên không cần
+// media riêng cho phần đó.
+@media (max-width: 1024px) {
+  .HeaderSanPham { padding: 0 20px; }
+  .KhungDanhSachSP { grid-template-columns: repeat(2, 1fr); padding: 0 20px; }
+  // .TenSanPhamGrid gốc (styles.scss) chỉ chừa chỗ 2 dòng (min-height:44px) - đủ ở desktop 4 cột
+  // (card rộng, tên ít khi xuống dòng 3). Card hẹp lại (2 cột) khiến vài tên dài xuống 3 dòng,
+  // đẩy lệch giá/nút so với card tên ngắn cùng hàng - chừa sẵn chỗ 3 dòng để đồng bộ mọi thẻ.
+  .TenSanPhamGrid { min-height: 66px; }
+}
+
+@media (max-width: 900px) {
+  .BannerSlideshow { display: none; }
+  .ThanhTienIch .VungAnToan { flex-wrap: wrap; row-gap: 25px; padding: 0 20px; }
+  .OSevice { width: calc(50% - 10px); }
+  .ChuService strong { white-space: normal; }
+  .TieuDeChinh { font-size: 22px; }
+}
+
+@media (max-width: 560px) {
+  .KhungDanhSachSP { gap: 14px; }
+  .GiaCuGrid, .GiaMoiGrid { font-size: 14px; }
+  .VipIconGrid { height: 20px; }
+  .HeaderSanPham { flex-direction: column; gap: 10px; padding-top: 24px; }
+  .TieuDeChinh { position: static; transform: none; }
+}
 

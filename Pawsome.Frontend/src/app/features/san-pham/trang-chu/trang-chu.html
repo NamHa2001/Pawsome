@@ -4,7 +4,7 @@
   <section class="BannerSlideshow">
     <div class="VungAnToan">
       <div class="KhungVuaSlide">
-        <div class="DanhSachSlide" [style.transform]="'translateX(-' + (slideIndex() * 1200) + 'px)'">
+        <div class="DanhSachSlide" [style.transform]="'translateX(-' + (slideIndex() * 100) + '%)'">
           @for (anh of slideAnh; track anh) {
           <div class="SlideItem"><img [src]="anh" alt="Promotional banner"></div>
           }
