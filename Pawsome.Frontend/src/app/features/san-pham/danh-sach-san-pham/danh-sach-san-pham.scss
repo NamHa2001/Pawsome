@@ -195,10 +195,11 @@
 
 .NutMoBoLoc { display: none; }
 
-// Tablet + Mobile: sidebar ẩn mặc định, bấm nút Filters mới hiện (đè lên trên, không đẩy layout)
-// - bộ lọc gốc dạng list dọc quá dài (Category+Condition+Brand+Price+Rating cộng lại hàng nghìn
-// px) nên đổi sang dạng "chip" nằm ngang cho gọn, xem lại đủ trong khi vẫn cuộn được. Luôn giữ 2
-// sản phẩm/hàng (không rớt về 1) (YPCN-4.2).
+// Tablet + Mobile: sidebar ẩn mặc định, bấm nút Filters mới hiện - nằm trong flow bình thường
+// (đẩy danh sách sản phẩm xuống khi mở, không phải overlay đè lên trên) và tự đóng lại ngay khi
+// áp dụng/xóa lọc (xem apDungBoLoc/xoaLoc). Bộ lọc gốc dạng list dọc quá dài (Category+Condition+
+// Brand+Price+Rating cộng lại hàng nghìn px) nên đổi sang dạng "chip" nằm ngang cho gọn, xem lại
+// đủ trong khi vẫn cuộn được. Luôn giữ 2 sản phẩm/hàng (không rớt về 1) (YPCN-4.2).
 @media (max-width: 1024px) {
   .ThanhDieuHuongPhu { justify-content: space-between; padding: 16px 20px; }
   .KhungBreadcrumb { width: auto; max-width: none; padding: 0; }

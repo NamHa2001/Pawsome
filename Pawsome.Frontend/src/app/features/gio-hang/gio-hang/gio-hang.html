@@ -16,10 +16,15 @@
     
     <!-- 2. Trạng thái Báo lỗi -->
     @else if (loi()) {
-      <div class="VungAnToan">
-        <p class="ThongBaoLoi">{{ loi() }}</p>
+      <div class="VungAnToan KhungGioHangTrong">
+        <div class="TrangThaiTrong">
+          <p class="ThongBaoLoi">{{ loi() }}</p>
+          @if (!daDangNhap()) {
+            <a routerLink="/tai-khoan/dang-nhap" class="NutChinh">Sign In</a>
+          }
+        </div>
       </div>
-    } 
+    }
 
     <!-- 3. Trạng thái Giỏ hàng trống -->
     @else if (!gioHang() || gioHang()!.items.length === 0) {

@@ -207,9 +207,13 @@
 
 .CumNutPhanTrang { display: flex; flex-wrap: wrap; gap: 8px; }
 
+// Padding mở sớm hơn (900px) để khớp các section khác cùng trang chi tiết sản phẩm (YPCN-4.2).
+@media (max-width: 900px) {
+  .KhungSanPham { padding: 0 20px; }
+}
+
 // Cột review + cột chỉ số phụ (65%/30%) dồn dọc, sort-by/phân trang căn giữa (YPCN-4.2).
 @media (max-width: 768px) {
-  .KhungSanPham { padding: 0 20px; }
   .TieuDeLonReview { font-size: 26px; margin-bottom: 30px; }
   .KhoiReviewCaNhan { flex-direction: column; }
   .PhanNoiDungReview, .PhanChiSoReview { width: 100%; }

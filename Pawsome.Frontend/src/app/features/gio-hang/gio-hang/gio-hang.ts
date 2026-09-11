@@ -105,6 +105,12 @@ export class GioHangComponent {
   }
 
   taiGioHang(): void {
+    if (!this.daDangNhap()) {
+      this.loi.set('Please sign in to view your cart.');
+      this.dangTai.set(false);
+      return;
+    }
+
     this.dangTai.set(true);
     this.loi.set(null);
     this.cartService.layGioHang().subscribe({
