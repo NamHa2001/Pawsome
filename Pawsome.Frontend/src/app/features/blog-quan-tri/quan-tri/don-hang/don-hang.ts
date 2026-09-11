@@ -35,6 +35,9 @@ export class QuanTriDonHang {
   readonly moRong = signal<number | null>(null);
   readonly trangThaiLoc = signal('');
 
+  donViVanChuyenNhap = 'GHTK';
+  maVanDonNhap = '';
+
   // Đến từ link "View all orders" ở trang nguoi-dung (?userId=...) - lọc bảng theo đúng khách
   // đó, khác trangThaiLoc chỉ set qua UI dropdown ở trang này.
   readonly userIdLoc = signal<number | null>(null);
@@ -122,6 +125,45 @@ export class QuanTriDonHang {
         this.ketThucCapNhat(order.orderId);
       }
     });
+  }
+
+  duyetTraHang(order: AdminOrder, dongY: boolean): void {
+    if (this.dangCapNhatDong(order.orderId)) return;
+
+    this.loiHanhDong.set(null);
+    this.dangCapNhat.update(ds => new Set(ds).add(order.orderId));
+
+    this.adminOrderService.duyetTraHang(order.orderId, dongY).subscribe({
+      next: ketQua => {
+        this.danhSach.update(ds => ds.map(o => o.orderId === ketQua.orderId ? ketQua : o));
+        this.ketThucCapNhat(order.orderId);
+      },
+      error: err => {
+        this.loiHanhDong.set(err?.error?.message ?? 'Failed to process the return request.');
+        this.ketThucCapNhat(order.orderId);
+      }
+    });
+  }
+
+  capNhatVanDon(order: AdminOrder): void {
+    if (this.dangCapNhatDong(order.orderId) || !this.maVanDonNhap.trim()) return;
+
+    this.loiHanhDong.set(null);
+    this.dangCapNhat.update(ds => new Set(ds).add(order.orderId));
+
+    this.adminOrderService
+      .capNhatVanDon(order.orderId, this.donViVanChuyenNhap, this.maVanDonNhap.trim())
+      .subscribe({
+        next: ketQua => {
+          this.danhSach.update(ds => ds.map(o => o.orderId === ketQua.orderId ? ketQua : o));
+          this.maVanDonNhap = '';
+          this.ketThucCapNhat(order.orderId);
+        },
+        error: err => {
+          this.loiHanhDong.set(err?.error?.message ?? 'Failed to save shipping info.');
+          this.ketThucCapNhat(order.orderId);
+        }
+      });
   }
 
   orderStatusLabel = orderStatusLabel;

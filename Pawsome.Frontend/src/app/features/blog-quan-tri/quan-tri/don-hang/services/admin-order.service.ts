@@ -30,4 +30,16 @@ export class AdminOrderService {
       .put<ApiResponse<AdminOrder>>(`${this.baseUrl}/${orderId}/status`, { trangThaiMoi })
       .pipe(map(res => res.data!));
   }
+
+  duyetTraHang(orderId: number, dongY: boolean): Observable<AdminOrder> {
+    return this.http
+      .put<ApiResponse<AdminOrder>>(`${this.baseUrl}/${orderId}/return-decision`, { dongY })
+      .pipe(map(res => res.data!));
+  }
+
+  capNhatVanDon(orderId: number, donViVanChuyen: string, maVanDon: string): Observable<AdminOrder> {
+    return this.http
+      .put<ApiResponse<AdminOrder>>(`${this.baseUrl}/${orderId}/shipping`, { donViVanChuyen, maVanDon })
+      .pipe(map(res => res.data!));
+  }
 }

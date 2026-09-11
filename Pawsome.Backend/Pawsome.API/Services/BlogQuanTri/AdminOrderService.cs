@@ -23,4 +23,10 @@ public class AdminOrderService : IAdminOrderService
 
     public Task<OrderDto> UpdateStatusAsync(int orderId, string trangThaiMoi) =>
         _orderService.UpdateTrangThaiAsync(orderId, trangThaiMoi);
+
+    public Task<OrderDto> DuyetTraHangAsync(int orderId, bool dongY) =>
+        _orderService.DuyetTraHangAsync(orderId, dongY);
+
+    public Task<OrderDto> CapNhatVanDonAsync(int orderId, UpdateShippingRequestDto dto) =>
+        _orderService.CapNhatVanDonAsync(orderId, dto);
 }

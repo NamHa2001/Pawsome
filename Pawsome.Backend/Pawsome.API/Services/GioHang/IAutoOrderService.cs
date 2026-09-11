@@ -10,5 +10,11 @@ namespace Pawsome.API.Services.GioHang
         Task TamDungAsync(int userId, int id);
         Task KichHoatAsync(int userId, int id);
         Task HuyAsync(int userId, int id);
+
+        // Dùng bởi AutoOrderProcessingService (BackgroundService chạy định kỳ) - đúng YC-6.1
+        // (tự tạo đơn khi tới hạn) và YC-6.3 (nhắc nhở trước khi xử lý). Trả về số lượng đã xử
+        // lý được để ghi log/theo dõi.
+        Task<int> XuLyDonDenHanAsync();
+        Task<int> GuiNhacNhoTruocHanAsync(int soNgayTruoc);
     }
 }

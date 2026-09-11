@@ -9,6 +9,7 @@ using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using Google.Apis.Auth;
 using Pawsome.API.Common.Email;
+using Pawsome.API.Services.DonHang;
 
 namespace Pawsome.API.Services.TaiKhoan;
 
@@ -22,8 +23,9 @@ public class AuthService : IAuthService
     private readonly IConfiguration _configuration;
     private readonly string _googleClientId;
     private readonly IEmailService _emailService;
+    private readonly IPawPointsService _pawPointsService;
 
-    public AuthService(PawsomeDbContext dbContext,IPasswordHasher passwordHasher,IJwtTokenGenerator jwtTokenGenerator,IConfiguration configuration,IEmailService emailService)
+    public AuthService(PawsomeDbContext dbContext,IPasswordHasher passwordHasher,IJwtTokenGenerator jwtTokenGenerator,IConfiguration configuration,IEmailService emailService,IPawPointsService pawPointsService)
     {
         _dbContext = dbContext;
         _passwordHasher = passwordHasher;
@@ -31,6 +33,7 @@ public class AuthService : IAuthService
         _configuration = configuration;
         _googleClientId = configuration["GoogleAuth:ClientId"]!;
         _emailService = emailService;
+        _pawPointsService = pawPointsService;
     }
 
     public async Task<AuthResponseDto> RegisterAsync(RegisterRequestDto dto)
@@ -53,6 +56,8 @@ public class AuthService : IAuthService
 
         _dbContext.Users.Add(user);
         await _dbContext.SaveChangesAsync();
+
+        await _pawPointsService.CongDiemThuongDangKyAsync(user.UserId);
 
         var token = _jwtTokenGenerator.GenerateToken(user.UserId, user.Email, "Customer");
 
@@ -216,6 +221,7 @@ public class AuthService : IAuthService
             await _dbContext.SaveChangesAsync();
 
             await _dbContext.Entry(user).Reference(u => u.Role).LoadAsync();
+            await _pawPointsService.CongDiemThuongDangKyAsync(user.UserId);
         }
 
         if (user.TrangThai == "locked")

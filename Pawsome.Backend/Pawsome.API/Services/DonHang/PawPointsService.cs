@@ -62,7 +62,7 @@ public class PawPointsService : IPawPointsService
         };
     }
 
-    private const decimal VndMoiDiem = 1000m;
+    private const decimal VndMoiDiem = 10000m;
 
     public async Task<decimal> KiemTraVaTinhQuyDoiAsync(int userId, int soDiemMuonDoi)
     {

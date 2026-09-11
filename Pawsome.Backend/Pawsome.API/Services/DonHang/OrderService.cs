@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Pawsome.API.Common;
 using Pawsome.API.Common.AuditLog;
+using Pawsome.API.Common.Email;
 using Pawsome.API.DTOs.DonHang;
 using Pawsome.API.Services.GioHang;
 using Pawsome.API.Services.SanPham;
@@ -17,10 +18,11 @@ public class OrderService : IOrderService
     private readonly ICartService _cartService;
     private readonly ICouponService _couponService;
     private readonly IPawPointsService _pawPointsService;
+    private readonly IEmailService _emailService;
 
     public OrderService(PawsomeDbContext dbContext, IProductService productService,
         IAuditLogService auditLogService, ICartService cartService, ICouponService couponService,
-        IPawPointsService pawPointsService)
+        IPawPointsService pawPointsService, IEmailService emailService)
     {
         _dbContext = dbContext;
         _productService = productService;
@@ -28,6 +30,26 @@ public class OrderService : IOrderService
         _cartService = cartService;
         _couponService = couponService;
         _pawPointsService = pawPointsService;
+        _emailService = emailService;
+    }
+
+    // Gửi email nền (không chờ SMTP để tránh chặn response) - email tham số phải được lấy
+    // TRƯỚC khi gọi hàm này (không truy cập _dbContext bên trong Task.Run, vì DbContext theo
+    // scope request sẽ bị dispose khi response đã trả về trước khi email gửi xong).
+    private void GuiEmailNen(string? email, string tieuDe, string noiDung)
+    {
+        if (string.IsNullOrWhiteSpace(email)) return;
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                await _emailService.SendAsync(email, tieuDe, noiDung);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Lỗi gửi email thông báo đơn hàng: {ex.Message}");
+            }
+        });
     }
 
     public async Task<OrderDto> CreateFromCartAsync(int userId, CreateOrderRequestDto dto)
@@ -150,7 +172,7 @@ public class OrderService : IOrderService
             }
 
             var tienHangThucChi = Math.Max(0, tienHang - giamGia);
-            var soDiemTich = (int)(tienHangThucChi / 1000);
+            var soDiemTich = (int)(tienHangThucChi / 10000);
             if (soDiemTich > 0)
             {
                 _dbContext.PawPointsTransactions.Add(new PawPointsTransaction
@@ -193,7 +215,115 @@ public class OrderService : IOrderService
             throw;
         }
 
+        var emailXacNhan = await _dbContext.Users
+            .Where(u => u.UserId == userId).Select(u => u.Email).FirstOrDefaultAsync();
+        GuiEmailNen(emailXacNhan, $"Xác nhận đơn hàng #{newOrderId} - Pawsome",
+            $"Cảm ơn bạn đã đặt hàng tại Pawsome!<br><br>" +
+            $"Đơn hàng #{newOrderId} đã được ghi nhận, thành tiền {thanhTien:N0}đ.<br>" +
+            "Vui lòng đăng nhập Pawsome, vào mục Lịch sử đơn hàng để theo dõi và hoàn tất thanh toán (nếu chưa thanh toán).<br><br>" +
+            "Trân trọng,<br>Pawsome");
+
         return await GetByIdAsync(userId, newOrderId) ?? throw new InvalidOperationException("Lỗi tạo đơn hàng.");
+    }
+
+    public async Task<OrderDto?> TaoDonTuAutoOrderAsync(int userId, int variantId, int soLuong)
+    {
+        var variant = await _dbContext.ProductVariants
+            .Include(v => v.Product)
+            .FirstOrDefaultAsync(v => v.VariantId == variantId);
+
+        if (variant == null || !variant.DangKinhDoanh || variant.SoLuongTon < soLuong)
+            return null;
+
+        var address = await _dbContext.Addresses
+            .Where(a => a.UserId == userId)
+            .OrderByDescending(a => a.LaMacDinh)
+            .FirstOrDefaultAsync();
+        if (address == null)
+            return null;
+
+        var tienHang = variant.Gia * soLuong;
+        var homNay = DateOnly.FromDateTime(DateTime.UtcNow);
+
+        var pawVipInfo = await _dbContext.Users
+            .Where(u => u.UserId == userId)
+            .Select(u => new { u.PawVipTier, u.PawVipHetHan })
+            .FirstOrDefaultAsync();
+
+        decimal giamGiaPawVip = 0;
+        var pawVipConHieuLuc = pawVipInfo != null
+            && PawVipTiers.ConHieuLuc(pawVipInfo.PawVipTier, pawVipInfo.PawVipHetHan, homNay);
+        if (pawVipConHieuLuc && PawVipTiers.PhanTramGiam.TryGetValue(pawVipInfo!.PawVipTier!, out var phanTramPawVip))
+        {
+            giamGiaPawVip = Math.Round(tienHang * phanTramPawVip, 0);
+        }
+        var mienPhiShipPawVip = pawVipConHieuLuc && PawVipTiers.TierMienPhiShip.Contains(pawVipInfo!.PawVipTier!);
+
+        // Auto-order không cho khách chọn đơn vị vận chuyển lúc thiết lập - mặc định GHTK (tiêu chuẩn).
+        var phiCoBanTheoTinh = address.TinhThanh.Trim().Equals("Hồ Chí Minh", StringComparison.OrdinalIgnoreCase)
+            || address.TinhThanh.Trim().Equals("Hà Nội", StringComparison.OrdinalIgnoreCase)
+            ? 20000m : 35000m;
+        var phiVanChuyen = mienPhiShipPawVip ? 0m : phiCoBanTheoTinh;
+
+        var giamGia = Math.Min(giamGiaPawVip, tienHang);
+        var thanhTien = Math.Max(0, tienHang + phiVanChuyen - giamGia);
+
+        await using var transaction = await _dbContext.Database.BeginTransactionAsync();
+        int newOrderId;
+        try
+        {
+            var order = new Order
+            {
+                UserId = userId,
+                AddressId = address.AddressId,
+                CouponId = null,
+                NgayDat = DateTime.UtcNow,
+                TienHang = tienHang,
+                PhiVanChuyen = phiVanChuyen,
+                GiamGia = giamGia,
+                ThanhTien = thanhTien,
+                TrangThai = OrderStatus.ChoXuLy,
+                DonViVanChuyen = "GHTK",
+                NgayCapNhat = DateTime.UtcNow,
+                OrderItems = new List<OrderItem>
+                {
+                    new() { VariantId = variantId, SoLuong = soLuong, DonGia = variant.Gia }
+                }
+            };
+
+            _dbContext.Orders.Add(order);
+            await _dbContext.SaveChangesAsync();
+
+            await _productService.TruTonKhoAsync(variantId, soLuong);
+
+            var tienHangThucChi = Math.Max(0, tienHang - giamGia);
+            var soDiemTich = (int)(tienHangThucChi / 10000);
+            if (soDiemTich > 0)
+            {
+                _dbContext.PawPointsTransactions.Add(new PawPointsTransaction
+                {
+                    UserId = userId,
+                    OrderId = order.OrderId,
+                    SoDiem = soDiemTich,
+                    Loai = "earn",
+                    NgayGiaoDich = DateTime.UtcNow
+                });
+                await _dbContext.SaveChangesAsync();
+            }
+
+            await _auditLogService.LogAsync(userId, "TAO_DON_TU_AUTO_ORDER", "orders", order.OrderId,
+                $"Tự động tạo đơn từ đặt hàng tự động (variant {variantId} x{soLuong}), thành tiền {thanhTien:N0}đ");
+
+            await transaction.CommitAsync();
+            newOrderId = order.OrderId;
+        }
+        catch
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
+
+        return await GetByIdAsync(userId, newOrderId);
     }
 
     public async Task<PagedResult<OrderDto>> GetByUserAsync(int userId, OrderFilterRequestDto filter)
@@ -212,10 +342,12 @@ public class OrderService : IOrderService
         var soDong = filter.PageSize < 1 ? 10 : Math.Min(filter.PageSize, 50);
 
         var items = await query.Skip((trang - 1) * soDong).Take(soDong).ToListAsync();
+        var dtoItems = items.Select(MapToDto).ToList();
+        await GanCoTheThanhToanAsync(dtoItems);
 
         return new PagedResult<OrderDto>
         {
-            Items = items.Select(MapToDto).ToList(),
+            Items = dtoItems,
             TotalCount = tongSo,
             PageNumber = trang,
             PageSize = soDong
@@ -228,7 +360,29 @@ public class OrderService : IOrderService
             .Include(o => o.OrderItems).ThenInclude(oi => oi.Variant).ThenInclude(v => v.Product)
             .FirstOrDefaultAsync(o => o.OrderId == orderId && o.UserId == userId);
 
-        return order == null ? null : MapToDto(order);
+        if (order == null) return null;
+
+        var dto = MapToDto(order);
+        await GanCoTheThanhToanAsync(new List<OrderDto> { dto });
+        return dto;
+    }
+
+    // Đơn còn ở cho_xu_ly VÀ chưa có giao dịch thanh toán nào thành công thì mới cho phép bấm
+    // "Thanh toán ngay" - dùng 1 truy vấn gộp cho cả danh sách, tránh N+1.
+    private async Task GanCoTheThanhToanAsync(List<OrderDto> orders)
+    {
+        var choXuLyIds = orders.Where(o => o.TrangThai == OrderStatus.ChoXuLy).Select(o => o.OrderId).ToList();
+        if (choXuLyIds.Count == 0) return;
+
+        var daThanhToanIds = await _dbContext.Payments
+            .Where(p => choXuLyIds.Contains(p.OrderId) && p.TrangThai == PaymentStatus.ThanhCong)
+            .Select(p => p.OrderId)
+            .Distinct()
+            .ToListAsync();
+        var daThanhToanSet = daThanhToanIds.ToHashSet();
+
+        foreach (var o in orders.Where(o => o.TrangThai == OrderStatus.ChoXuLy))
+            o.CoTheThanhToan = !daThanhToanSet.Contains(o.OrderId);
     }
 
     public async Task<PagedResult<OrderDto>> GetAllAsync(OrderFilterRequestDto filter)
@@ -315,6 +469,10 @@ public class OrderService : IOrderService
         await _dbContext.SaveChangesAsync();
         await _auditLogService.LogAsync(userId, "HUY_DON_HANG", "orders", orderId, dto.LyDo);
 
+        var emailHuy = await _dbContext.Users.Where(u => u.UserId == userId).Select(u => u.Email).FirstOrDefaultAsync();
+        GuiEmailNen(emailHuy, $"Đơn hàng #{orderId} đã được hủy - Pawsome",
+            $"Đơn hàng #{orderId} của bạn đã được hủy thành công.<br><br>Trân trọng,<br>Pawsome");
+
         return MapToDto(order);
     }
 
@@ -332,6 +490,12 @@ public class OrderService : IOrderService
 
         order.TrangThai = trangThaiMoi;
         await _dbContext.SaveChangesAsync();
+
+        var emailDoiTrangThai = await _dbContext.Users
+            .Where(u => u.UserId == order.UserId).Select(u => u.Email).FirstOrDefaultAsync();
+        GuiEmailNen(emailDoiTrangThai, $"Cập nhật trạng thái đơn hàng #{orderId} - Pawsome",
+            $"Đơn hàng #{orderId} của bạn vừa được cập nhật trạng thái: <b>{trangThaiMoi}</b>.<br><br>" +
+            "Vui lòng đăng nhập Pawsome, vào mục Lịch sử đơn hàng để xem chi tiết.<br><br>Trân trọng,<br>Pawsome");
 
         return MapToDto(order);
     }
@@ -377,6 +541,12 @@ public class OrderService : IOrderService
         order.MaVanDon = dto.MaVanDon;
         order.TrangThai = OrderStatus.DaGiaoVan;
         await _dbContext.SaveChangesAsync();
+
+        var emailVanDon = await _dbContext.Users
+            .Where(u => u.UserId == order.UserId).Select(u => u.Email).FirstOrDefaultAsync();
+        GuiEmailNen(emailVanDon, $"Đơn hàng #{orderId} đã được giao vận - Pawsome",
+            $"Đơn hàng #{orderId} của bạn đã được bàn giao cho đơn vị vận chuyển <b>{dto.DonViVanChuyen}</b>, " +
+            $"mã vận đơn: <b>{dto.MaVanDon}</b>.<br><br>Trân trọng,<br>Pawsome");
 
         return MapToDto(order);
     }
@@ -442,6 +612,16 @@ public class OrderService : IOrderService
         }
 
         await _dbContext.SaveChangesAsync();
+
+        var emailTraHang = await _dbContext.Users
+            .Where(u => u.UserId == order.UserId).Select(u => u.Email).FirstOrDefaultAsync();
+        GuiEmailNen(emailTraHang,
+            dongY ? $"Yêu cầu trả hàng đơn #{orderId} đã được duyệt - Pawsome"
+                  : $"Yêu cầu trả hàng đơn #{orderId} đã bị từ chối - Pawsome",
+            dongY
+                ? $"Yêu cầu trả hàng cho đơn #{orderId} đã được chấp thuận. Số tiền/điểm liên quan sẽ được hoàn lại.<br><br>Trân trọng,<br>Pawsome"
+                : $"Yêu cầu trả hàng cho đơn #{orderId} đã bị từ chối. Vui lòng liên hệ bộ phận hỗ trợ nếu cần thêm thông tin.<br><br>Trân trọng,<br>Pawsome");
+
         return MapToDto(order);
     }
 
