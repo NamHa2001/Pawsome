@@ -140,7 +140,8 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
 }
 
 .NutShopNowGrid {
-  width: 190px;
+  width: 100%;
+  max-width: 190px;
   height: 44px;
   background-color: #A51F1F;
   color: #fff;

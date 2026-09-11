@@ -124,6 +124,38 @@
   text-align: left;
 }
 
+// Style item dùng chung cho danh sách link ở cả tab Products lẫn Information - layout lưới
+// (số cột) tách riêng theo từng tab vì Products chỉ có 4 mục (2 cột) còn Information có 16 mục
+// chia sẵn 3 cột (3 <ul> riêng, xem .LuoiInfoFooter) nên không dùng chung 1 kiểu lưới được.
+.DanhSachSPFooter {
+  list-style: none;
+
+  li { margin-bottom: 10px; }
+
+  a {
+    color: var(--MauTrang);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+
+    i { color: #FFD700; font-size: 11px; margin-right: 6px; }
+
+    &:hover { text-decoration: underline; }
+  }
+}
+
+// Giới hạn 12 sản phẩm tên ngắn nhất (xem footer.ts) - đủ để chia 3 cột như bản Information.
+// li không cần margin-bottom riêng nữa vì grid gap đã lo khoảng cách dòng - để cả 2 thành dư.
+.LuoiSPNoiBatFooter {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px 20px;
+
+  li { margin-bottom: 0; }
+}
+
+.LuoiInfoFooter { display: flex; gap: 80px; }
+
 .CotPhaiFooter {
   width: 40%;
   text-align: right;
@@ -181,6 +213,13 @@
 .AnhPayment {
   height: 25px;
   width: auto;
+}
+
+// height:auto phải mở sớm hơn (1024px) so với các rule dồn cột (768px) bên dưới - ở khoảng
+// 769-1024px, 2 cột 55/40 đã hẹp hơn desktop nên nội dung cần nhiều chiều cao hơn 566px cố định,
+// dù chưa tới ngưỡng dồn dọc hẳn (YPCN-4.2).
+@media (max-width: 1024px) {
+  .ChanTrang { height: auto; }
 }
 
 // Chiều cao 566px cố định + 2 cột 55/40 chỉ đúng ở desktop - mobile nội dung dồn dọc nên cần
