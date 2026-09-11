@@ -1,0 +1,110 @@
+.TieuDeTrang {
+  margin-bottom: 22px;
+
+  h1 { font-size: 24px; font-weight: 800; color: var(--MauDen); margin: 0 0 4px; }
+}
+
+.MoTaTrang { font-size: 14px; color: #888; margin: 0; }
+
+.ThongBaoRong { color: #999; font-size: 14px; text-align: center; padding: 50px 22px; margin: 0; }
+.ThongBaoLoi { color: #b91c1c; }
+
+.TheQuanTri {
+  background: var(--MauTrang);
+  border-radius: 0.35rem;
+  box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+  overflow: hidden;
+}
+
+.TieuDeThe {
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid #F0E5E5;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--MauDoDam);
+}
+
+.TieuDeTheBoLoc {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.KhoiBoLoc {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ChonBoLoc {
+  border: 1px solid #E0D0D0;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 13px;
+  color: var(--MauDen);
+  background: var(--MauTrang);
+}
+
+.ThanThe { padding: 0; }
+
+.BangCuon { overflow-x: auto; }
+
+.BangDonHang {
+  width: 100%;
+  border-collapse: collapse;
+
+  th, td {
+    text-align: left;
+    padding: 14px 22px;
+    border-bottom: 1px solid #F5EBEB;
+    vertical-align: top;
+    white-space: nowrap;
+  }
+
+  th {
+    background: var(--MauHongNhat);
+    color: var(--MauDoDam);
+    font-weight: 700;
+    font-size: 13px;
+    text-transform: uppercase;
+  }
+
+  tbody tr:hover td { background: #FFFAFA; }
+}
+
+.NutXemChiTiet, .NutXoaBoLoc {
+  border: 1px solid var(--MauDoDam);
+  background: transparent;
+  color: var(--MauDoDam);
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+
+  &:hover { background: var(--MauHongNhat); }
+}
+
+.PhanTrang {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  padding: 18px 22px;
+
+  button {
+    border: 1px solid #E0D0D0;
+    background: var(--MauTrang);
+    border-radius: 6px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-size: 13px;
+
+    &:disabled { opacity: 0.5; cursor: not-allowed; }
+    &.active { background: var(--MauDoDam); color: var(--MauTrang); border-color: var(--MauDoDam); }
+    &:hover:not(:disabled):not(.active) { background: var(--MauHongNhat); }
+  }
+}
