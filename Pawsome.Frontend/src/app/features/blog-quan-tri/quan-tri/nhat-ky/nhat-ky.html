@@ -1,0 +1,69 @@
+<div class="TieuDeTrang">
+  <h1>System Log</h1>
+  <p class="MoTaTrang">Audit trail of important user, transaction and admin actions.</p>
+</div>
+
+<div class="TheQuanTri">
+  <div class="TieuDeThe TieuDeTheBoLoc">
+    <span>Activity</span>
+    <div class="KhoiBoLoc">
+      <input
+        type="text"
+        class="ChonBoLoc"
+        placeholder="Filter by action..."
+        [(ngModel)]="hanhDongLoc"
+        (keyup.enter)="apDungBoLoc()" />
+      <input type="date" class="ChonBoLoc" [(ngModel)]="tuNgayLoc" (change)="apDungBoLoc()" />
+      <input type="date" class="ChonBoLoc" [(ngModel)]="denNgayLoc" (change)="apDungBoLoc()" />
+      <button type="button" class="NutXemChiTiet" (click)="apDungBoLoc()">Search</button>
+      <button type="button" class="NutXoaBoLoc" (click)="xoaBoLoc()">Clear</button>
+    </div>
+  </div>
+
+  <div class="ThanThe">
+    @if (dangTai()) {
+      <p class="ThongBaoRong">Loading...</p>
+    } @else if (loiTai()) {
+      <p class="ThongBaoRong ThongBaoLoi">{{ loiTai() }}</p>
+    } @else if (danhSach().length === 0) {
+      <p class="ThongBaoRong">No log entries found.</p>
+    } @else {
+      <div class="BangCuon">
+        <table class="BangDonHang">
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>User</th>
+              <th>Action</th>
+              <th>Object</th>
+              <th>Detail</th>
+              <th>IP</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (log of danhSach(); track log.logId) {
+              <tr>
+                <td>{{ log.ngayTao | date:'dd/MM/yyyy HH:mm' }}</td>
+                <td>{{ log.hoTenNguoiDung || (log.userId ? ('User #' + log.userId) : 'System') }}</td>
+                <td>{{ log.hanhDong }}</td>
+                <td>{{ log.doiTuong }}{{ log.doiTuongId ? ' #' + log.doiTuongId : '' }}</td>
+                <td>{{ log.chiTiet }}</td>
+                <td>{{ log.diaChiIp }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      @if (tongTrang() > 1) {
+        <div class="PhanTrang">
+          <button type="button" [disabled]="trang() === 1" (click)="doiTrang(trang() - 1)">Prev</button>
+          @for (t of cacTrang(); track t) {
+            <button type="button" [class.active]="trang() === t" (click)="doiTrang(t)">{{ t }}</button>
+          }
+          <button type="button" [disabled]="trang() === tongTrang()" (click)="doiTrang(trang() + 1)">Next</button>
+        </div>
+      }
+    }
+  </div>
+</div>

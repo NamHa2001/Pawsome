@@ -51,6 +51,11 @@ export const routes: Routes = [
         path: 'blog',
         canActivate: [roleGuard('Admin')],
         loadComponent: () => import('./quan-tri/blog/quan-tri-blog').then(m => m.QuanTriBlog)
+      },
+      {
+        path: 'nhat-ky',
+        canActivate: [roleGuard('Admin')],
+        loadComponent: () => import('./quan-tri/nhat-ky/nhat-ky').then(m => m.QuanTriNhatKy)
       }
     ]
   }
