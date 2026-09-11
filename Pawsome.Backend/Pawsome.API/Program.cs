@@ -171,6 +171,7 @@ builder.Services.AddScoped<IRecaptchaService, RecaptchaService>();
 builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<ICouponService, CouponService>();
 builder.Services.AddScoped<IAutoOrderService, AutoOrderService>();
+builder.Services.AddHostedService<AutoOrderProcessingService>(); // Job nền xử lý auto-order tới hạn + nhắc nhở (YC-6.1/6.3)
 builder.Services.AddScoped<IPawVipService, PawVipService>();
 builder.Services.AddScoped<IPawVipPaymentService, PawVipPaymentService>();
 // Phần 4 - Đơn hàng:       

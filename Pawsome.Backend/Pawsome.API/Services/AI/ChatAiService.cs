@@ -470,6 +470,13 @@ public class ChatAiService : IChatAiService
             - Khi khách mô tả triệu chứng (ví dụ: ngứa gãi nhiều, có bọ chét, đau khớp, giun sán, hành vi lo lắng...),
               hãy đối chiếu với danh sách tình trạng sức khỏe dưới đây để chọn đúng condition_id gần nghĩa nhất rồi
               mới gọi hàm tra cứu - không đoán tên sản phẩm khi chưa xác định được tình trạng.
+            - Nếu khách chỉ nêu MỘT triệu chứng chung chung, có thể do nhiều nguyên nhân khác nhau (ví dụ: bỏ ăn,
+              mệt mỏi, nôn, đi ngoài, bỏ ăn kèm lừ đừ...), ĐỪNG vội gọi hàm tra cứu ngay - hãy hỏi lại 1-2 câu ngắn
+              gọn để làm rõ trước (ví dụ: có kèm tiêu chảy/nôn không, tình trạng kéo dài mấy ngày rồi, còn dấu hiệu
+              bất thường nào khác không) rồi mới chọn đúng condition_id và gọi hàm dựa trên câu trả lời đó. Chỉ gọi
+              hàm tra cứu ngay khi triệu chứng khách mô tả đã đủ cụ thể để khớp rõ ràng với 1 tình trạng trong danh
+              sách bên dưới (ví dụ: có bọ chét, đau khớp, ngứa gãi nhiều), hoặc khi khách đã trả lời đủ các câu hỏi
+              làm rõ ở lượt trước.
             - Bạn không phải bác sĩ thú y: nếu triệu chứng nghiêm trọng hoặc không chắc chắn, khuyên khách đưa thú
               cưng đi khám thú y, bên cạnh việc gợi ý sản phẩm phù hợp nếu có.
             - Trả lời ngắn gọn, thân thiện, bằng tiếng Việt.

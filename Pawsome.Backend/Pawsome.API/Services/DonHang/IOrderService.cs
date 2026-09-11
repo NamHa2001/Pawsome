@@ -6,6 +6,15 @@ namespace Pawsome.API.Services.DonHang;
 public interface IOrderService
 {
     Task<OrderDto> CreateFromCartAsync(int userId, CreateOrderRequestDto dto);
+
+    // Dùng bởi AutoOrderProcessingService (Phần 3) khi 1 đơn đặt hàng tự động tới hạn - tạo
+    // đơn 1 sản phẩm trực tiếp, KHÔNG qua giỏ hàng thật (tránh xoá/ảnh hưởng giỏ hàng khách
+    // đang dùng dở). Dùng địa chỉ mặc định của khách; trả về null nếu hết hàng hoặc khách
+    // chưa có địa chỉ nào - AutoOrderProcessingService tự quyết định xử lý tiếp (giữ nguyên
+    // NgayKeTiep để thử lại lần chạy sau). Không tự động thanh toán - hệ thống không lưu
+    // thẻ/token, đơn tạo ra ở trạng thái chờ xử lý như đơn thường, khách phải tự hoàn tất
+    // thanh toán sau khi nhận email.
+    Task<OrderDto?> TaoDonTuAutoOrderAsync(int userId, int variantId, int soLuong);
     Task<PagedResult<OrderDto>> GetByUserAsync(int userId, OrderFilterRequestDto filter);
     Task<OrderDto?> GetByIdAsync(int userId, int orderId);
 

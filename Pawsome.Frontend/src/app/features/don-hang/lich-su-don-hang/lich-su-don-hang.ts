@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Order } from '../thanh-toan/models/thanh-toan.model';
 import { OrderService } from '../thanh-toan/services/order.service';
+import { PaymentService } from '../thanh-toan/services/payment.service';
 import {
   ORDER_STATUS_FILTERS, OrderStatus, canCancelOrder, canRequestReturn,
   orderStatusCssClass, orderStatusLabel
@@ -20,6 +21,10 @@ type ActionType = 'cancel' | 'return';
 })
 export class LichSuDonHangComponent {
   private readonly orderService = inject(OrderService);
+  private readonly paymentService = inject(PaymentService);
+
+  readonly payingOrderId = signal<number | null>(null);
+  readonly payError = signal<string | null>(null);
 
   readonly statusFilters = ORDER_STATUS_FILTERS;
   readonly orderStatusLabel = orderStatusLabel;
@@ -85,6 +90,25 @@ export class LichSuDonHangComponent {
 
   toggleExpand(orderId: number): void {
     this.expandedOrderId.set(this.expandedOrderId() === orderId ? null : orderId);
+  }
+
+  payNow(orderId: number, method: 'momo' | 'vnpay'): void {
+    this.payingOrderId.set(orderId);
+    this.payError.set(null);
+
+    const request$ = method === 'momo'
+      ? this.paymentService.createMoMoPayment(orderId)
+      : this.paymentService.createVnPayPayment(orderId);
+
+    request$.subscribe({
+      next: result => {
+        window.location.href = result.payUrl;
+      },
+      error: err => {
+        this.payingOrderId.set(null);
+        this.payError.set(err?.error?.message ?? 'Could not start payment. Please try again.');
+      }
+    });
   }
 
   openAction(orderId: number, type: ActionType): void {

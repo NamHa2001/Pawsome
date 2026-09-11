@@ -55,4 +55,41 @@ public class AdminOrderController : ControllerBase
             return BadRequest(ApiResponse<OrderDto>.Fail(ex.Message));
         }
     }
+
+    [HttpPut("{id}/return-decision")]
+    public async Task<IActionResult> DuyetTraHang(int id, [FromBody] ReturnDecisionRequestDto dto)
+    {
+        try
+        {
+            var result = await _adminOrderService.DuyetTraHangAsync(id, dto.DongY);
+            return Ok(ApiResponse<OrderDto>.Ok(result,
+                dto.DongY ? "Đã duyệt yêu cầu trả hàng." : "Đã từ chối yêu cầu trả hàng."));
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(ApiResponse<OrderDto>.Fail(ex.Message));
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ApiResponse<OrderDto>.Fail(ex.Message));
+        }
+    }
+
+    [HttpPut("{id}/shipping")]
+    public async Task<IActionResult> CapNhatVanDon(int id, [FromBody] UpdateShippingRequestDto dto)
+    {
+        try
+        {
+            var result = await _adminOrderService.CapNhatVanDonAsync(id, dto);
+            return Ok(ApiResponse<OrderDto>.Ok(result, "Đã cập nhật thông tin vận chuyển."));
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(ApiResponse<OrderDto>.Fail(ex.Message));
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ApiResponse<OrderDto>.Fail(ex.Message));
+        }
+    }
 }

@@ -99,6 +99,34 @@
                           <span>Tracking: {{ order.maVanDon }} ({{ order.donViVanChuyen }})</span>
                         }
                       </div>
+
+                      @if (order.trangThai === 'cho_tra_hang') {
+                        <div class="DongTraHang">
+                          <button type="button" class="NutXemChiTiet" [disabled]="dangCapNhatDong(order.orderId)"
+                                  (click)="duyetTraHang(order, true)">
+                            Approve Return
+                          </button>
+                          <button type="button" class="NutXemChiTiet" [disabled]="dangCapNhatDong(order.orderId)"
+                                  (click)="duyetTraHang(order, false)">
+                            Reject Return
+                          </button>
+                        </div>
+                      }
+
+                      @if (!order.maVanDon && (order.trangThai === 'cho_xu_ly' || order.trangThai === 'dang_xu_ly')) {
+                        <div class="DongVanDon">
+                          <select class="ChonBoLoc" [(ngModel)]="donViVanChuyenNhap">
+                            <option value="GHTK">GHTK</option>
+                            <option value="GHN">GHN</option>
+                            <option value="Viettel Post">Viettel Post</option>
+                          </select>
+                          <input type="text" placeholder="Tracking code" [(ngModel)]="maVanDonNhap" />
+                          <button type="button" class="NutXemChiTiet" [disabled]="dangCapNhatDong(order.orderId)"
+                                  (click)="capNhatVanDon(order)">
+                            Save Tracking
+                          </button>
+                        </div>
+                      }
                     </div>
                   </td>
                 </tr>

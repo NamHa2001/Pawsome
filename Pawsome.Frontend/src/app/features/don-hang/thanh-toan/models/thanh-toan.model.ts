@@ -22,6 +22,7 @@ export interface Order {
   trangThai: string;
   donViVanChuyen: string | null;
   maVanDon: string | null;
+  coTheThanhToan: boolean;
   orderItems: OrderItem[];
 }
 
