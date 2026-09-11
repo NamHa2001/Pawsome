@@ -40,6 +40,10 @@
   right: 0;
   width: 350px;
   height: 450px;
+  // .CumChatAI bottom:100px + .CuaSoChat bottom:80px + height 450px = mép trên khung chat cách
+  // đáy màn hình 630px. Header cao 195px (45+100+50) nên cần trừ đủ 100+80+195+10(đệm) = 385px,
+  // không phải chỉ 220px như lần trước (tính thiếu 2 khoảng bottom nên chưa siết được) (YPCN-4.2).
+  max-height: calc(100vh - 385px);
   background: white;
   border-radius: 20px;
   box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);

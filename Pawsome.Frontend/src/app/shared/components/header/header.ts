@@ -36,7 +36,7 @@ export class Header {
 
   readonly daCuonQua200 = signal(false);
   readonly danHeader = signal(false);
-  
+
   // Tự động nhận giá trị items.length từ CartService
   readonly soLuongGioHang = this.cartService.soLuongGioHang;
 

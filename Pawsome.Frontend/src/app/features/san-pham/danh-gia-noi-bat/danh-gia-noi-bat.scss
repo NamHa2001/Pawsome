@@ -173,3 +173,13 @@
   font-size: 13px;
   color: #777;
 }
+
+// minmax(420px,580px) không co được dưới 420px nên tràn ngang trên điện thoại - mobile chuyển
+// 1 cột, thêm padding 2 bên (VungAnToanDoc gốc không có padding) (YPCN-4.2).
+@media (max-width: 900px) {
+  .HangTieuDeNoiBat, .LuoiDanhGiaNoiBat { padding: 0 20px; }
+  .LuoiDanhGiaNoiBat { grid-template-columns: 1fr; }
+  .TieuDeDanhGia { font-size: 26px; }
+  .TheDanhGiaNoiBat { padding: 20px; gap: 16px; }
+  .AnhSPNoiBat { width: 100px; height: 100px; min-width: 100px; }
+}

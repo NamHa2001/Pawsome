@@ -47,6 +47,12 @@ export class DanhSachSanPham implements OnInit {
 
   readonly boLoc = signal<BoLocSanPham>({ page: 1, pageSize: 12 });
 
+  readonly hienBoLoc = signal(false);
+
+  moDongBoLoc(): void {
+    this.hienBoLoc.update(v => !v);
+  }
+
   ngOnInit(): void {
     this.categoryService.getAll().subscribe(ds => this.danhMucList.set(ds));
     this.brandService.getAll().subscribe(ds => this.thuongHieuList.set(ds));
@@ -81,6 +87,7 @@ export class DanhSachSanPham implements OnInit {
   apDungBoLoc(thayDoi: Partial<BoLocSanPham>): void {
     const moi = { ...this.boLoc(), ...thayDoi, page: 1 };
     this.router.navigate([], { relativeTo: this.route, queryParams: this.thanhQueryParams(moi) });
+    this.hienBoLoc.set(false);
   }
 
   doiTrang(trang: number): void {
@@ -91,6 +98,7 @@ export class DanhSachSanPham implements OnInit {
 
   xoaLoc(): void {
     this.router.navigate([], { relativeTo: this.route, queryParams: {} });
+    this.hienBoLoc.set(false);
   }
 
   readonly dangThemGioNhanh = signal(false);

@@ -11,7 +11,7 @@
 .TongSoReview { color: #555; font-weight: 600; margin-bottom: 20px; }
 
 .HangSao { display: flex; align-items: center; gap: 15px; margin-bottom: 8px; font-size: 14px; font-weight: 700; color: #2F2D2E; }
-.ThanhPhanTram { width: 200px; height: 8px; background: #F0F0F0; border-radius: 4px; overflow: hidden; }
+.ThanhPhanTram { flex: 1; max-width: 200px; height: 8px; background: #F0F0F0; border-radius: 4px; overflow: hidden; }
 .MucDo { height: 100%; background: #FFA500; }
 
 .CotOverallRating { flex: 1; text-align: center; }
@@ -50,4 +50,13 @@
 
   &:hover { background-color: #C62828; transform: translateY(-2px); }
   &:disabled { opacity: 0.6; cursor: default; transform: none; }
+}
+
+// 3 cột (tóm tắt sao/điểm tổng/nút viết review) dồn dọc, LuoiChiTieu 3 chỉ tiêu xuống 1 cột (YPCN-4.2).
+@media (max-width: 768px) {
+  .KhungTongQuanReview { flex-direction: column; align-items: stretch; gap: 25px; }
+  .CotOverallRating, .CotWriteReview { justify-content: center; }
+  .DiemSo { font-size: 44px; }
+  .LuoiChiTieu { flex-direction: column; gap: 20px; }
+  .ItemChiTieu { width: 100%; }
 }

@@ -64,7 +64,11 @@ export class TrangChu implements OnInit, OnDestroy {
 
     this.brandService.getAll().subscribe(ds => this.thuongHieuList.set(ds.slice(0, 6)));
 
-    this.timerSlide = setInterval(() => this.doiSlide(1), 10000);
+    // BannerSlideshow ẩn hẳn ở mobile (trang-chu.scss, ≤900px) - không chạy timer vô ích khi
+    // slideshow không hề hiển thị.
+    if (window.matchMedia('(min-width: 901px)').matches) {
+      this.timerSlide = setInterval(() => this.doiSlide(1), 10000);
+    }
   }
 
   ngOnDestroy(): void {

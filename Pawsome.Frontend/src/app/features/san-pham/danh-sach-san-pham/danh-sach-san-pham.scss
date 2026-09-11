@@ -10,7 +10,8 @@
 }
 
 .KhungBreadcrumb {
-  width: 1200px;
+  width: 100%;
+  max-width: 1200px;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -27,12 +28,13 @@
 }
 
 .KhungTrangDanhSach {
-  width: 1200px;
+  width: 100%;
+  max-width: 1200px;
   margin: 0 auto;
+  padding: 0 0 60px;
   display: flex;
   gap: 30px;
   align-items: flex-start;
-  padding-bottom: 60px;
 }
 
 .SidebarLoc {
@@ -165,6 +167,7 @@
   font-size: 16px;
   font-weight: 600;
   color: var(--MauDen);
+  white-space: nowrap;
 }
 
 .GiaMoiHang {
@@ -178,12 +181,74 @@
   font-size: 16px;
   font-weight: 600;
   color: var(--MauDoDam);
+  white-space: nowrap;
 }
 
-.VipIconGrid { height: 25px; cursor: pointer; }
+.VipIconGrid { height: 25px; cursor: pointer; flex-shrink: 0; }
 
 .VungPhanTrang {
   display: flex;
   justify-content: center;
+  flex-wrap: wrap;
   gap: 8px;
+}
+
+.NutMoBoLoc { display: none; }
+
+// Tablet + Mobile: sidebar ẩn mặc định, bấm nút Filters mới hiện - nằm trong flow bình thường
+// (đẩy danh sách sản phẩm xuống khi mở, không phải overlay đè lên trên) và tự đóng lại ngay khi
+// áp dụng/xóa lọc (xem apDungBoLoc/xoaLoc). Bộ lọc gốc dạng list dọc quá dài (Category+Condition+
+// Brand+Price+Rating cộng lại hàng nghìn px) nên đổi sang dạng "chip" nằm ngang cho gọn, xem lại
+// đủ trong khi vẫn cuộn được. Luôn giữ 2 sản phẩm/hàng (không rớt về 1) (YPCN-4.2).
+@media (max-width: 1024px) {
+  .ThanhDieuHuongPhu { justify-content: space-between; padding: 16px 20px; }
+  .KhungBreadcrumb { width: auto; max-width: none; padding: 0; }
+
+  .NutMoBoLoc {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: var(--MauDoDam);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+  }
+
+  .KhungTrangDanhSach { flex-direction: column; padding-left: 20px; padding-right: 20px; }
+
+  .SidebarLoc {
+    display: none;
+    width: 100%;
+    margin-bottom: 20px;
+
+    &.MoTrenMobile { display: block; }
+  }
+
+  .KhoiLoc { margin-bottom: 16px; }
+
+  .DanhSachLoc {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+
+    li { padding: 6px 14px; border-radius: 20px; background: var(--MauTrang); font-size: 13px; }
+  }
+
+  .KhungDanhSachSP { grid-template-columns: repeat(2, 1fr); }
+  // .TenSanPhamGrid gốc (styles.scss) chỉ chừa chỗ 2 dòng - card hẹp lại 2 cột khiến tên dài xuống
+  // 3 dòng, đẩy lệch giá/nút so với card tên ngắn cùng hàng - chừa sẵn chỗ 3 dòng để đồng bộ.
+  .TenSanPhamGrid { min-height: 66px; }
+}
+
+@media (max-width: 560px) {
+  .KhungBreadcrumb, .KhungTrangDanhSach { padding-left: 14px; padding-right: 14px; }
+  .KhungDanhSachSP { gap: 14px; }
+  .GiaChinhGrid, .GiaMoiGrid { font-size: 14px; }
+  .VipIconGrid { height: 20px; }
+  .SidebarLoc { padding: 14px; }
+  .KhoiLoc { margin-bottom: 18px; }
 }

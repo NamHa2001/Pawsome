@@ -82,6 +82,7 @@
 
 .KhungTimKiem {
   width: 498px;
+  max-width: 100%;
   height: 35px;
   background-color: var(--MauTrang);
   border-radius: 25px;
@@ -171,7 +172,8 @@
   border: none;
   outline: none;
   background: none;
-  width: 100%;
+  flex: 1;
+  min-width: 0;
   padding: 0 15px;
   font-size: 14px;
   color: #888;
@@ -429,4 +431,35 @@
   font-size: 12px;
   font-weight: 600;
   color: #999;
+}
+
+// Ẩn hotline/khuyến mại icon để đủ chỗ 1 hàng (YPCN-4.2).
+@media (max-width: 900px) {
+  .KhungChinhDauTrang .VungAnToan,
+  .ThanhTrenCung .VungAnToan,
+  .ThanhDieuHuong .VungAnToan {
+    padding: 0 14px;
+  }
+
+  .CumHotline { display: none; }
+  .KhungLogo { flex-shrink: 0; }
+  .AnhLogo { height: 30px; }
+  .KhungTimKiem { width: auto; flex: 1 1 auto; min-width: 0; margin: 0 8px; }
+  .CumTienIch { gap: 14px; flex-shrink: 0; }
+  .VongTronIconDo { width: 34px; height: 34px; font-size: 15px; }
+  .ThongBaoSoLuong { width: 15px; height: 15px; font-size: 9px; }
+  .DanhSachThongTin { flex-wrap: wrap; row-gap: 4px; }
+  .MucThongTin { font-size: 13px; padding: 0 10px; }
+
+  // Menu chính hiện thẳng 1 hàng cuộn ngang (không hamburger/dropdown) - bấm vào đi thẳng trang
+  // tương ứng. Giữ Shop by Pet/Condition/Brands trên mobile - bỏ Blog/What's New (user yêu cầu).
+  .DanhSachMenuChinh { overflow-x: auto; flex-wrap: nowrap; }
+  .LienKetChinh { padding: 0 16px; white-space: nowrap; }
+  .KhungMenuCon, .KhuyenMaiMenu { display: none; }
+  .MucMenuChinh:nth-child(n+4) { display: none; }
+}
+
+@media (max-width: 480px) {
+  .MucThongTin { font-size: 12px; padding: 0 8px; border-right: none; }
+  .AnhLogo { height: 26px; }
 }

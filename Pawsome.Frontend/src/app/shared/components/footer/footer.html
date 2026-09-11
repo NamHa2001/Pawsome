@@ -18,16 +18,88 @@
 
     <div class="KhungNoiDungThayDoi">
       <div class="CotTraiFooter">
-        <div class="TabHienThi active">
-          <span class="NhanTieuDe">About Us</span>
-          <p class="VanBanMoTa">
-            Welcome to PawSome.com - your one-stop destination for all your pet care needs!
-            We offer an extensive selection of premium products, from dog and cat care essentials
-            to horse health supplies, bird supplies, and small pet healthcare products.
-            As a leading online pet store, we're committed to delivering top-quality pet supplies
-            at unbeatable prices, ensuring your beloved pets get the best care possible.
-          </p>
-        </div>
+        @if (tabDangChon() === 'about-us') {
+          <div class="TabHienThi active">
+            <span class="NhanTieuDe">About Us</span>
+            <p class="VanBanMoTa">
+              Welcome to PawSome.com - your one-stop destination for all your pet care needs!
+              We offer an extensive selection of premium products, from dog and cat care essentials
+              to horse health supplies, bird supplies, and small pet healthcare products.
+              As a leading online pet store, we're committed to delivering top-quality pet supplies
+              at unbeatable prices, ensuring your beloved pets get the best care possible.
+            </p>
+          </div>
+        } @else if (tabDangChon() === 'products') {
+          <div class="TabHienThi active">
+            <span class="NhanTieuDe">Products</span>
+            <ul class="DanhSachSPFooter LuoiSPNoiBatFooter">
+              @for (sp of sanPhamNoiBatFooter(); track sp.productId) {
+                <li>
+                  <a [routerLink]="['/san-pham', sp.productId]">
+                    <i class="fa-solid fa-chevron-right"></i> {{ sp.ten }}
+                  </a>
+                </li>
+              }
+            </ul>
+          </div>
+        } @else if (tabDangChon() === 'info') {
+          <div class="TabHienThi active">
+            <span class="NhanTieuDe">Information</span>
+            <div class="LuoiInfoFooter">
+              <ul class="DanhSachSPFooter">
+                <li><a href="#"><i class="fa-solid fa-chevron-right"></i> About Us</a></li>
+                <li><a href="#"><i class="fa-solid fa-chevron-right"></i> Contact Us</a></li>
+                <li><a href="#"><i class="fa-solid fa-chevron-right"></i> FAQ</a></li>
+                <li><a href="#"><i class="fa-solid fa-chevron-right"></i> How To Order</a></li>
+                <li><a href="#"><i class="fa-solid fa-chevron-right"></i> Our Guarantee</a></li>
+              </ul>
+              <ul class="DanhSachSPFooter">
+                <li><a href="#"><i class="fa-solid fa-chevron-right"></i> Shipping Policy</a></li>
+                <li><a href="#"><i class="fa-solid fa-chevron-right"></i> Privacy Policy</a></li>
+                <li><a href="#"><i class="fa-solid fa-chevron-right"></i> Terms of Use</a></li>
+                <li><a href="#"><i class="fa-solid fa-chevron-right"></i> PetCare+ Membership</a></li>
+                <li><a routerLink="/gio-hang/dat-hang-tu-dong"><i class="fa-solid fa-chevron-right"></i> Auto Order</a></li>
+                <li><a routerLink="/don-hang/pawpoints"><i class="fa-solid fa-chevron-right"></i> Paw Points</a></li>
+              </ul>
+              <ul class="DanhSachSPFooter">
+                <li><a href="#"><i class="fa-solid fa-chevron-right"></i> Sitemap</a></li>
+                <li><a href="#"><i class="fa-solid fa-chevron-right"></i> Affiliates</a></li>
+                <li><a routerLink="/blog"><i class="fa-solid fa-chevron-right"></i> Blog</a></li>
+                <li><a href="#"><i class="fa-solid fa-chevron-right"></i> Testimonials</a></li>
+                <li><a routerLink="/don-hang/theo-doi"><i class="fa-solid fa-chevron-right"></i> Track Order</a></li>
+              </ul>
+            </div>
+          </div>
+        } @else if (tabDangChon() === 'categories') {
+          <div class="TabHienThi active">
+            <span class="NhanTieuDe">Categories</span>
+            <div class="LuoiInfoFooter">
+              <ul class="DanhSachSPFooter">
+                <li><a [routerLink]="['/san-pham']" [queryParams]="{ categoryId: 1 }"><i class="fa-solid fa-chevron-right"></i> Dog Supplies</a></li>
+                <li><a [routerLink]="['/san-pham']" [queryParams]="{ categoryId: 2 }"><i class="fa-solid fa-chevron-right"></i> Cat Supplies</a></li>
+                <li><a href="#"><i class="fa-solid fa-chevron-right"></i> Homeopathy</a></li>
+                <li><a [routerLink]="['/san-pham']" [queryParams]="{ categoryId: 4 }"><i class="fa-solid fa-chevron-right"></i> Bird Supplies</a></li>
+                <li><a [routerLink]="['/san-pham']" [queryParams]="{ categoryId: 3 }"><i class="fa-solid fa-chevron-right"></i> Horse Supplies</a></li>
+                <li><a href="#"><i class="fa-solid fa-chevron-right"></i> Supplements</a></li>
+                <li><a href="#"><i class="fa-solid fa-chevron-right"></i> Pet Hygiene</a></li>
+              </ul>
+              <ul class="DanhSachSPFooter">
+                <li><a [routerLink]="['/san-pham']" [queryParams]="{ conditionId: 1 }"><i class="fa-solid fa-chevron-right"></i> Flea, Tick</a></li>
+                <li><a [routerLink]="['/san-pham']" [queryParams]="{ conditionId: 2 }"><i class="fa-solid fa-chevron-right"></i> Dewormers</a></li>
+                <li><a [routerLink]="['/san-pham']" [queryParams]="{ conditionId: 5 }"><i class="fa-solid fa-chevron-right"></i> Skin & Coat</a></li>
+                <li><a [routerLink]="['/san-pham']" [queryParams]="{ conditionId: 4 }"><i class="fa-solid fa-chevron-right"></i> Joint Care</a></li>
+                <li><a href="#"><i class="fa-solid fa-chevron-right"></i> Dietary & Nutrition</a></li>
+              </ul>
+              <ul class="DanhSachSPFooter">
+                <li><a [routerLink]="['/san-pham']" [queryParams]="{ conditionId: 6 }"><i class="fa-solid fa-chevron-right"></i> Training, Behaviour</a></li>
+                <li><a [routerLink]="['/san-pham']" [queryParams]="{ conditionId: 3 }"><i class="fa-solid fa-chevron-right"></i> Heartworms</a></li>
+                <li><a href="#"><i class="fa-solid fa-chevron-right"></i> Eye & Ear</a></li>
+                <li><a href="#"><i class="fa-solid fa-chevron-right"></i> Urinary Incontinence</a></li>
+                <li><a href="#"><i class="fa-solid fa-chevron-right"></i> Oral Hygiene</a></li>
+              </ul>
+            </div>
+          </div>
+        }
       </div>
 
       <div class="CotPhaiFooter">

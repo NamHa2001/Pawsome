@@ -4,7 +4,8 @@
 }
 
 .KhungSanPham {
-  width: 1200px;
+  width: 100%;
+  max-width: 1200px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -124,7 +125,7 @@
 }
 
 .KhungBannerSP {
-  width: 1200px;
+  width: 100%;
   margin: 10px 0 30px 0;
 }
 
@@ -182,7 +183,7 @@
   }
 }
 
-.NoiDungChiTietSP { width: 100%; padding: 0 20px 50px 20px; }
+.NoiDungChiTietSP { width: 100%; padding: 0 0 50px 0; }
 .TieuDeSanphamChinh { color: var(--MauDen); font-size: 24px; font-weight: 800; margin-bottom: 20px; }
 .TieuDePhuDetail { color: var(--MauDen); font-size: 18px; font-weight: 700; margin: 30px 0 15px 0; }
 .DoanVanDetail { color: #444; line-height: 1.8; font-size: 15px; margin-bottom: 15px; text-align: justify; white-space: pre-line; }
@@ -208,4 +209,25 @@
   }
 
   td { color: #555; font-weight: 500; }
+}
+
+// Padding mở sớm hơn (900px) so với rule xếp dọc (768px) bên dưới - để khớp các section khác của
+// cùng trang chi tiết sản phẩm (banner-vip, đánh giá nổi bật...) cũng đổi padding ở mốc 900px,
+// tránh khoảng 769-899px một số khối có padding, khối khác chưa (YPCN-4.2).
+@media (max-width: 900px) {
+  .KhungSanPham { padding: 0 20px; }
+}
+
+@media (max-width: 768px) {
+  .HangTieuDeChinh { flex-direction: column; gap: 20px; }
+  .KhoiBenPhai { align-items: flex-start; width: 100%; }
+  .TenSanPham { font-size: 24px; }
+  .KhungVungTabChon { overflow-x: auto; }
+  .NutTab { flex: 0 0 auto; white-space: nowrap; padding: 14px 20px; }
+  .BangThongSoKyThuat th, .BangThongSoKyThuat td { padding: 10px 8px; font-size: 12px; }
+}
+
+@media (max-width: 480px) {
+  .KhungSanPham { padding: 0 14px; }
+  .NutTab { padding: 12px 14px; font-size: 14px; }
 }
