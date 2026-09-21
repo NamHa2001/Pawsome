@@ -68,13 +68,19 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-// ── CORS (cho phép Angular dev server gọi API) ────────────────────────────
+// ── CORS (cho phép Angular gọi API) ───────────────────────────────────────
+// Nguồn được phép lấy từ Cors:AllowedOrigins trong appsettings; không khai báo thì chỉ cho Angular dev server.
 const string AngularDevCorsPolicy = "AngularDevCors";
+var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>();
+if (allowedOrigins is not { Length: > 0 })
+{
+    allowedOrigins = new[] { "http://localhost:4200" };
+}
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(AngularDevCorsPolicy, policy =>
     {
-        policy.WithOrigins("http://localhost:4200")
+        policy.WithOrigins(allowedOrigins)
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
