@@ -1,5 +1,5 @@
 import { DecimalPipe } from '@angular/common';
-import { Component, HostListener, computed, effect, inject, signal } from '@angular/core';
+import { Component, DestroyRef, HostListener, computed, effect, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -34,6 +34,19 @@ export class Header {
   readonly hienDropdownTaiKhoan = signal(false);
   readonly hienDropdownDangNhap = signal(false);
 
+  // Mobile: "Shop by Pet"/"Shop by Condition"/"Brands" trước đây bấm là điều hướng thẳng, không xổ
+  // menu con ra được (menu con .KhungMenuCon chỉ hiện qua :hover - không có trên cảm ứng). Giờ bấm
+  // để xổ/đóng menu con (giống các dropdown khác trong header), chỉ 1 menu mở tại 1 thời điểm -
+  // lưu index (0/1/2) của .MucMenuChinh đang mở, null = không mở cái nào.
+  readonly mucMenuMoTrenMobile = signal<number | null>(null);
+
+  // routerLink là directive riêng, tự lắng nghe click và tự điều hướng qua Router API - gọi
+  // event.preventDefault()/stopPropagation() trong (click) handler của mình KHÔNG chặn được nó (2
+  // listener độc lập trên cùng 1 phần tử). Phải tắt hẳn routerLink trên mobile ([routerLink]="null"
+  // = Angular tự hiểu là không điều hướng) thay vì cố chặn sau khi nó đã tự gọi navigate().
+  private readonly mqMobileNav = window.matchMedia('(max-width: 900px)');
+  readonly laMobileNav = signal(this.mqMobileNav.matches);
+
   readonly daCuonQua200 = signal(false);
   readonly danHeader = signal(false);
 
@@ -48,6 +61,13 @@ export class Header {
   private readonly tuKhoaGoiY$ = new Subject<string>();
 
   constructor(private readonly router: Router) {
+    // Header bị tạo/hủy lại theo mỗi lần đổi trang (mỗi trang tự khai <app-header/> riêng, không
+    // nằm ngoài router-outlet) - phải tự gỡ listener khi hủy, không thì mỗi lần đổi trang lại cộng
+    // dồn thêm 1 listener resize không bao giờ được gỡ.
+    const capNhatMobileNav = (e: MediaQueryListEvent) => this.laMobileNav.set(e.matches);
+    this.mqMobileNav.addEventListener('change', capNhatMobileNav);
+    inject(DestroyRef).onDestroy(() => this.mqMobileNav.removeEventListener('change', capNhatMobileNav));
+
     this.brandService.getAll().subscribe(ds => this.danhSachThuongHieu.set(ds));
 
     effect(() => {
@@ -105,6 +125,20 @@ export class Header {
       this.hienDropdownTaiKhoan.set(false);
       this.hienDropdownDangNhap.set(false);
     }
+    if (!target.closest('.MucMenuChinh')) {
+      this.mucMenuMoTrenMobile.set(null);
+    }
+  }
+
+  // Chỉ chặn điều hướng + xổ menu con trên mobile (<=900px, đúng mốc menu chuyển sang dạng cuộn
+  // ngang trong header.scss) - ở desktop vẫn bấm là đi thẳng trang như cũ, menu con vẫn hiện qua
+  // :hover như cũ, không đổi hành vi.
+  toggleMenuConMobile(index: number, event: MouseEvent): void {
+    if (!window.matchMedia('(max-width: 900px)').matches) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+    this.mucMenuMoTrenMobile.update(v => (v === index ? null : index));
   }
 
   toggleDropdownTaiKhoan(event: MouseEvent): void {

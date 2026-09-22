@@ -92,16 +92,25 @@
   }
 }
 
+// Giờ là nút "Apply Filters" duy nhất cho cả panel (trước đây chỉ áp dụng riêng giá) - căn giữa
+// icon + chữ, cách nút "Clear Filters" bên dưới 1 khoảng như 2 nút hành động ngang hàng nhau.
 .NutApDungGia {
   width: 100%;
-  padding: 8px;
+  padding: 10px;
   background: var(--MauDoDam);
   color: white;
   border: none;
   border-radius: 6px;
   font-weight: 600;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 10px;
+
+  &:hover { background: #FF7A00; }
 }
 
 .NutXoaLoc {

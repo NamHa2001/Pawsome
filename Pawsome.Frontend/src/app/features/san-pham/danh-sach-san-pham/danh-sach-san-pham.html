@@ -18,9 +18,9 @@
       <div class="KhoiLoc">
         <h3 class="TieuDeLoc">Category</h3>
         <ul class="DanhSachLoc">
-          <li [class.active]="!boLoc().categoryId" (click)="apDungBoLoc({ categoryId: undefined })">All</li>
+          <li [class.active]="!boLocTam().categoryId" (click)="capNhatLocTam({ categoryId: undefined })">All</li>
           @for (dm of danhMucList(); track dm.categoryId) {
-            <li [class.active]="boLoc().categoryId === dm.categoryId" (click)="apDungBoLoc({ categoryId: dm.categoryId })">
+            <li [class.active]="boLocTam().categoryId === dm.categoryId" (click)="capNhatLocTam({ categoryId: dm.categoryId })">
               {{ dichTenDanhMuc(dm.tenDanhMuc) }}
             </li>
           }
@@ -30,9 +30,9 @@
       <div class="KhoiLoc">
         <h3 class="TieuDeLoc">Condition</h3>
         <ul class="DanhSachLoc">
-          <li [class.active]="!boLoc().conditionId" (click)="apDungBoLoc({ conditionId: undefined })">All</li>
+          <li [class.active]="!boLocTam().conditionId" (click)="capNhatLocTam({ conditionId: undefined })">All</li>
           @for (tt of tinhTrangList(); track tt.conditionId) {
-            <li [class.active]="boLoc().conditionId === tt.conditionId" (click)="apDungBoLoc({ conditionId: tt.conditionId })">
+            <li [class.active]="boLocTam().conditionId === tt.conditionId" (click)="capNhatLocTam({ conditionId: tt.conditionId })">
               {{ tt.tenTinhTrang }}
             </li>
           }
@@ -42,9 +42,9 @@
       <div class="KhoiLoc">
         <h3 class="TieuDeLoc">Brand</h3>
         <ul class="DanhSachLoc">
-          <li [class.active]="!boLoc().brandId" (click)="apDungBoLoc({ brandId: undefined })">All</li>
+          <li [class.active]="!boLocTam().brandId" (click)="capNhatLocTam({ brandId: undefined })">All</li>
           @for (th of thuongHieuList(); track th.brandId) {
-            <li [class.active]="boLoc().brandId === th.brandId" (click)="apDungBoLoc({ brandId: th.brandId })">
+            <li [class.active]="boLocTam().brandId === th.brandId" (click)="capNhatLocTam({ brandId: th.brandId })">
               {{ th.tenThuongHieu }}
             </li>
           }
@@ -54,27 +54,27 @@
       <div class="KhoiLoc">
         <h3 class="TieuDeLoc">Price Range (vnd)</h3>
         <div class="HangGiaLoc">
-          <input type="number" placeholder="Min" #giaMin [value]="boLoc().giaMin ?? ''">
+          <input type="number" placeholder="Min" #giaMin [value]="boLocTam().giaMin ?? ''">
           <span>-</span>
-          <input type="number" placeholder="Max" #giaMax [value]="boLoc().giaMax ?? ''">
+          <input type="number" placeholder="Max" #giaMax [value]="boLocTam().giaMax ?? ''">
         </div>
-        <button class="NutApDungGia" (click)="apDungBoLoc({ giaMin: giaMin.valueAsNumber || undefined, giaMax: giaMax.valueAsNumber || undefined })">
-          Apply
-        </button>
       </div>
 
       <div class="KhoiLoc">
         <h3 class="TieuDeLoc">Minimum Rating</h3>
         <ul class="DanhSachLoc">
-          <li [class.active]="!boLoc().danhGiaMin" (click)="apDungBoLoc({ danhGiaMin: undefined })">All</li>
+          <li [class.active]="!boLocTam().danhGiaMin" (click)="capNhatLocTam({ danhGiaMin: undefined })">All</li>
           @for (sao of [4, 3, 2, 1]; track sao) {
-            <li [class.active]="boLoc().danhGiaMin === sao" (click)="apDungBoLoc({ danhGiaMin: sao })">
+            <li [class.active]="boLocTam().danhGiaMin === sao" (click)="capNhatLocTam({ danhGiaMin: sao })">
               {{ sao }} <i class="fa-solid fa-star icon-sao-nho"></i> & up
             </li>
           }
         </ul>
       </div>
 
+      <button class="NutApDungGia" (click)="apDungLoc(giaMin.valueAsNumber, giaMax.valueAsNumber)">
+        <i class="fa-solid fa-check"></i> Apply Filters
+      </button>
       <button class="NutXoaLoc" (click)="xoaLoc()"><i class="fa-solid fa-rotate-left"></i> Clear Filters</button>
     </aside>
 
