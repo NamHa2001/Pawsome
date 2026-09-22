@@ -50,10 +50,11 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
   align-items: center;
 }
 
+// Không cần margin-top bù chiều cao header nữa - header giờ position:sticky (header.scss), tự
+// chiếm đúng không gian thật của nó trong luồng layout, không "thoát luồng" như fixed trước đây.
 .NoiDungChinh {
   flex: 1;
   width: 100%;
-  margin-top: 195px;
 }
 
 // Dùng kèm .VungAnToan cho các trang có nội dung xếp dọc (khác kiểu hàng ngang

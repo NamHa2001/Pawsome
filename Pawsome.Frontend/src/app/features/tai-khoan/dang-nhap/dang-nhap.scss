@@ -17,10 +17,13 @@
   font-family: 'Sora', sans-serif;
 }
 
+// Không cần margin-top bù chiều cao header nữa - header giờ position:sticky, tự chiếm đúng không
+// gian thật của nó trong luồng layout (header.scss). min-height vẫn trừ --header-height để trang
+// ngắn nội dung không đẩy footer lên giữa màn hình.
 .auth-page {
   width: 100%;
   max-width: 1512px;
-  margin: var(--header-height) auto 0;
+  margin: 0 auto;
   display: grid;
   grid-template-columns: 1fr 1fr;
   min-height: calc(100vh - var(--header-height));
@@ -294,7 +297,6 @@ app-chat-ai {
   .auth-page {
     width: 100%;
     grid-template-columns: 1fr;
-    margin-top: var(--header-height);
     min-height: calc(100vh - var(--header-height));
   }
   .brand-panel {
@@ -310,9 +312,6 @@ app-chat-ai {
 }
 
 @media (max-width: 600px) {
-  .auth-page {
-    margin-top: var(--header-height);
-  }
   .form-panel {
     padding: 35px 20px;
   }
