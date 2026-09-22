@@ -200,7 +200,8 @@ var app = builder.Build();
 // ── Middleware pipeline ────────────────────────────────────────────────────
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
-if (app.Environment.IsDevelopment())
+// Swagger luôn bật khi Development; môi trường khác chỉ bật khi Swagger:Enabled = true trong appsettings.
+if (app.Environment.IsDevelopment() || app.Configuration.GetValue<bool>("Swagger:Enabled"))
 {
     app.UseSwagger();
     app.UseSwaggerUI(options =>
