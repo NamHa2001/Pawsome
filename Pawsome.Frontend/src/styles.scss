@@ -136,7 +136,12 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
   color: #000;
   margin-bottom: 15px;
   text-align: center;
-  min-height: 44px;
+  line-height: 1.3;
+  height: 2.6em;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
 .NutShopNowGrid {
