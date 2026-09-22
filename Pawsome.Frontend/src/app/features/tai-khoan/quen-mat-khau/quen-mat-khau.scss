@@ -17,10 +17,12 @@
   font-family: 'Sora', sans-serif;
 }
 
+// Không cần margin-top bù chiều cao header nữa - header giờ position:sticky, tự chiếm đúng không
+// gian thật của nó trong luồng layout (header.scss).
 .auth-page.single-column {
   width: 100%;
   max-width: 1512px;
-  margin: var(--header-height) auto 0;
+  margin: 0 auto;
   min-height: calc(100vh - var(--header-height));
   background-color: var(--clr-page-bg);
   box-sizing: border-box;
@@ -153,7 +155,6 @@ app-chat-ai { position: relative; z-index: 2000; }
 
 @media (max-width: 860px) {
   .auth-page.single-column {
-    margin-top: var(--header-height);
     min-height: calc(100vh - var(--header-height));
   }
   .form-panel {

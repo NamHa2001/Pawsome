@@ -2,13 +2,18 @@
   display: contents;
 }
 
+// position: sticky (không phải fixed) - fixed định vị theo toàn bộ viewport (tính cả phần dành
+// cho scrollbar dù đã ẩn), tách khỏi luồng layout bình thường của trang -> width bị lệch vài px so
+// với phần thân/footer (vốn tính theo width thật của nội dung, không tính scrollbar), và phải bù
+// margin-top cố định 195px ở mọi nơi khác (dễ sai khi header cao hơn 195px thật, vd trên mobile
+// khi ThanhTrenCung tự xuống dòng). sticky vẫn dính trên đầu khi cuộn y hệt fixed (không có vùng
+// cuộn lồng nhau nào khác trong app), nhưng nằm trong luồng bình thường nên tự khớp width với phần
+// thân và tự chiếm đúng chiều cao thật của nó - không cần con số 195px cố định ở đâu nữa.
 .DauTrang {
   width: 100%;
   max-width: 1512px;
-  position: fixed;
+  position: sticky;
   top: 0;
-  left: 0;
-  right: 0;
   margin: 0 auto;
   z-index: 1000;
   background-color: var(--MauTrang);
@@ -451,10 +456,14 @@
   .DanhSachThongTin { flex-wrap: wrap; row-gap: 4px; }
   .MucThongTin { font-size: 13px; padding: 0 10px; }
 
-  // Menu chính hiện thẳng 1 hàng cuộn ngang (không hamburger/dropdown) - bấm vào đi thẳng trang
-  // tương ứng. Giữ Shop by Pet/Condition/Brands trên mobile - bỏ Blog/What's New (user yêu cầu).
-  .DanhSachMenuChinh { overflow-x: auto; flex-wrap: nowrap; }
-  .LienKetChinh { padding: 0 16px; white-space: nowrap; }
+  // Menu chính hiện thẳng 1 hàng (không hamburger/dropdown) - bấm vào đi thẳng trang tương ứng.
+  // Giữ Shop by Pet/Condition/Brands trên mobile - bỏ Blog/What's New (user yêu cầu). Trước đây
+  // để overflow-x:auto (cuộn ngang) vì padding/font cố định không đủ chỗ cho cả 3 mục - giờ đổi
+  // padding/font sang clamp() (co theo tỉ lệ màn hình) + dàn đều justify-content:space-between để
+  // vừa khít 1 hàng, không cần cuộn nữa (user yêu cầu). Vẫn giữ overflow-x:auto làm lưới an toàn
+  // cho trường hợp màn cực hẹp ngoài dự kiến, dù thực tế không còn cần tới.
+  .DanhSachMenuChinh { width: 100%; justify-content: space-between; overflow-x: auto; flex-wrap: nowrap; }
+  .LienKetChinh { padding: 0 clamp(4px, 2vw, 16px); white-space: nowrap; font-size: clamp(12px, 3.5vw, 15px); }
   .KhungMenuCon, .KhuyenMaiMenu { display: none; }
   .MucMenuChinh:nth-child(n+4) { display: none; }
 }

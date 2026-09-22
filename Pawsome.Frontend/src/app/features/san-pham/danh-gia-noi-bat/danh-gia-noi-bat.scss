@@ -180,6 +180,10 @@
   .HangTieuDeNoiBat, .LuoiDanhGiaNoiBat { padding: 0 20px; }
   .LuoiDanhGiaNoiBat { grid-template-columns: 1fr; }
   .TieuDeDanhGia { font-size: 26px; }
-  .TheDanhGiaNoiBat { padding: 20px; gap: 16px; }
+  // Grid item mặc định min-width:auto - không co lại theo track 1fr nếu nội dung bên trong (ảnh
+  // 100px + tên/sao/avatar ở .DongDuoiNoiBat không cho xuống dòng) rộng hơn cột, đẩy card giãn ra
+  // tràn ngang cả trang trên mobile - chỉ riêng khối này có ở trang chủ nên chỉ trang chủ bị lộ lỗi.
+  .TheDanhGiaNoiBat { padding: 20px; gap: 16px; min-width: 0; }
   .AnhSPNoiBat { width: 100px; height: 100px; min-width: 100px; }
+  .DongDuoiNoiBat { flex-wrap: wrap; row-gap: 6px; }
 }

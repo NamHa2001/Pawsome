@@ -17,11 +17,13 @@
   background-color: var(--clr-page-bg);
 }
 
+// Không cần margin-top bù chiều cao header nữa - header giờ position:sticky, tự chiếm đúng không
+// gian thật của nó trong luồng layout (header.scss).
 .auth-page {
   width: 100%;
   max-width: 1512px;
   min-height: calc(100vh - 195px);
-  margin: 195px auto 0 auto;
+  margin: 0 auto;
   display: grid;
   grid-template-columns: 1fr 1fr;
   background-color: var(--clr-page-bg);

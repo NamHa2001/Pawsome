@@ -6,13 +6,14 @@
   font-family: 'Sora', sans-serif;
 }
 
+// Không cần margin-top bù chiều cao header nữa - header giờ position:sticky, tự chiếm đúng không
+// gian thật của nó trong luồng layout (header.scss).
 .TrangKhuTaiKhoan {
   width: 100%;
   display: flex;
   justify-content: center;
   background-color: var(--clr-page-bg);
   min-height: calc(100vh - var(--header-height));
-  margin-top: var(--header-height);
   padding: 40px 0 60px;
   box-sizing: border-box;
 }

@@ -70,26 +70,32 @@
   display: flex;
   justify-content: center;
 
-  .VungAnToan { display: flex; justify-content: space-between; align-items: center; }
+  // flex-wrap luôn bật (không đợi tới breakpoint 900px mới bật) - width % cố định (24%/50%) trước
+  // đây chỉ đúng ở đúng 2 khoảng đã test (>900px và <=900px), khoảng giữa (901-1200px, tablet
+  // ngang...) vẫn dùng 24%/hàng quá chật, chữ dài như "100% Satisfaction" không đủ chỗ, bị khuất/
+  // tràn cạnh. flex-basis (.OSevice bên dưới) + wrap tự tính số cột vừa đủ theo mọi bề rộng thật,
+  // không cần dò thêm breakpoint nào nữa.
+  .VungAnToan { display: flex; flex-wrap: wrap; row-gap: 25px; justify-content: space-between; align-items: flex-start; }
 }
 
 .OSevice {
   display: flex;
   align-items: flex-start;
   gap: 15px;
-  width: 24%;
+  flex: 1 1 240px;
+  min-width: 0;
 }
 
 .IconTron {
-  width: 65px;
-  height: 65px;
+  width: clamp(50px, 6vw, 65px);
+  height: clamp(50px, 6vw, 65px);
   background-color: #D32F2F;
   color: var(--MauTrang);
   border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 30px;
+  font-size: clamp(22px, 3vw, 30px);
   flex-shrink: 0;
   box-shadow: 0 4px 15px rgba(165, 31, 31, 0.2);
   transition: all 0.3s ease;
@@ -104,9 +110,12 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+  min-width: 0;
 
-  strong { font-size: 16px; font-weight: 700; color: var(--MauDen); margin-bottom: 4px; white-space: nowrap; }
-  span { font-size: 13px; color: #666; font-weight: 300; line-height: 1.4; }
+  // Bỏ white-space:nowrap - chữ luôn được phép tự xuống dòng khi không đủ chỗ thay vì tràn/khuất
+  // cạnh; font-size dùng clamp() để tự co giãn theo bề rộng màn hình (user yêu cầu) thay vì cố định.
+  strong { font-size: clamp(14px, 1.8vw, 16px); font-weight: 700; color: var(--MauDen); margin-bottom: 4px; }
+  span { font-size: clamp(12px, 1.4vw, 13px); color: #666; font-weight: 300; line-height: 1.4; }
 }
 
 .KhungChuaLon {
@@ -181,8 +190,11 @@
   line-height: 1.7;
 }
 
+// font-size/height dùng clamp(sàn, tỉ lệ theo bề rộng màn hình, trần) thay vì số cố định đổi đột
+// ngột tại 1 mốc breakpoint - co giãn liên tục theo mọi bề rộng điện thoại thực tế (390px, 393px,
+// 412px, 430px...) thay vì chỉ đúng ở đúng những mốc đã test, tránh vỡ lại khi đổi sang máy khác.
 .GiaCuGrid {
-  font-size: 16px;
+  font-size: clamp(14px, 3.5vw, 16px);
   color: var(--MauDen);
   font-weight: 600;
   white-space: nowrap;
@@ -192,17 +204,20 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 10px;
+  gap: clamp(3px, 2vw, 10px);
 }
 
 .GiaMoiGrid {
-  font-size: 16px;
+  font-size: clamp(14px, 3.5vw, 16px);
   font-weight: 600;
   color: var(--MauDoDam);
   white-space: nowrap;
 }
 
-.VipIconGrid { height: 25px; cursor: pointer; flex-shrink: 0; }
+// height dùng clamp thay vì số cố định - ở màn rất hẹp co về sàn 12px (đủ nhỏ để không tràn cạnh
+// giá "vnd", tính dư cho cả máy 320px đời cũ), màn rộng hơn (tablet/desktop) tự lớn dần về đúng
+// 25px gốc theo file mẫu.
+.VipIconGrid { height: clamp(12px, 4vw, 25px); cursor: pointer; flex-shrink: 0; }
 
 // 4 khối dịch vụ (24%/hàng) và grid 4 cột 280px cố định chỉ vừa ở desktop 1200px - tràn ngang
 // hoàn toàn trên mobile (YPCN-4.2). Slideshow/aspect-ratio đã tự co giãn ở base rule nên không cần
@@ -235,24 +250,37 @@
   // Ở layout 2 cột (mobile/tablet), chỉ hiện 3 hàng đầu (6 sản phẩm) thay vì đủ 8 như desktop 4
   // cột x 2 hàng - danh sách trên mobile ngắn hơn chủ đích, không phải cắt bớt do lỗi dữ liệu.
   .KhungDanhSachSP .TheSanPham:nth-child(n+7) { display: none; }
+  // .CumGia còn nằm trong 2 lớp padding của cha (.TheSanPham 13px + .NoiDungSP 10px, cả 2 đều dùng
+  // chung nhiều nơi khác nên không đổi) - chỉ đổi padding riêng .CumGia (20px gốc) không đủ, tổng
+  // vẫn cách viền card thật 13+10+padding, không phải đúng padding đó. margin âm 10px để "kéo" khối
+  // giá thoát khỏi padding 10px của .NoiDungSP, cộng padding 2px riêng -> đúng 2px tính từ viền card
+  // thật (13px của .TheSanPham + 2px) cho cả giá (trái) lẫn logo PawVip (phải, user yêu cầu).
+  // width phải cộng thêm đúng 20px (bù 2 bên margin âm) - .CumGia là flex item trong .NoiDungSP
+  // (align-items:center, không phải stretch) nên width:auto sẽ co theo nội dung thay vì tự giãn
+  // lấp khoảng trống margin âm như block thường, phải tính tay bằng calc().
+  .CumGia { width: calc(100% + 20px); padding: 15px 2px 0; margin-left: -10px; margin-right: -10px; }
+  // Cùng kiểu tính như .CumGia ở trên: nút gốc (styles.scss) bị chặn max-width:190px + nằm trong 2
+  // lớp padding của cha nên nhìn lọt thỏm giữa card, 2 bên dư nhiều hồng hơn hẳn nút - bỏ max-width,
+  // kéo ra sát viền card thật rồi chừa đúng 2px mỗi bên (margin -8px bù 10px padding .NoiDungSP,
+  // width +16px bù 2 bên margin). Chữ "ADD TO CART" cỡ 16px gốc không đủ chỗ trong nút hẹp lại nên
+  // bị xuống 2 dòng - dùng clamp() để cỡ chữ (và icon giỏ hàng, tự scale theo font-size) tự nhỏ lại
+  // theo bề rộng màn hình, giữ đúng 1 dòng.
+  .NutShopNowGrid {
+    width: calc(100% + 16px);
+    max-width: none;
+    margin: 0 -8px;
+    font-size: clamp(12px, 3.5vw, 16px);
+  }
 }
 
 @media (max-width: 900px) {
   .BannerSlideshow { display: none; }
-  .ThanhTienIch .VungAnToan { flex-wrap: wrap; row-gap: 25px; padding: 0 20px; }
-  .OSevice { width: calc(50% - 10px); }
-  .ChuService strong { white-space: normal; }
+  .ThanhTienIch .VungAnToan { padding: 0 20px; }
   .TieuDeChinh { font-size: 22px; }
 }
 
 @media (max-width: 560px) {
   .KhungDanhSachSP { gap: 14px; }
-  .GiaCuGrid, .GiaMoiGrid { font-size: 14px; }
-  // Logo PawVip (chỉ set height, width co theo tỉ lệ ảnh gốc) cộng với giá "nowrap" có lúc rộng hơn
-  // khung card hẹp (2 cột) - thay vì để xuống dòng, thu nhỏ hẳn logo + giảm khoảng cách để vừa nằm
-  // gọn 1 hàng như thiết kế gốc.
-  .VipIconGrid { height: 14px; }
-  .GiaMoiHang { gap: 6px; }
   .HeaderSanPham { flex-direction: column; gap: 10px; padding-top: 24px; }
   .TieuDeChinh { position: static; transform: none; }
 }
