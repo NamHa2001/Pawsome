@@ -47,10 +47,36 @@ export class DanhSachSanPham implements OnInit {
 
   readonly boLoc = signal<BoLocSanPham>({ page: 1, pageSize: 12 });
 
+  // boLocTam: bản nháp đang chỉnh trong panel filter, tách riêng khỏi boLoc (bộ lọc đã thật sự áp
+  // dụng, dùng để gọi API/hiện trên URL). Trước đây mỗi lần bấm 1 mục filter là gọi thẳng API +
+  // đóng panel ngay - giờ bấm mục filter chỉ cập nhật boLocTam (không gọi API, không đóng panel),
+  // phải bấm nút "Apply Filters" mới thật sự lọc (user yêu cầu). Panel cũng chỉ đóng khi bấm lại
+  // đúng nút "Filters" ở header phụ, Apply/Clear không tự đóng nữa (user yêu cầu).
+  readonly boLocTam = signal<BoLocSanPham>({ page: 1, pageSize: 12 });
+
   readonly hienBoLoc = signal(false);
 
   moDongBoLoc(): void {
-    this.hienBoLoc.update(v => !v);
+    this.hienBoLoc.update(v => {
+      // Mở panel: đồng bộ lại bản nháp theo đúng bộ lọc đang thật sự áp dụng - nếu lần trước đóng
+      // panel giữa chừng (chưa bấm Apply) thì lần mở này không giữ lại phần dở dang đó.
+      if (!v) this.boLocTam.set(this.boLoc());
+      return !v;
+    });
+  }
+
+  // Chip Category/Condition/Brand/Rating gọi hàm này - chỉ cập nhật bản nháp, KHÔNG gọi API/đóng
+  // panel (khác apDungLoc() bên dưới).
+  capNhatLocTam(thayDoi: Partial<BoLocSanPham>): void {
+    this.boLocTam.update(v => ({ ...v, ...thayDoi }));
+  }
+
+  // Nút "Apply Filters" duy nhất - commit toàn bộ bản nháp (category/condition/brand/rating/giá)
+  // thành bộ lọc thật, gọi API qua điều hướng query params. Không đóng panel (user yêu cầu).
+  apDungLoc(giaMin?: number, giaMax?: number): void {
+    const moi: BoLocSanPham = { ...this.boLocTam(), giaMin: giaMin || undefined, giaMax: giaMax || undefined, page: 1 };
+    this.boLocTam.set(moi);
+    this.router.navigate([], { relativeTo: this.route, queryParams: this.thanhQueryParams(moi) });
   }
 
   ngOnInit(): void {
@@ -84,12 +110,6 @@ export class DanhSachSanPham implements OnInit {
     });
   }
 
-  apDungBoLoc(thayDoi: Partial<BoLocSanPham>): void {
-    const moi = { ...this.boLoc(), ...thayDoi, page: 1 };
-    this.router.navigate([], { relativeTo: this.route, queryParams: this.thanhQueryParams(moi) });
-    this.hienBoLoc.set(false);
-  }
-
   doiTrang(trang: number): void {
     if (trang < 1 || trang > this.tongTrang()) return;
     const moi = { ...this.boLoc(), page: trang };
@@ -97,8 +117,8 @@ export class DanhSachSanPham implements OnInit {
   }
 
   xoaLoc(): void {
+    this.boLocTam.set({ page: 1, pageSize: 12 });
     this.router.navigate([], { relativeTo: this.route, queryParams: {} });
-    this.hienBoLoc.set(false);
   }
 
   readonly dangThemGioNhanh = signal(false);

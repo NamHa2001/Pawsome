@@ -102,33 +102,33 @@
   <nav class="ThanhDieuHuong">
     <div class="VungAnToan">
       <ul class="DanhSachMenuChinh">
-        <li class="MucMenuChinh">
-          <a routerLink="/san-pham" class="LienKetChinh">Shop by Pet</a>
+        <li class="MucMenuChinh" [class.MoTrenMobile]="mucMenuMoTrenMobile() === 0">
+          <a [routerLink]="laMobileNav() ? null : '/san-pham'" class="LienKetChinh" (click)="toggleMenuConMobile(0, $event)">Shop by Pet</a>
           <ul class="KhungMenuCon">
-            <li><a routerLink="/san-pham" [queryParams]="{ categoryId: 1 }">Dog</a></li>
-            <li><a routerLink="/san-pham" [queryParams]="{ categoryId: 2 }">Cat</a></li>
-            <li><a routerLink="/san-pham" [queryParams]="{ categoryId: 3 }">Horse</a></li>
-            <li><a routerLink="/san-pham" [queryParams]="{ categoryId: 4 }">Bird</a></li>
+            <li><a routerLink="/san-pham" [queryParams]="{ categoryId: 1 }" (click)="mucMenuMoTrenMobile.set(null)">Dog</a></li>
+            <li><a routerLink="/san-pham" [queryParams]="{ categoryId: 2 }" (click)="mucMenuMoTrenMobile.set(null)">Cat</a></li>
+            <li><a routerLink="/san-pham" [queryParams]="{ categoryId: 3 }" (click)="mucMenuMoTrenMobile.set(null)">Horse</a></li>
+            <li><a routerLink="/san-pham" [queryParams]="{ categoryId: 4 }" (click)="mucMenuMoTrenMobile.set(null)">Bird</a></li>
           </ul>
         </li>
 
-        <li class="MucMenuChinh">
-          <a routerLink="/san-pham" class="LienKetChinh">Shop by Condition</a>
+        <li class="MucMenuChinh" [class.MoTrenMobile]="mucMenuMoTrenMobile() === 1">
+          <a [routerLink]="laMobileNav() ? null : '/san-pham'" class="LienKetChinh" (click)="toggleMenuConMobile(1, $event)">Shop by Condition</a>
           <ul class="KhungMenuCon">
-            <li><a routerLink="/san-pham" [queryParams]="{ conditionId: 1 }">Flea, Tick</a></li>
-            <li><a routerLink="/san-pham" [queryParams]="{ conditionId: 2 }">Wormers</a></li>
-            <li><a routerLink="/san-pham" [queryParams]="{ conditionId: 3 }">Heartwormers</a></li>
-            <li><a routerLink="/san-pham" [queryParams]="{ conditionId: 4 }">Joint Care</a></li>
-            <li><a routerLink="/san-pham" [queryParams]="{ conditionId: 5 }">Skin & Coat</a></li>
-            <li><a routerLink="/san-pham" [queryParams]="{ conditionId: 6 }">Behavioural</a></li>
+            <li><a routerLink="/san-pham" [queryParams]="{ conditionId: 1 }" (click)="mucMenuMoTrenMobile.set(null)">Flea, Tick</a></li>
+            <li><a routerLink="/san-pham" [queryParams]="{ conditionId: 2 }" (click)="mucMenuMoTrenMobile.set(null)">Wormers</a></li>
+            <li><a routerLink="/san-pham" [queryParams]="{ conditionId: 3 }" (click)="mucMenuMoTrenMobile.set(null)">Heartwormers</a></li>
+            <li><a routerLink="/san-pham" [queryParams]="{ conditionId: 4 }" (click)="mucMenuMoTrenMobile.set(null)">Joint Care</a></li>
+            <li><a routerLink="/san-pham" [queryParams]="{ conditionId: 5 }" (click)="mucMenuMoTrenMobile.set(null)">Skin & Coat</a></li>
+            <li><a routerLink="/san-pham" [queryParams]="{ conditionId: 6 }" (click)="mucMenuMoTrenMobile.set(null)">Behavioural</a></li>
           </ul>
         </li>
 
-        <li class="MucMenuChinh">
-          <a routerLink="/san-pham" class="LienKetChinh">Brands</a>
+        <li class="MucMenuChinh" [class.MoTrenMobile]="mucMenuMoTrenMobile() === 2">
+          <a [routerLink]="laMobileNav() ? null : '/san-pham'" class="LienKetChinh" (click)="toggleMenuConMobile(2, $event)">Brands</a>
           <ul class="KhungMenuCon">
             @for (th of danhSachThuongHieu(); track th.brandId) {
-              <li><a routerLink="/san-pham" [queryParams]="{ brandId: th.brandId }">{{ th.tenThuongHieu }}</a></li>
+              <li><a routerLink="/san-pham" [queryParams]="{ brandId: th.brandId }" (click)="mucMenuMoTrenMobile.set(null)">{{ th.tenThuongHieu }}</a></li>
             }
           </ul>
         </li>

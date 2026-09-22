@@ -450,22 +450,42 @@
   .KhungLogo { flex-shrink: 0; }
   .AnhLogo { height: 30px; }
   .KhungTimKiem { width: auto; flex: 1 1 auto; min-width: 0; margin: 0 8px; }
+  // .DanhSachGoiYTimKiem gốc dùng left:0;right:0 - khớp đúng bề rộng .KhungTimKiem (cha,
+  // position:relative). Ở mobile .KhungTimKiem bị co lại rất hẹp (flex:1 1 auto giữa logo và cụm
+  // icon), nên khung gợi ý cũng hẹp theo, tên/giá sản phẩm không đủ chỗ, phải cuộn ngang mới xem hết
+  // (user yêu cầu dài hơn). Tự căn giữa theo tâm ngang của khung tìm kiếm rồi nới rộng hẳn ra bằng
+  // gần hết bề ngang màn hình, không còn phụ thuộc bề rộng hẹp của khung tìm kiếm nữa.
+  .DanhSachGoiYTimKiem { left: 50%; right: auto; transform: translateX(-50%); width: calc(100vw - 48px); max-width: 340px; max-height: 280px; }
+  .MucGoiYTimKiem { padding: 8px 12px; gap: 10px; }
+  .AnhGoiYTimKiem { width: 30px; height: 30px; }
+  .TenGoiYTimKiem { font-size: 13px; }
+  .GiaGoiYTimKiem { font-size: 12px; }
   .CumTienIch { gap: 14px; flex-shrink: 0; }
   .VongTronIconDo { width: 34px; height: 34px; font-size: 15px; }
   .ThongBaoSoLuong { width: 15px; height: 15px; font-size: 9px; }
   .DanhSachThongTin { flex-wrap: wrap; row-gap: 4px; }
   .MucThongTin { font-size: 13px; padding: 0 10px; }
 
-  // Menu chính hiện thẳng 1 hàng (không hamburger/dropdown) - bấm vào đi thẳng trang tương ứng.
-  // Giữ Shop by Pet/Condition/Brands trên mobile - bỏ Blog/What's New (user yêu cầu). Trước đây
-  // để overflow-x:auto (cuộn ngang) vì padding/font cố định không đủ chỗ cho cả 3 mục - giờ đổi
-  // padding/font sang clamp() (co theo tỉ lệ màn hình) + dàn đều justify-content:space-between để
-  // vừa khít 1 hàng, không cần cuộn nữa (user yêu cầu). Vẫn giữ overflow-x:auto làm lưới an toàn
-  // cho trường hợp màn cực hẹp ngoài dự kiến, dù thực tế không còn cần tới.
-  .DanhSachMenuChinh { width: 100%; justify-content: space-between; overflow-x: auto; flex-wrap: nowrap; }
+  // Menu chính hiện thẳng 1 hàng - padding/font dùng clamp() (co theo tỉ lệ màn hình) + dàn đều
+  // justify-content:space-between để vừa khít, không cần cuộn ngang (user yêu cầu). KHÔNG được đặt
+  // overflow-x:auto ở đây (dù chỉ để phòng hờ) - overflow-x khác visible sẽ khiến trình duyệt tự ép
+  // overflow-y cũng thành auto theo, cắt mất luôn menu con .KhungMenuCon (position:absolute, xổ
+  // xuống dưới) khiến nó không hiện ra được dù đã bấm mở.
+  .DanhSachMenuChinh { width: 100%; justify-content: space-between; flex-wrap: nowrap; }
   .LienKetChinh { padding: 0 clamp(4px, 2vw, 16px); white-space: nowrap; font-size: clamp(12px, 3.5vw, 15px); }
-  .KhungMenuCon, .KhuyenMaiMenu { display: none; }
+  .KhuyenMaiMenu { display: none; }
   .MucMenuChinh:nth-child(n+4) { display: none; }
+  // Menu con vốn chỉ hiện qua :hover (base rule .MucMenuChinh:hover .KhungMenuCon) - không có hover
+  // thật trên cảm ứng nên trước đây ẩn hẳn (display:none) trên mobile, bấm "Shop by Pet"... chỉ đi
+  // thẳng trang, không xổ được menu con. Giờ bấm để toggle qua class .MoTrenMobile (header.ts) thay
+  // cho :hover - vẫn giữ position:absolute như desktop (không đẩy layout, không đè lệch các mục
+  // cùng hàng bên cạnh), chỉ đổi cách kích hoạt.
+  .KhungMenuCon { width: min(220px, 80vw); }
+  .MucMenuChinh.MoTrenMobile .KhungMenuCon { opacity: 1; visibility: visible; transform: translateY(0); }
+  // "Brands" là mục cuối cùng (nth-child(3), bên phải nhất) trong hàng 3 mục - menu con mặc định
+  // left:0 (xổ về bên phải tính từ mép trái mục cha) sẽ tràn ra ngoài màn hình vì không còn chỗ bên
+  // phải. Riêng mục này đổi lại right:0 (xổ về bên trái) để luôn nằm gọn trong màn hình.
+  .MucMenuChinh:nth-child(3) .KhungMenuCon { left: auto; right: 0; }
 }
 
 @media (max-width: 480px) {
