@@ -210,10 +210,18 @@
 @media (max-width: 1024px) {
   .HeaderSanPham { padding: 0 20px; }
   .KhungDanhSachSP { grid-template-columns: repeat(2, 1fr); padding: 0 20px; }
+  // Grid item mặc định min-width:auto - không co lại theo track 1fr nếu nội dung bên trong
+  // (giá "vnd" nowrap + logo PawVip cao 20px nhưng rộng theo tỉ lệ ảnh gốc) rộng hơn cột 2 fr.
+  // Thiếu dòng này, card tự giãn theo nội dung, đẩy tràn ngang cả 2 cột ra khỏi màn hình mobile
+  // dù ở desktop (cột rộng hơn nhiều) không hề lộ lỗi.
+  .TheSanPham { min-width: 0; }
   // .TenSanPhamGrid gốc (styles.scss) chỉ chừa chỗ 2 dòng (min-height:44px) - đủ ở desktop 4 cột
   // (card rộng, tên ít khi xuống dòng 3). Card hẹp lại (2 cột) khiến vài tên dài xuống 3 dòng,
   // đẩy lệch giá/nút so với card tên ngắn cùng hàng - chừa sẵn chỗ 3 dòng để đồng bộ mọi thẻ.
   .TenSanPhamGrid { min-height: 66px; }
+  // Ở layout 2 cột (mobile/tablet), chỉ hiện 3 hàng đầu (6 sản phẩm) thay vì đủ 8 như desktop 4
+  // cột x 2 hàng - danh sách trên mobile ngắn hơn chủ đích, không phải cắt bớt do lỗi dữ liệu.
+  .KhungDanhSachSP .TheSanPham:nth-child(n+7) { display: none; }
 }
 
 @media (max-width: 900px) {
