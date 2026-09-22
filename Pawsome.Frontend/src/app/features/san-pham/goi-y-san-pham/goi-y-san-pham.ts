@@ -1,7 +1,7 @@
 import { DecimalPipe } from '@angular/common';
 import { Component, computed, effect, inject, input, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { SanPham, phanTramSao } from '../models/san-pham.model';
+import { SanPham, giaVipPlaceholder, phanTramSao } from '../models/san-pham.model';
 import { ProductService } from '../services/product.service';
 import { CartService } from '../../gio-hang/gio-hang/services/cart.service';
 import { TokenService } from '../../../core/models/token.service';
@@ -23,6 +23,7 @@ export class GoiYSanPham {
 
   readonly saoArr = [1, 2, 3, 4, 5];
   protected readonly phanTramSao = phanTramSao;
+  protected readonly giaVipPlaceholder = giaVipPlaceholder;
 
   readonly sanPhamCungDanhMuc = signal<SanPham[]>([]);
   readonly sanPhamBanChay = signal<SanPham[]>([]);
@@ -43,6 +44,12 @@ export class GoiYSanPham {
       });
       this.productService.getBanChay(productId, 4).subscribe(ds => this.sanPhamBanChay.set(ds));
     });
+  }
+
+  diToiPawVip(event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.router.navigate(['/gio-hang/pawvip']);
   }
 
   themVaoGioNhanh(item: SanPham, event: Event): void {

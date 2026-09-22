@@ -21,8 +21,10 @@
           <p class="ThongBaoLoi">{{ loi() }}</p>
         }
         <div class="SubBottom">
-          <div #recaptchaBox class="KhungRecaptcha"></div>
-          <button class="NutSubscribe" [disabled]="dangGui()" (click)="subscribe()">
+          <div class="KhungRecaptchaWrap">
+            <div #recaptchaBox class="KhungRecaptcha"></div>
+          </div>
+          <button class="NutSubscribe" [disabled]="dangGui() || thieuDieuKien()" (click)="subscribe()">
             {{ dangGui() ? 'Submitting...' : 'Subscribe' }}
           </button>
         </div>

@@ -47,6 +47,13 @@ export class WelcomeBonus implements AfterViewInit {
     setTimeout(() => this.renderRecaptchaKhiSanSang(soLanThu + 1), 200);
   }
 
+  // Dùng cho [disabled] trên nút Subscribe - vô hiệu nút ngay khi thiếu email/chưa tick reCAPTCHA
+  // thay vì để bấm được rồi mới báo lỗi (subscribe() bên dưới vẫn giữ nguyên check này làm lớp bảo
+  // vệ cuối, phòng trường hợp autofill khiến template chưa kịp cập nhật lại disabled).
+  thieuDieuKien(): boolean {
+    return !this.email.trim() || !this.recaptchaToken();
+  }
+
   subscribe(): void {
     this.loi.set(null);
     this.thongBao.set(null);
