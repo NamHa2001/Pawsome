@@ -186,3 +186,13 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
   &:disabled { opacity: 0.4; cursor: default; }
   &:hover:not(.active):not(:disabled) { background-color: #FDF3F3; border-color: #8A191C; color: #8A191C; }
 }
+
+// Safari/Chrome mobile tự động zoom trang khi focus vào input/textarea/select có font-size <16px
+// (để chữ dễ đọc hơn) - rất khó chịu vì lần nào bấm vào ô nhập liệu (search, email, form đăng
+// nhập/đăng ký/địa chỉ/thanh toán...) cũng bị giật zoom. Ép tối thiểu 16px cho MỌI ô nhập liệu ở
+// mobile - dùng !important vì có quá nhiều input/form rải khắp app, mỗi cái đang tự đặt font-size
+// riêng (thường 13-15px) nên chỉ 1 rule chung không !important sẽ không thắng nổi các rule cụ thể
+// hơn đó; đây là ràng buộc UX bắt buộc, không phải ghi đè thẩm mỹ thông thường.
+@media (max-width: 900px) {
+  input, textarea, select { font-size: 16px !important; }
+}
